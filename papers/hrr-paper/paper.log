@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  24 JUN 2016 16:19
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  24 JUN 2016 18:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -379,14 +379,7 @@ LaTeX Font Info:    Redeclaring math accent \widetilde on input line 946.
 (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
-) (./paper.aux
-
-LaTeX Warning: Label `no-perm' multiply defined.
-
-
-LaTeX Warning: Label `no-perm' multiply defined.
-
-)
+) (./paper.aux)
 \openout1 = `paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 316.
@@ -494,44 +487,43 @@ Package pdftex.def Info: img/scalar-pre-perm-probe.png used on input line 482.
 File: img/scalar-pre-perm-fft.png Graphic file (type png)
 
 <use img/scalar-pre-perm-fft.png>
-Package pdftex.def Info: img/scalar-pre-perm-fft.png used on input line 492.
+Package pdftex.def Info: img/scalar-pre-perm-fft.png used on input line 494.
 (pdftex.def)             Requested size: 252.0pt x 76.21173pt.
 
-<img/scalar-perm-step.png, id=22, 876.27374pt x 261.97874pt>
-File: img/scalar-perm-step.png Graphic file (type png)
+<img/scalar-random-fft.png, id=22, 876.27374pt x 259.97125pt>
+File: img/scalar-random-fft.png Graphic file (type png)
 
-<use img/scalar-perm-step.png>
-Package pdftex.def Info: img/scalar-perm-step.png used on input line 498.
-(pdftex.def)             Requested size: 252.0pt x 75.34029pt.
-
-<img/scalar-post-perm-fft.png, id=23, 876.27374pt x 259.97125pt>
-File: img/scalar-post-perm-fft.png Graphic file (type png)
-
-<use img/scalar-post-perm-fft.png>
-Package pdftex.def Info: img/scalar-post-perm-fft.png used on input line 499.
+<use img/scalar-random-fft.png>
+Package pdftex.def Info: img/scalar-random-fft.png used on input line 499.
 (pdftex.def)             Requested size: 252.0pt x 74.76297pt.
 
+<img/scalar-perm-step-fft.png, id=23, 1334.9875pt x 259.97125pt>
+File: img/scalar-perm-step-fft.png Graphic file (type png)
 
-LaTeX Warning: Reference `scalar-encoder' on page 2 undefined on input line 504
-.
+<use img/scalar-perm-step-fft.png>
+Package pdftex.def Info: img/scalar-perm-step-fft.png used on input line 510.
+(pdftex.def)             Requested size: 252.0pt x 49.07373pt.
 
 <img/scalar-post-perm.png, id=24, 1349.04pt x 261.97874pt>
 File: img/scalar-post-perm.png Graphic file (type png)
 
 <use img/scalar-post-perm.png>
-Package pdftex.def Info: img/scalar-post-perm.png used on input line 507.
+Package pdftex.def Info: img/scalar-post-perm.png used on input line 519.
 (pdftex.def)             Requested size: 252.0pt x 48.937pt.
 
 <img/scalar-post-perm-probe.png, id=25, 1349.04pt x 259.97125pt>
 File: img/scalar-post-perm-probe.png Graphic file (type png)
 
 <use img/scalar-post-perm-probe.png>
-Package pdftex.def Info: img/scalar-post-perm-probe.png used on input line 508.
+Package pdftex.def Info: img/scalar-post-perm-probe.png used on input line 524.
 
 (pdftex.def)             Requested size: 252.0pt x 48.56201pt.
+
+Underfull \vbox (badness 5133) has occurred while \output is active []
+
  [2 <./img/scalar-pre-perm.png> <./img/scalar-pre-perm-probe.png> <./img/scalar
--pre-perm-fft.png> <./img/scalar-perm-step.png> <./img/scalar-post-perm-fft.png
->]
+-pre-perm-fft.png> <./img/scalar-random-fft.png> <./img/scalar-perm-step-fft.pn
+g>]
 No file paper.bbl.
 
 ** Conference Paper **
@@ -547,34 +539,27 @@ Before submitting the final camera ready copy, remember to:
 [3
 
  <./img/scalar-post-perm.png> <./img/scalar-post-perm-probe.png>]
-(./paper.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: There were multiply-defined labels.
-
- ) 
+(./paper.aux) ) 
 Here is how much of TeX's memory you used:
- 4747 strings out of 494935
- 73058 string characters out of 6178122
- 126665 words of memory out of 5000000
- 7927 multiletter control sequences out of 15000+600000
+ 4757 strings out of 494935
+ 73144 string characters out of 6178122
+ 127718 words of memory out of 5000000
+ 7937 multiletter control sequences out of 15000+600000
  38784 words of font info for 75 fonts, out of 8000000 for 9000
  39 hyphenation exceptions out of 8191
- 42i,9n,40p,606b,381s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
-lic/mathabx-type1/matha10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/mathabx-type1/matha7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/mat
-habx-type1/mathx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
-b8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (3 pages, 589570 bytes).
+ 42i,9n,40p,738b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr
+/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/public/mathabx-type1/matha10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/mathabx-type1/matha7.pfb></usr/share/texlive/texmf-dist/fonts/typ
+e1/public/mathabx-type1/mathx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi
+8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on paper.pdf (3 pages, 651851 bytes).
 PDF statistics:
  76 PDF objects out of 1000 (max. 8388607)
  43 compressed objects within 1 object stream

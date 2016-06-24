@@ -470,7 +470,7 @@ Encoding scalars is a good example for the necessity of preserving topology. Dep
 (10000 \otimes A) \oslash 10001
 \end{equation}
 
-To facilitate these two qualities scalar encoding can be achieved with the help of Gaussian distributions. The encoded vector will simply represent a Gaussian bell sampled over a fixed input range. Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what binding such a  Unfortunately
+To facilitate these two qualities scalar encoding can be achieved with the help of Gaussian distributions. The encoded vector will simply represent a Gaussian bell sampled over a fixed input range. Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what the result of binding it to a generic random vector is. With this result it becomes obvious that lots of information is lost. If this result is probed with the same random vector used in binding something similar to the initial Gaussian bell is expected. And yet figure \ref{no-perm-b} presents no such outcome. While there is a peak at the initial value lots of other peaks also arise, making it impossible to detect which one is correct. 
 
 \begin{figure}
 \begin{subfigure}{1\columnwidth}
@@ -484,30 +484,49 @@ To facilitate these two qualities scalar encoding can be achieved with the help 
 \label{no-perm-b}
 \end{subfigure}
 \caption{Plot of vector values. Figure \ref{no-perm-a} shows the binding of the value 8 on a scale to 10 with the symbolic representation of "ball", which is random. In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
+\label{no-perm}
 \end{figure}
 
-Since however circular convolution is based on Fourier transformations the lack of frequencies present in the encoding becomes apparent in Fourier space as well. All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation. In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and does not come close to resembling the original Gaussian. 
+This effect is due to the fact that circular convolution is based on Fourier transformations and the lack of frequencies present in encoded vectors becomes apparent in Fourier space as well. Figure \ref{fft} highlights this. All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation. In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and does not come close to resembling the original Gaussian. 
 
 \begin{figure}
+\begin{subfigure}{1\columnwidth}
 \includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
-\caption{Plot of vector values. Left plots are done without permutation, right ones are done with. Both columns represent the same operations: first row is encoding of value 8 on a scale to 10. Second is the real part of the Fourier transformation of the previously encoded vector. Final row is the result of probing for the value 8.}
-\label{no-perm}
+\caption{Scalar}
+\label{fft-a}
+\end{subfigure}
+\begin{subfigure}{1\columnwidth}
+\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
+\caption{Random}
+\label{fft-b}
+\end{subfigure}
+\caption{.}
+\label{fft}
 \end{figure}
 
+This inconvenience is removed with the help of permutations. Depending on the size of the memory vectors used a fixed permutation is generated. Whenever a scalar is encoded the Gaussian bell is first sampled over the range, after which the sampled values swap places accordingly. As such the resulting vector will present lots of jumps in value, which have a significant impact on the Fourier space, as can be seen in figure \ref{perm-fft}.
+
 \begin{figure}
-\includegraphics[width=\columnwidth]{img/scalar-perm-step.png}
-\includegraphics[width=\columnwidth]{img/scalar-post-perm-fft.png}
-\caption{Plot of vector values. Left plots are done without permutation, right ones are done with. Both columns represent the same operations: first row is encoding of value 8 on a scale to 10. Second is the real part of the Fourier transformation of the previously encoded vector. Final row is the result of probing for the value 8.}
-\label{no-perm}
+\includegraphics[width=\columnwidth]{img/scalar-perm-step-fft.png}
+\caption{.}
+\label{perm-fft}
 \end{figure}
 
-This inconvenience is removed with the help of permutations. Depending on the size of the memory vectors used a fixed permutation is generated. Whenever a scalar is encoded the Gaussian bell is first sampled over the range, after which the sampled values swap places accordingly. As such the resulting vector will present lots of jumps in value, which have a significant impact on the Fourier space. Working with such a vector makes it possible to probe for scalars and receive a Gaussian bell overlapped with some noise. All of this can be seen in Figure \ref{scalar-encoder}.
+Working with such a vector makes it possible to successfully probe for scalars and receive a Gaussian bell overlapped with some noise. All of this can be seen in figure \ref{perm}, which depicts the exact same operations as figure \ref{no-perm}, but using a permuted version of a Gaussian bell. The result in figure \ref{perm-b} clearly shows an according spike. This vector can be smoothed out, after which the peak can easily be identified and the initial scalar can be recovered.
 
 \begin{figure}
+\begin{subfigure}{1\columnwidth}
 \includegraphics[width=\columnwidth]{img/scalar-post-perm.png}
+\caption{Binging}
+\label{perm-a}
+\end{subfigure}
+\begin{subfigure}{1\columnwidth}
 \includegraphics[width=\columnwidth]{img/scalar-post-perm-probe.png}
-\caption{Plot of vector values. Left plots are done without permutation, right ones are done with. Both columns represent the same operations: first row is encoding of value 8 on a scale to 10. Second is the real part of the Fourier transformation of the previously encoded vector. Final row is the result of probing for the value 8.}
-\label{no-perm}
+\caption{Probing}
+\label{perm-b}
+\end{subfigure}
+\caption{.}
+\label{perm}
 \end{figure}
 
 
