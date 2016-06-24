@@ -490,17 +490,9 @@ To facilitate these two qualities scalar encoding can be achieved with the help 
 This effect is due to the fact that circular convolution is based on Fourier transformations and the lack of frequencies present in encoded vectors becomes apparent in Fourier space as well. Figure \ref{fft} highlights this. All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation. In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and does not come close to resembling the original Gaussian. 
 
 \begin{figure}
-\begin{subfigure}{1\columnwidth}
 \includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
-\caption{Scalar}
-\label{fft-a}
-\end{subfigure}
-\begin{subfigure}{1\columnwidth}
 \includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
-\caption{Random}
-\label{fft-b}
-\end{subfigure}
-\caption{.}
+\caption{Fourier space conversions of a Gaussian bell and a random vector.}
 \label{fft}
 \end{figure}
 
@@ -508,7 +500,7 @@ This inconvenience is removed with the help of permutations. Depending on the si
 
 \begin{figure}
 \includegraphics[width=\columnwidth]{img/scalar-perm-step-fft.png}
-\caption{.}
+\caption{Plots on the effect of permuting a Gaussian bell, and the impact on Fourier space.}
 \label{perm-fft}
 \end{figure}
 
@@ -525,7 +517,7 @@ Working with such a vector makes it possible to successfully probe for scalars a
 \caption{Probing}
 \label{perm-b}
 \end{subfigure}
-\caption{.}
+\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian for value 8 on a scale to 10 with the symbolic representation of "ball", which is random. In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
 \label{perm}
 \end{figure}
 

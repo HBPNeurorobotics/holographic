@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  24 JUN 2016 18:06
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  24 JUN 2016 18:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -487,39 +487,39 @@ Package pdftex.def Info: img/scalar-pre-perm-probe.png used on input line 482.
 File: img/scalar-pre-perm-fft.png Graphic file (type png)
 
 <use img/scalar-pre-perm-fft.png>
-Package pdftex.def Info: img/scalar-pre-perm-fft.png used on input line 494.
+Package pdftex.def Info: img/scalar-pre-perm-fft.png used on input line 493.
 (pdftex.def)             Requested size: 252.0pt x 76.21173pt.
 
 <img/scalar-random-fft.png, id=22, 876.27374pt x 259.97125pt>
 File: img/scalar-random-fft.png Graphic file (type png)
 
 <use img/scalar-random-fft.png>
-Package pdftex.def Info: img/scalar-random-fft.png used on input line 499.
+Package pdftex.def Info: img/scalar-random-fft.png used on input line 494.
 (pdftex.def)             Requested size: 252.0pt x 74.76297pt.
 
 <img/scalar-perm-step-fft.png, id=23, 1334.9875pt x 259.97125pt>
 File: img/scalar-perm-step-fft.png Graphic file (type png)
 
 <use img/scalar-perm-step-fft.png>
-Package pdftex.def Info: img/scalar-perm-step-fft.png used on input line 510.
+Package pdftex.def Info: img/scalar-perm-step-fft.png used on input line 502.
 (pdftex.def)             Requested size: 252.0pt x 49.07373pt.
 
 <img/scalar-post-perm.png, id=24, 1349.04pt x 261.97874pt>
 File: img/scalar-post-perm.png Graphic file (type png)
 
 <use img/scalar-post-perm.png>
-Package pdftex.def Info: img/scalar-post-perm.png used on input line 519.
+Package pdftex.def Info: img/scalar-post-perm.png used on input line 511.
 (pdftex.def)             Requested size: 252.0pt x 48.937pt.
 
 <img/scalar-post-perm-probe.png, id=25, 1349.04pt x 259.97125pt>
 File: img/scalar-post-perm-probe.png Graphic file (type png)
 
 <use img/scalar-post-perm-probe.png>
-Package pdftex.def Info: img/scalar-post-perm-probe.png used on input line 524.
+Package pdftex.def Info: img/scalar-post-perm-probe.png used on input line 516.
 
 (pdftex.def)             Requested size: 252.0pt x 48.56201pt.
 
-Underfull \vbox (badness 5133) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2 <./img/scalar-pre-perm.png> <./img/scalar-pre-perm-probe.png> <./img/scalar
 -pre-perm-fft.png> <./img/scalar-random-fft.png> <./img/scalar-perm-step-fft.pn
@@ -541,10 +541,10 @@ Before submitting the final camera ready copy, remember to:
  <./img/scalar-post-perm.png> <./img/scalar-post-perm-probe.png>]
 (./paper.aux) ) 
 Here is how much of TeX's memory you used:
- 4757 strings out of 494935
- 73144 string characters out of 6178122
- 127718 words of memory out of 5000000
- 7937 multiletter control sequences out of 15000+600000
+ 4753 strings out of 494935
+ 73108 string characters out of 6178122
+ 127684 words of memory out of 5000000
+ 7933 multiletter control sequences out of 15000+600000
  38784 words of font info for 75 fonts, out of 8000000 for 9000
  39 hyphenation exceptions out of 8191
  42i,9n,40p,738b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -559,7 +559,7 @@ e1/public/mathabx-type1/mathx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
 urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi
 8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (3 pages, 651851 bytes).
+Output written on paper.pdf (3 pages, 652134 bytes).
 PDF statistics:
  76 PDF objects out of 1000 (max. 8388607)
  43 compressed objects within 1 object stream
