@@ -7,7 +7,7 @@ from numpy.fft import fft, ifft
 from numpy.linalg import norm
 from numpy import array, sqrt, dot
 import random
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 from vsa import VSA
     
@@ -18,6 +18,7 @@ class HRR(VSA):
     #sz = () # size of the storage
     size = 20
     verbose = True
+    visualize = False
     
     stddev = 0.02
   
@@ -48,8 +49,6 @@ class HRR(VSA):
             self.memory = memory 
         else :
             self.memory = self.encode(size, v)    
-            
-        assert(self.is_normalized(self.memory))
     
     @classmethod
     def reset_kernel(self):
@@ -60,12 +59,12 @@ class HRR(VSA):
         if op.__class__ != self.__class__:
             op = HRR(op)
         
-        return HRR('-', memory=self.normalize(self.memory + op.memory))   
+        return HRR('-', memory=self.memory + op.memory)
 
     def __sub__(self, op):
         if op.__class__ != self.__class__:
             op = HRR(op)
-        return HRR('-', memory=self.normalize(self.memory - op.memory))        
+        return HRR('-', memory=self.memory - op.memory)       
         
     def __mul__(self, op):
         if op.__class__ != self.__class__:
@@ -95,8 +94,9 @@ class HRR(VSA):
         op_dec = self.periodic_corr(self.memory, op.memory) 
         #op_dec_unperm = smooth(op_dec_unperm, window_len=100)
         
-        #print("Output:")
-        #self.plot(op_dec)
+        if self.visualize:
+            print("Output:")
+            self.plot(op_dec)
             
         # cleanup of noisy result by dictionary lookup
         max_sim = {}
@@ -114,17 +114,19 @@ class HRR(VSA):
             if v > 0.1:
                 max_sim[k] = v
         
-        #if not max_sim:       
-        #    #print("Output Reverse:")
-        #    #self.plot(self.reverse_permute(op_dec))
-        #    op_dec = smooth(self.reverse_permute(op_dec),self.size/50)  
-        #    #print("Output Smooth:")
-        #    #self.plot(op_dec)
-        #    while np.max(op_dec) > 6 * abs(np.mean(op_dec)):
-        #        max_sim[len(max_sim)] = int(self.reverse_scale(np.argmax(op_dec), len(op_dec)))
-        #        compensate = self.scalar_encoder(self.reverse_scale(np.argmax(op_dec), len(op_dec)), len(op_dec))
-        #        compensate[:] = [x * -abs(np.max(op_dec)) for x in compensate]     
-        #        op_dec += compensate      
+        if not max_sim:   
+            if self.visualize:
+                print("Output Reverse:")
+                self.plot(self.reverse_permute(op_dec))
+            op_dec = smooth(self.reverse_permute(op_dec),self.size/50)  
+            if self.visualize:
+                print("Output Smooth:")
+                self.plot(op_dec)
+            while np.max(op_dec) > 6 * abs(np.mean(op_dec)):
+                max_sim[len(max_sim)] = int(self.reverse_scale(np.argmax(op_dec), len(op_dec)))
+                compensate = self.scalar_encoder(self.reverse_scale(np.argmax(op_dec), len(op_dec)), len(op_dec))
+                compensate[:] = [x * -abs(np.max(op_dec)) for x in compensate]     
+                op_dec += compensate      
         
         
         if HRR.verbose:
@@ -154,16 +156,16 @@ class HRR(VSA):
 
             result = np.empty(self.size, dtype=float)
          
-            #if type(op) == float or type(op) == int: 
-            #    result = self.permute(self.normalize(self.scalar_encoder(op, self.size)))
-            #elif type(op) == tuple:
-            #    result = self.permute(self.normalize(self.coordinate_encoder(op)))
-            #else:    
-            result = self.normalize(array([random.gauss(0,1) for i in range(self.size)]))
-            HRR.mapping[op] = result
-                
-            #print("Encoded ", op)    
-            #self.plot(result)    
+            if type(op) == float or type(op) == int: 
+                result = self.permute(self.normalize(self.scalar_encoder(op, self.size)))
+            elif type(op) == tuple:
+                result = self.permute(self.normalize(self.coordinate_encoder(op)))
+            else:    
+                result = array([random.gauss(0,1) for i in range(self.size)])
+                HRR.mapping[op] = result
+            if self.visualize:    
+                print("Encoded ", op)    
+                self.plot(result)    
             return result
     
     def scalar_encoder(self,x,length):       
@@ -197,15 +199,15 @@ class HRR(VSA):
     
     def normalize(self,v):
         v -= np.sum(v)/self.size
-        v /= norm(v)
-        assert(self.is_normalized(v))
+        #v /= norm(v)
+        #assert(self.is_normalized(v))
         return v
     
     def is_normalized(self,v):
         return (abs(norm(v) - 1.0) <= 0.000001)
     
     def periodic_corr(self, x, y):  
-        return self.normalize(ifft(fft(x) * fft(y).conj()).real)
+        return ifft(fft(x) * fft(y).conj()).real
     
     def circconv(self, a, b):
         #print("FFT 1:")
@@ -219,7 +221,7 @@ class HRR(VSA):
         #self.plot2(fft(b))
         #print("Mul Result:")
         #self.plot(self.normalize(np.real(ifft(fft(a)*fft(b)))))
-        return self.normalize(np.real(ifft(fft(a)*fft(b))))
+        return np.real(ifft(fft(a)*fft(b)))
         
     def compare(self,one, other): # other is nparray
         scale=norm(one)*norm(other)
@@ -256,18 +258,18 @@ class HRR(VSA):
             result[p[i]] = x[i]
         return result
     
-    #def plot(self,v):
-    #    plt.figure()
-    #    xx = range(len(v))
-    #    plt.plot(xx, v)
-    #    plt.show()
-        
-    #def plot2(self,v):
-    #    plt.figure()
-    #    xx = range(len(v))
-    #    plt.plot(xx, v)
-    #    plt.axis([-50,550,-6,6])
-    #    plt.show()
+    def plot(self,v):
+        plt.figure()
+        xx = range(len(v))
+        plt.plot(xx, v)
+        plt.show()
+       
+    def plot2(self,v):
+        plt.figure()
+        xx = range(len(v))
+        plt.plot(xx, v)
+        plt.axis([-50,550,-6,6])
+        plt.show()
     
 def create_permutation(L):
     HRR.permutation[L] = np.random.permutation(L)

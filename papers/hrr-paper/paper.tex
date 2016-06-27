@@ -521,7 +521,9 @@ Working with such a vector makes it possible to successfully probe for scalars a
 \label{perm}
 \end{figure}
 
+On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up a small issue. Adding multiple such bindings on top of each other would constantly increase the values in the resulting vector. Due to this, when probing, we would receive vectors which had the correct distance between their values, i.e. the correct "shape", but would be shifted on the Y-axis. This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n x_i = 0\), and is achieved with this simple operation:
 
+\[ \forall x_i \in x: x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|} \]
 
 \subsection{Coordinate encoder}
 
