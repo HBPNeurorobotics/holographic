@@ -280,6 +280,11 @@ class HRR(VSA):
         plt.axis([-50,550,-6,6])
         plt.show()
     
+    def decode(self):
+        
+        s = smooth(self.memory, window_length = self.size * 0.2)
+        return np.argmax(s)
+    
 def create_permutation(L):
     HRR.permutation[L] = np.random.permutation(L)
 
