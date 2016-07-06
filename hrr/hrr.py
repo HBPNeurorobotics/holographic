@@ -16,7 +16,7 @@ class HRR(VSA):
     #m = []  # memorry storage
     mapping = {}  # list of known mappings so far
     #sz = () # size of the storage
-    size = 20
+    size = 256
     verbose = True
     visualize = False
     
@@ -36,7 +36,7 @@ class HRR(VSA):
         HRR.size = size
         create_permutation(size)
     
-    def __init__(self, v, size=None, memory=None):
+    def __init__(self, v, size=None, memory=None, generator=None):
         
         if size == None:
             size = HRR.size               
@@ -47,6 +47,13 @@ class HRR(VSA):
         
         if memory != None:
             self.memory = memory 
+        elif generator != None:
+            memory = generator[0]
+            for i in range(self.size):
+                for j in range(len(generator) - 1):
+                    memory[i] += generator[j+1][i]
+                memory[i] /= len(generator)
+            self.memory = memory
         else :
             self.memory = self.encode(size, v)    
     
@@ -250,6 +257,7 @@ class HRR(VSA):
             result[i] = x[p[i]]
         return result
     
+    @classmethod
     def reverse_permute(self,x):
         n = len(x)
         p = self.permutation[n]
@@ -258,6 +266,7 @@ class HRR(VSA):
             result[p[i]] = x[i]
         return result
     
+    @classmethod
     def plot(self,v):
         plt.figure()
         xx = range(len(v))
