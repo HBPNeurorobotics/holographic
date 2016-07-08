@@ -282,14 +282,18 @@ class HRR(VSA):
     
     def decode(self):
         
-        s = smooth(self.memory, window_length = self.size * 0.2)
-        return np.argmax(s)
+        s = smooth(HRR.reverse_permute(self.memory), window_len = self.size * 0.01)
+        p = np.argmax(s)
+        #p = np.argmax(HRR.reverse_permute(self.memory))
+        #print('Before: {}'.format(p))
+        p = (p / float(self.size)) * (self.input_range[1] - self.input_range[0]) + self.input_range[0]
+        #print('After: {}'.format(p))
+        return p
     
 def create_permutation(L):
     HRR.permutation[L] = np.random.permutation(L)
 
 create_permutation(HRR.size)
-
 
 def smooth(x,window_len=100,window='hanning'):
     """smooth the data using a window with requested size.
