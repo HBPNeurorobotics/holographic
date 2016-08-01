@@ -1,4 +1,3 @@
-
 import numpy as np
 import scipy as sp
 import scipy.ndimage
@@ -9,26 +8,37 @@ from numpy import array, sqrt, dot
 import random
 import matplotlib.pyplot as plt
 
+import helpers
 from vsa import VSA
-    
+
+##  Holographic Reduced Representations.
+# 
+#   A Vector Symbolic Architecture that allows the user to work with and 
+#   perform operations on symbols, which hold the place of various inputs.
+
 class HRR(VSA):
 
-    mapping = {}  # list of known mappings so far
-    permutation = {} # indexed by array size
-    size = 256 #length of memory vectors
-    stddev = 0.02 #standard deviation of gaussian bells for scalar encoders
-    input_range = np.array([0,100]) # range of accepted inputs
+    mapping = {}                    # List of known mappings.
+    permutation = {}                # List of vector permutations, indexed by vector size.
+    size = 256                      # Length of memory vectors.
+    stddev = 0.02                   # Standard deviation of gaussian bells for scalar encoders.
+    input_range = np.array([0,100]) # Range of accepted inputs.
+    distance_threshold = 0.20       # Distance from which similarity is accepted.
+    incremental_weight = 0.1        # Weight used for induction.
+    peak_min = 6                    # Minimum factor by which a gaussian peak needs be larger than the average of noise.
     
-    verbose = True
-    visualize = False
+    verbose = True                  # Console verbose output.
+    visualize = False               # Graph plotting of various steps of operations.
     
-    def __init__(self, v, size=None, memory=None, generator=None):
-        
-        if size == None:
-            size = HRR.size               
-        
-        self.size = size
-        self.label = v
+    ## The constructor.
+    #
+    #  @param self The object pointer.
+    #  @param input_value The value for which the HRR is constructed. May be of different types.
+    #  @param memory A float vector which is the symbol by which the input value will be represented.
+    #  @param generator A vector of diverse symbolic vectors, over which a mean is calculated and used as memory.
+    def __init__(self, input_value, memory=None, generator=None):
+       
+        self.label = input_value
         
         if memory != None:
             self.memory = memory 
@@ -40,287 +50,248 @@ class HRR(VSA):
                 memory[i] /= len(generator)
             self.memory = memory
         else :
-            self.memory = self.encode(size, v)    
+            self.memory = self.encode(input_value)    
     
-    @classmethod
-    def reset_kernel(self):
-        HRR.mapping = {}     
-        
+    ## Setter for the length of symbolic vectors to be used.
+    #  
+    #  Every time this method is run all the previous mappings will be wiped.
+    #
+    #  @param self The object pointer.
+    #  @param size The new size. Must be > 0.
     @classmethod
     def set_size(self, size):
         assert(size > 0)
         HRR.size = size
-        create_permutation(size)
-          
-    def __add__(self, op):
-        if op.__class__ != self.__class__:
-            op = HRR(op)
+        HRR.reset_kernel()
+    
+    ## Method that wipes previous mappings
+    #
+    #  @param self The object pointer.
+    @classmethod
+    def reset_kernel(self):
+        HRR.mapping = {}     
+   
+    ## Overload of the "+" operand.
+    #
+    #  Creates a new HRR containing the sum of the other two memories as its own.
+    #
+    #  @param self The object pointer.
+    #  @param operand The second operand of the operation.
+    #  @return The new HRR.
+    def __add__(self, operand):
         
-        return HRR('-', memory=self.memory + op.memory)
+        if operand.__class__ != self.__class__:
+            operand = HRR(operand)
+        return HRR('-', memory=self.memory + operand.memory)
 
-    def __sub__(self, op):
-        if op.__class__ != self.__class__:
-            op = HRR(op)
-        return HRR('-', memory=self.memory - op.memory)       
+    ## Overload of the "-" operand.
+    #
+    #  Creates a new HRR containing the subtraction of the other two memories as its own.
+    #
+    #  @param self The object pointer.
+    #  @param operand The second operand of the operation.
+    #  @return The new HRR.
+    def __sub__(self, operand):
         
-    def __mul__(self, op):
-        if op.__class__ != self.__class__:
-            op = HRR(op)
-            
-        #perform binding
-        memory = self.circconv(self.memory, op.memory)       
+        if operand.__class__ != self.__class__:
+            operand = HRR(operand)
+        return HRR('-', memory=self.memory - operand.memory)    
+    
+    ## Overload of the "*" operand.
+    #
+    #  Creates a new HRR containing by binding the other two with the help of circular convolution.
+    #
+    #  @param self The object pointer.
+    #  @param operand The second operand of the operation.
+    #  @return The new HRR.        
+    def __mul__(self, operand):
+        if operand.__class__ != self.__class__:
+            operand = HRR(operand)
+        memory = self.circconv(self.memory, operand.memory) #perform binding       
         
         return HRR('-', memory=memory)
     
-    def __mod__(self, op):
+    ## Overload of the "%" operand.
+    #
+    #  Creates a new HRR containing by probing the first with the second via periodic correlation.
+    #
+    #  @param self The object pointer.
+    #  @param operand The second operand of the operation.
+    #  @return The new HRR.    
+    def __mod__(self, operand):
         
-        if op.__class__ != self.__class__:
-            op = HRR(op)
+        if operand.__class__ != self.__class__:
+            operand = HRR(operand)
+        memory = self.periodic_corr(self.memory, operand.memory) #perform unbinding
         
-        # perform unbinding
-        op_dec = self.periodic_corr(self.memory, op.memory)
-        
-        return HRR('-', memory=op_dec)
-        
-    def __div__(self, op):
+        return HRR('-', memory=memory)
     
-        if op.__class__ != self.__class__:
-            op = HRR(op)        
+    ## Overload of the "/" operand.
+    #
+    #  Probes the first HRR with the second via periodic correlation and decodes the result, returning it as a dictionary.
+    #
+    #  @param self The object pointer.
+    #  @param operand The second operand of the operation.
+    #  @return A dictionary of the decoded values. Can also be empty or contain more than one value.       
+    def __div__(self, operand):
     
-        # perform unbinding
-        op_dec = self.periodic_corr(self.memory, op.memory) 
+        if operand.__class__ != self.__class__:
+            operand = HRR(operand)        
+        memory = self.periodic_corr(self.memory, operand.memory) #perform unbinding
         
         if self.visualize:
             print("Output:")
-            self.plot(op_dec)
+            self.plot(memory)
+        
+        return self.decode(memory)
+    
+    ## Overload of the "**" operand.
+    #
+    #  Further induces an HRR's memory with that of another one.
+    #
+    #  @param self The object pointer.
+    #  @param operand The second operand of the operation.
+    #  @return The new HRR.     
+    def __pow__(self, operand):
+        
+        if operand.__class__ != self.__class__:
+            operand = HRR(operand)
             
+        return HRR('-', memory = incremental_weight * (self.memory - operand.memory))
+         
+    def decode(self, memory):
+        
         # cleanup of noisy result by dictionary lookup
-        max_sim = {}
-        max_v = -1
-        max_idx = -1
-        for k in HRR.mapping: # for every known key...
-            v = self.distance(HRR.mapping[k], op_dec) # determine distance
+        result = {}
+        match = False
+        for key in HRR.mapping:
+            dist = self.distance(HRR.mapping[key], memory) # determine distance
             if HRR.verbose :
-                print("Distance from {} is {}".format(k,v))
-            
-            if max_idx == -1 or max_v < v:
-                max_v = v
-                max_idx = k
-                
-            if v > 0.1:
-                max_sim[k] = v
+                print("Distance from {} is {}".format(key,dist))
+      
+            if dist > self.distance_threshold:
+                result[key] = dist
+                match = True
         
         # if no matches have been found in the dictionary try scalar decoder
-        if not max_sim:   
+        if not match:   
             if self.visualize:
                 print("Output Reverse:")
-                self.plot(self.reverse_permute(op_dec))
-            op_dec = smooth(self.reverse_permute(op_dec),self.size/50)  
+                self.plot(self.reverse_permute(memory))
+            memory = helpers.smooth(self.reverse_permute(memory),self.size/50)  
             if self.visualize:
                 print("Output Smooth:")
-                self.plot(op_dec)
-            while np.max(op_dec) > 6 * abs(np.mean(op_dec)):
-                max_sim[len(max_sim)] = int(self.reverse_scale(np.argmax(op_dec), len(op_dec)))
-                compensate = self.scalar_encoder(self.reverse_scale(np.argmax(op_dec), len(op_dec)), len(op_dec))
-                compensate[:] = [x * -abs(np.max(op_dec)) for x in compensate]     
-                op_dec += compensate      
+                self.plot(memory)
+            while np.max(memory) > self.peak_min * abs(np.mean(memory)):
+                spot = int(helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range))
+                result[spot] = 1
+                compensate = self.scalar_encoder(helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range), len(memory))
+                compensate[:] = [x * -abs(np.max(memory)) for x in compensate]     
+                memory += compensate      
         
-        
-        if HRR.verbose:
-            return max_sim
-        else:
-            if max_v < 0.01:
-                return "result too noisy"
-            else:
-                return max_idx
-        
-    def encode(self, sz, op):
-        if op in HRR.mapping:
-            return HRR.mapping[op]
+        return result
+     
+    def encode(self, input_value):
+        if input_value in HRR.mapping:
+            return HRR.mapping[input_value]
         else:
 
             result = np.empty(self.size, dtype=float)
          
-            if type(op) == float or type(op) == int: 
-                result = self.permute(self.normalize(self.scalar_encoder(op, self.size)))
-            elif type(op) == tuple:
-                result = self.permute(self.normalize(self.coordinate_encoder(op)))
+            if type(input_value) == float or type(input_value) == int: 
+                result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size)))
+            elif type(input_value) == tuple:
+                result = self.permute(helpers.normalize(self.coordinate_encoder(input_value)))
             else:    
                 result = array([random.gauss(0,1) for i in range(self.size)])
-                HRR.mapping[op] = result
+                HRR.mapping[input_value] = result
             if self.visualize:    
-                print("Encoded ", op)    
+                print("Encoded ", input_value)    
                 self.plot(result)    
             return result
     
-    def scalar_encoder(self,x,length):       
+    def scalar_encoder(self,scalar,length):       
         
         result = np.empty(length, dtype=float)
         
         for i in range(length):
-            result[i] = self.gaussian(i,self.scale(x, length),self.stddev * length) 
+            result[i] = helpers.gaussian(i,helpers.scale(scalar, length, self.input_range),self.stddev * length) 
             
         return result
         
     
-    def coordinate_encoder(self, x):   
+    def coordinate_encoder(self, coordinates):   
         
         # get number of coordinates
-        n = len(x)
+        nr = len(coordinates)
         
         # compute individual lengths
-        L = int(HRR.size / n)
-        L_last = HRR.size - L * (n - 1)
+        length = int(HRR.size / nr)
+        length_last = HRR.size - length * (nr - 1)
         
         out = []
-        for i in range(n-1):
-            enc = self.scalar_encoder(x[i], L)
+        for i in range(nr-1):
+            enc = self.scalar_encoder(coordinates[i], length)
             out.extend(enc)
         # encode the last segment
-        enc = self.scalar_encoder(x[n-1], L_last)
+        enc = self.scalar_encoder(coordinates[n-1], length_last)
         out.extend(enc)
         
         return out
+           
+    def periodic_corr(self, one, other):  
+        return ifft(fft(one) * fft(other).conj()).real
     
-    def normalize(self,v):
-        v -= np.sum(v)/self.size
-        #assert(self.is_normalized(v))
-        return v
-    
-    def is_normalized(self,v):
-        return (abs(norm(v) - 1.0) <= 0.000001)
-    
-    def periodic_corr(self, x, y):  
-        return ifft(fft(x) * fft(y).conj()).real
-    
-    def circconv(self, a, b):
-        return np.real(ifft(fft(a)*fft(b)))
+    def circconv(self, one, other):
+        return np.real(ifft(fft(one)*fft(other)))
         
-    def compare(self,one, other): # other is nparray
+    def distance(self,one, other):
         scale=norm(one)*norm(other)
         if scale==0: return 0
         return dot(one,other)/(scale)
-    
-    def distance(self, one, other): #other is nparray
-        return self.compare(one, other)
-    
-    def gaussian(self, x, mu, sig):
-        return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
-    @classmethod
-    def scale(self,x,L = None):
-        return float(x - self.input_range[0]) * L / (self.input_range[1] - self.input_range[0])
+    def permute(self,vect):
+        nr = len(vect)
+        if nr not in self.permutation:
+            HRR.permutation[nr] = np.random.permutation(nr)
+        return helpers.permute(vect,HRR.permutation[nr])
     
-    @classmethod
-    def reverse_scale(self,x,L):
-        return float(x - self.input_range[0]) / L * (self.input_range[1] - self.input_range[0])
+    def reverse_permute(self,vect):
+        nr = len(vect)
+        if nr not in self.permutation:
+            HRR.permutation[nr] = np.random.permutation(nr)
+        return helpers.reverse_permute(vect,HRR.permutation[nr])
     
-    @classmethod
-    def permute(self,x):
-        n = len(x)
-        if n not in self.permutation:
-            create_permutation(n)
-        result = np.empty(n, dtype=float)
-        p = self.permutation[n]
-        for i in range(n): 
-            result[i] = x[p[i]]
-        return result
-    
-    @classmethod
-    def reverse_permute(self,x):
-        n = len(x)
-        p = self.permutation[n]
-        result = np.empty(n, dtype=float)
-        for i in range(n):
-            result[p[i]] = x[i]
-        return result
-    
-    @classmethod
-    def plot(self,v):
+    def plot(self, vect=None, unpermute=False, smooth=False, wide=False):
+        if vect == None:
+            vect = self.memory
+        if unpermute:
+            vect = self.reverse_permute(vect)
+        if smooth:
+            vect = helpers.smooth(vect)
         plt.figure()
-        xx = range(len(v))
-        plt.plot(xx, v)
+        xx = range(len(vect))
+        if wide:
+            widen = len(vect) * 0.1 
+            down = np.amin(vect)
+            up = np.amax(vect)
+            mean = np.amax(vect) - np.amin(vect)
+            down -= mean * 0.1
+            up += mean * 0.1
+            plt.axis([-widen, len(vect) + widen, down, up])
+        plt.plot(xx, vect)
         plt.show()
-       
-    @classmethod
-    def plot2(self,v):
-        plt.figure()
-        xx = range(len(v))
-        plt.plot(xx, v)
-        plt.axis([-50,550,-6,6])
-        plt.show()
-        
-    def decode(self):
-        s = smooth(self.memory, window_length = self.size * 0.2)
-        return np.argmax(s)
-        s = smooth(HRR.reverse_permute(self.memory), window_len = self.size * 0.01)
-        p = np.argmax(s)
-        #p = np.argmax(HRR.reverse_permute(self.memory))
-        #print('Before: {}'.format(p))
-        p = (p / float(self.size)) * (self.input_range[1] - self.input_range[0]) + self.input_range[0]
-        #print('After: {}'.format(p))
-        return p    
-    
-def create_permutation(L):
-    HRR.permutation[L] = np.random.permutation(L)
 
-create_permutation(HRR.size)
+#    def decode(self):
+#        s = helpers.smooth(self.memory, window_length = self.size * 0.2)
+#        return np.argmax(s)
+#        s = helpers.smooth(HRR.reverse_permute(self.memory), window_len = self.size * 0.01)
+#        p = np.argmax(s)
+#        #p = np.argmax(HRR.reverse_permute(self.memory))
+#        #print('Before: {}'.format(p))
+#        p = (p / float(self.size)) * (self.input_range[1] - self.input_range[0]) + self.input_range[0]
+#        #print('After: {}'.format(p))
+#        return p    
 
-def smooth(x,window_len=100,window='hanning'):
-    """smooth the data using a window with requested size.
-
-    This method is based on the convolution of a scaled window with the signal.
-    The signal is prepared by introducing reflected copies of the signal
-    (with the window size) in both ends so that transient parts are minimized
-    in the begining and end part of the output signal.
-
-    input:
-        x: the input signal
-        window_len: the dimension of the smoothing window; should be an odd integer
-        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
-            flat window will produce a moving average smoothing.
-
-    output:
-        the smoothed signal
-
-    example:
-
-    t=linspace(-2,2,0.1)
-    x=sin(t)+randn(len(t))*0.1
-    y=smooth(x)
-
-    see also:
-
-    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
-    scipy.signal.lfilter
-
-    TODO: the window parameter could be the window itself if an array instead of a string
-    NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
-    """
-
-    if x.ndim != 1:
-        raise ValueError, "smooth only accepts 1 dimension arrays."
-
-    if x.size < window_len:
-        raise ValueError, "Input vector needs to be bigger than window size."
-
-
-    if window_len<3:
-        return x
-
-
-    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
-
-
-    s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
-    #print(len(s))
-    if window == 'flat': #moving average
-        w=numpy.ones(window_len,'d')
-    else:
-        w=eval('np.'+window+'(window_len)')
-
-    y=np.convolve(w/w.sum(),s,mode='valid')
-    return y
 
 

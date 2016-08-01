@@ -35,20 +35,12 @@ class VSA:
         pass  
     
     @abstractmethod
-    def coordinate_encoder(self, x, limits_min, limits_max):
-        pass 
-    
-    @abstractmethod
     def periodic_corr(self, x, y):
         pass   
     
     @abstractmethod
     def circconv(self, a, b):
         pass   
-    
-    @abstractmethod
-    def compare(self,one, other):
-        pass
     
     @abstractmethod
     def distance(self, one, other):
