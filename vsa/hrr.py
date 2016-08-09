@@ -7,6 +7,7 @@ from numpy.linalg import norm
 from numpy import array, sqrt, dot
 import random
 import matplotlib.pyplot as plt
+import numbers
 
 import helpers
 from vsa import VSA
@@ -225,7 +226,7 @@ class HRR(VSA):
 
             result = np.empty(self.size, dtype=float)
          
-            if type(input_value) == float or type(input_value) == int: 
+            if isinstance(input_value, float) or isinstance(input_value, numbers.Integral):
                 result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size)))
             elif type(input_value) == tuple:
                 result = self.permute(helpers.normalize(self.coordinate_encoder(input_value)))
