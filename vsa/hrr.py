@@ -160,7 +160,7 @@ class HRR(VSA):
         if operand.__class__ != self.__class__:
             operand = HRR(operand)
             
-        return HRR('-', memory = incremental_weight * (self.memory - operand.memory))
+        return HRR('-', memory = self.memory - self.incremental_weight * (self.memory - operand.memory))
     
     ## Decodes a symbol and retrieves its content.
     #
