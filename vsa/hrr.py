@@ -217,7 +217,7 @@ class HRR(VSA):
                 if return_dict == False:
                     return spot
         if len(result) == 0 and suppress_value is not None:
-            return None
+            return np.nan
         return result
     
     ## Creates an encoding for a given input.

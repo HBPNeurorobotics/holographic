@@ -57,19 +57,22 @@ class Approximation:
             temp = B.decode(return_dict=True)
             if len(temp) > 1:
                 Y_hrr[i] = temp.keys()[1]
-            else:
+                Y_hrr2[i] = temp.keys()[0]
+            elif len(temp) > 0:
                 Y_hrr[i] = temp.keys()[0]
-            Y_hrr2[i] = temp.keys()[0]
+                Y_hrr2[i] = temp.keys()[0]
+            else:
+                Y_hrr[i] = np.nan
+                Y_hrr2[i] = np.nan
             if len(temp) > 1:
-                # TODO: this is a hack, find something more intelligent
                 temp = B.decode(return_dict=False, suppress_value=x)
+                #print("suppress_value: {}".format(temp))
                 Y_hrrsupp[i] = temp
             else:
-                Y_hrrsupp[i] = Y_hrr2[i]
-            #Y_hrr[i] = B.decode(return_dict=True).values()[1]
+                Y_hrrsupp[i] = np.nan
             #Y_hrr[i] = temp
             Y_np[i] = self.fn(x)
-            #print("HRR: f({}) = {} / truth: {} error: {}".format(x, Y_hrr[i], Y_np[i], Y_np[i] - Y_hrr[i]))
+            #print("HRR: f({}) = 2nd({}) 1st({}) suppr({}) / truth: {} error: {}".format(x, Y_hrr[i], Y_hrr2[i], Y_hrrsupp[i], Y_np[i], Y_hrrsupp[i] - Y_hrr[i]))
         plt.figure()
         h_np, = plt.plot(X, Y_np, 'g', label="Ground truth")
         h_hrr, = plt.plot(X, Y_hrr, 'cx--', label="2nd peak if avail")
