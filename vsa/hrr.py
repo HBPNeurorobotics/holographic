@@ -171,8 +171,10 @@ class HRR(VSA):
     #
     #  @param self The object pointer.
     #  @param memory The memory vector.
-    #  @return A dictionary containing the decoded content.          
-    def decode(self, memory=None):
+    #  @param return_dict Whether to return a dictionary of all values or just the first value.
+    #  @param suppress_value The given value (if any) will be suppressed from the result.
+    #  @return A dictionary containing the decoded content or the first one depending on suppress_value.
+    def decode(self, memory=None, return_dict=False, suppress_value=None):
         
         if memory == None:
             memory = self.memory
@@ -198,6 +200,11 @@ class HRR(VSA):
             if self.visualize:
                 print("Output Smooth:")
                 self.plot(memory)
+            if suppress_value is not None:
+                # suppress the given value in the memory
+                compensate = self.scalar_encoder(suppress_value, len(memory))
+                compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
+                memory += compensate
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
                 spot = helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range)
                 result[spot] = 1
@@ -207,7 +214,10 @@ class HRR(VSA):
                 if self.visualize:
                     print("Output Smooth:")
                     self.plot(memory)
-        
+                if return_dict == False:
+                    return spot
+        if len(result) == 0 and suppress_value is not None:
+            return None
         return result
     
     ## Creates an encoding for a given input.
