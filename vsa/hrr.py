@@ -23,7 +23,7 @@ class HRR(VSA):
     permutation = {}                # List of vector permutations, indexed by vector size.
     size = 256                      # Length of memory vectors.
     stddev = 0.02                   # Standard deviation of gaussian bells for scalar encoders.
-    input_range = np.array([0,100]) # Range of accepted inputs.
+    valid_range = np.array([0,100]) # Range of accepted inputs.
     distance_threshold = 0.20       # Distance from which similarity is accepted.
     incremental_weight = 0.1        # Weight used for induction.
     peak_min = 10                    # Minimum factor by which a gaussian peak needs be larger than the average of noise.
@@ -37,9 +37,10 @@ class HRR(VSA):
     #  @param input_value The value for which the HRR is constructed. May be of different types.
     #  @param memory A float vector which is the symbol by which the input value will be represented.
     #  @param generator A vector of diverse symbolic vectors, over which a mean is calculated and used as memory.
-    def __init__(self, input_value, memory=None, generator=None):
+    def __init__(self, input_value, memory=None, generator=None, valid_range=np.array([0,100])):
        
         self.label = input_value
+        self.valid_range = valid_range
 
         if memory is not None:
             self.memory = memory 
@@ -206,7 +207,7 @@ class HRR(VSA):
                 compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
                 memory += compensate
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
-                spot = helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range)
+                spot = helpers.reverse_scale(np.argmax(memory), len(memory), self.valid_range)
                 result[spot] = 1
                 compensate = self.scalar_encoder(spot, len(memory))
                 compensate[:] = [x * -abs(np.max(memory)) for x in compensate]     
@@ -263,8 +264,9 @@ class HRR(VSA):
         result = np.empty(length, dtype=float)
         
         for i in range(length):
-            result[i] = helpers.gaussian(i,helpers.scale(scalar, length, self.input_range),self.stddev * length) 
-            
+            scaled = helpers.scale(scalar, length, self.valid_range)
+            result[i] = helpers.gaussian(i, scaled, self.stddev * length)
+
         return result
         
     ## TODO

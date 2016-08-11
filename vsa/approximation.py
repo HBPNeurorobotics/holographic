@@ -15,11 +15,10 @@ class Approximation:
         else:
             HRR.set_size(HRR.size)
 
-    def learn(self, in_range=(-1.0, 1.0), n_samples=200, fn=None, stddev=0.03, use_incremental=True):
+    def learn(self, in_range, out_range, n_samples=200, fn=None, stddev=0.03, use_incremental=False):
         if fn is not None:
             self.fn = fn
             HRR.reset_kernel()
-        HRR.input_range = np.array([in_range[0], in_range[1]])
         HRR.stddev = stddev
         # create n_samples evenly spaced sampling points for input space
         #print("HRR size: {}, input_range: {}, stddev {}".format(HRR.size, HRR.input_range, HRR.stddev))
@@ -28,31 +27,32 @@ class Approximation:
         if use_incremental:
             # initialize T
             B_0 = self.fn(A[0])
-            self.T = HRR(B_0) % A[0]
+            self.T = HRR(B_0, valid_range=out_range) % HRR(A[0], valid_range=in_range)
             # sample function and sequentially update the approximation vector
             for A_i in A[1:]:
                 B_i = self.fn(A_i)  # evaluate ith sample
-                self.T = self.T ** (HRR(B_i) % A_i)  # update T
+                self.T = self.T ** (HRR(B_i, valid_range=out_range) % HRR(A_i, valid_range=in_range))  # update T
         else:
             samples = np.empty((n_samples, HRR.size), dtype=float)
             for i, A_i in enumerate(A):
                 B_i = self.fn(A_i)  # evaluate ith sample
-                samples[i] = (HRR(B_i) % A_i).memory  # probe HRR
+                samples[i] = (HRR(B_i, valid_range=out_range) % HRR(A_i, valid_range=in_range)).memory  # probe HRR
             self.T = HRR(0, generator=samples)
 
         #self.T.plot()
         #print("learn: {}".format(self.T.memory))
 
-    def plot_result(self, n_samples=10):
-        X = np.linspace(HRR.input_range[0], HRR.input_range[1], n_samples)
+    def plot_result(self, in_range, out_range, n_samples=10):
+        X = np.linspace(in_range[0], in_range[1], n_samples)
         Y_hrr = np.empty(n_samples, dtype=float)
         Y_hrr2 = np.empty(n_samples, dtype=float)
         Y_hrrsupp = np.empty(n_samples, dtype=float)
         Y_np = np.empty(n_samples, dtype=float)
         for i, x in enumerate(X):
-            A = HRR(x)
+            A = HRR(x, valid_range=in_range)
             B = A * self.T
-            #HRR.plot(HRR.reverse_permute(HRR(x).memory))
+            B.valid_range = out_range
+            #HRR.plot(HRR.reverse_permute(HRR(x, valid_range=in_range).memory))
             #HRR.plot(HRR.reverse_permute((A * self.T).memory))
             temp = B.decode(return_dict=True)
             if len(temp) > 1:
@@ -77,7 +77,7 @@ class Approximation:
         h_np, = plt.plot(X, Y_np, 'g', label="Ground truth")
         h_hrr, = plt.plot(X, Y_hrr, 'cx--', label="2nd peak if avail")
         h_hrr2, = plt.plot(X, Y_hrr2, 'bx--', label="1st peak")
-        h_suppr, = plt.plot(X, Y_hrrsupp, 'rx-', label="Suppressed input x")
+        h_suppr, = plt.plot(X, Y_hrrsupp, 'rx-', label="Suppressed input x", linewidth=2.0)
         plt_handles = [h_np, h_hrr, h_hrr2, h_suppr]
         plt.legend(handles=plt_handles, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
         plt.show()
