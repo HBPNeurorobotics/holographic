@@ -73,7 +73,7 @@ def scale(val,length ,input_range):
 #  @param input_range A vector containing only two positions: the min and max values of the input.
 #  @result The scaled value.
 def reverse_scale(val,length ,input_range):
-    return float(val - input_range[0]) / length * (input_range[1] - input_range[0])
+    return float(val) / length * (input_range[1] - input_range[0]) + input_range[0]
 
 def smooth(x,window_len=100,window='hanning'):
     """smooth the data using a window with requested size.

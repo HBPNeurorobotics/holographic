@@ -199,9 +199,9 @@ class HRR(VSA):
                 print("Output Smooth:")
                 self.plot(memory)
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
-                spot = int(helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range))
+                spot = helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range)
                 result[spot] = 1
-                compensate = self.scalar_encoder(helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range), len(memory))
+                compensate = self.scalar_encoder(spot, len(memory))
                 compensate[:] = [x * -abs(np.max(memory)) for x in compensate]     
                 memory += compensate 
                 if self.visualize:
