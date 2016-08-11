@@ -40,10 +40,10 @@ class HRR(VSA):
     def __init__(self, input_value, memory=None, generator=None):
        
         self.label = input_value
-        
-        if memory != None:
+
+        if memory is not None:
             self.memory = memory 
-        elif generator != None:
+        elif generator is not None:
             memory = generator[0]
             for i in range(self.size):
                 for j in range(len(generator) - 1):
