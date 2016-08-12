@@ -29,7 +29,7 @@ class TCP:
         self.arms = arms
         assert(len(armlengths) == arms and all(a > 0 for a in armlengths))
         self.armlengths = armlengths
-        self.setAngles(angles)
+        self.setAngles(angles)    
         
     ## Setter for arm angles.
     #
@@ -37,6 +37,7 @@ class TCP:
     #  @param angles The list of arm angles, which must have the same shape as for the constructor.
     def setAngles(self,angles):
         if not self.d3:
+            assert(not isinstance(angles[0],list))
             assert(len(angles) == self.arms and all(a >= 0 for a in angles))
             self.angles = angles
         else:
@@ -68,10 +69,10 @@ class TCP:
     #
     #  @param self The object pointer. 
     def computeTcp(self):
-    
+        
         self.tcp = np.zeros(4)
         self.tcp[3] = 1
-
+        
         for i in range(self.arms):
             
             if (self.verbose):
@@ -92,7 +93,6 @@ class TCP:
             else:
                 xangle = self.angles[i][0]
                 zangle = self.angles[i][1]
-
 
             rotz = np.zeros((4,4))
             rotz[2][2] = 1
