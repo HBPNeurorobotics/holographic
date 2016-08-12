@@ -171,17 +171,17 @@ class HRR(VSA):
     
     ## Decodes a symbol and retrieves its content.
     #
-    #  The result is a dictionary, in which the keys represent the decoded result.
-    #  The value of the keys represents the distance to the actual mapping for non-scalars.
-    #  For scalars the value is always 1.
+    #  The result is a list of tuples, in which the left values represent the decoded result.
+    #  The right value of the tuples represent the distance to the actual mapping for non-scalars.
+    #  For scalars the right value is always 1.
     #  The symbol is first matched against all existing mappings and only then treated as a scalar.
     #
     #  @param self The object pointer.
     #  @param memory The memory vector.
-    #  @param return_dict Whether to return a dictionary of all values or just the first value.
+    #  @param return_list Whether to return a list of all values or just the first value.
     #  @param suppress_value The given value (if any) will be suppressed from the result.
-    #  @return A dictionary containing the decoded content or the first one depending on suppress_value.
-    def decode(self, memory=None, return_dict=False, suppress_value=None, decode_range=None):
+    #  @return A dictionary containing the decoded content or the first one depending on return_list.
+    def decode(self, memory=None, return_list=False, suppress_value=None, decode_range=None):
         
         if memory == None:
             memory = self.memory
@@ -192,7 +192,7 @@ class HRR(VSA):
             raise ValueError("Decoding scalar values requires valid range (valid_range or decode_range parameter)")
         
         # Dictionary lookup for existing mapping.
-        result = {}
+        result = []
         match = False
         for key in HRR.mapping:
             dist = self.distance(HRR.mapping[key], memory) # determine distance
@@ -200,7 +200,7 @@ class HRR(VSA):
                 print("Distance from {} is {}".format(key,dist))
       
             if dist > self.distance_threshold:
-                result[key] = dist
+                result.append((key, dist))
                 match = True
         
         # If no matches have been found in the dictionary try scalar decoder.
@@ -219,16 +219,16 @@ class HRR(VSA):
                 memory += compensate
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
                 spot = []
-                if type(decode_range) == tuple:
+                if isinstance(decode_range, (frozenset, list, np.ndarray, set, tuple)):
                     num_rng = len(decode_range)
                     for i, rng in enumerate(decode_range):
                         spot.append(helpers.reverse_scale(np.argmax(memory[i*num_rng:(i+1)*num_rng]), int(HRR.size/num_rng), rng))
                 else:
                     spot = helpers.reverse_scale(np.argmax(memory), len(memory), decode_range)
-                result[spot] = 1
-                if return_dict == False:
+                result.append((spot, 1))
+                if return_list == False:
                     return spot
-                if type(decode_range) == tuple:
+                if isinstance(decode_range, (frozenset, list, np.ndarray, set, tuple)):
                     compensate = self.coordinate_encoder(spot, decode_range)
                 else:
                     compensate = self.scalar_encoder(spot, len(memory), decode_range)
@@ -256,7 +256,7 @@ class HRR(VSA):
         if encode_range is None:
             raise ValueError("Encoding scalar values requires valid range (valid_range or encode_range parameter)")
 
-        if input_value in HRR.mapping:
+        if not isinstance(input_value, np.ndarray) and input_value in HRR.mapping:
             return HRR.mapping[input_value]
         else:
 
@@ -264,7 +264,7 @@ class HRR(VSA):
          
             if isinstance(input_value, float) or isinstance(input_value, numbers.Integral):
                 result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size, encode_range)))
-            elif type(input_value) == tuple:
+            elif isinstance(input_value, (frozenset, list, np.ndarray, set, tuple)):
                 result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
             else:    
                 result = array([random.gauss(0,1) for i in range(self.size)])
