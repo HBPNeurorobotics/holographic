@@ -4,8 +4,6 @@ import numpy as np
 from approximation import Approximation
 #%matplotlib inline
 
-HRR.verbose = False
-
 def fn_square(x):
     return x*x
 
@@ -13,15 +11,15 @@ def fn(x):
     return fn_square(x)
 
 HRR.visualize = False
+HRR.verbose = False
 
-in_range = np.array([-3.5, 3.5])
-#out_range = np.array([-1.0, 1.0])
-out_range = np.array([0.0, fn_square(in_range[0])])
+input_range = np.array([-3.5, 3.5])
+output_range = np.array([0.0, fn_square(input_range[0])])
 
-print("in_range: {} out_range: {}".format(in_range, out_range))
+print("input_range: {} output_range: {}".format(input_range, output_range))
 
 appr = Approximation(fn=fn, size=2000)
 HRR.incremental_weight = 0.5
-appr.learn(in_range=in_range, out_range=out_range, n_samples=200, stddev=0.02, use_incremental=False)
-appr.plot_result(in_range=in_range, out_range=out_range, n_samples=19)
+appr.learn(input_range=input_range, output_range=output_range, n_samples=200, stddev=0.02, use_incremental=False)
+appr.plot_result(input_range=input_range, output_range=output_range, n_samples=19)
 

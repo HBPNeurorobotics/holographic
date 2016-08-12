@@ -23,7 +23,6 @@ class HRR(VSA):
     permutation = {}                # List of vector permutations, indexed by vector size.
     size = 256                      # Length of memory vectors.
     stddev = 0.02                   # Standard deviation of gaussian bells for scalar encoders.
-    input_range = np.array([0,100]) # Range of accepted inputs.
     distance_threshold = 0.20       # Distance from which similarity is accepted.
     incremental_weight = 0.1        # Weight used for induction.
     peak_min = 10                    # Minimum factor by which a gaussian peak needs be larger than the average of noise.
@@ -37,9 +36,11 @@ class HRR(VSA):
     #  @param input_value The value for which the HRR is constructed. May be of different types.
     #  @param memory A float vector which is the symbol by which the input value will be represented.
     #  @param generator A vector of diverse symbolic vectors, over which a mean is calculated and used as memory.
-    def __init__(self, input_value, memory=None, generator=None):
+    def __init__(self, input_value, memory=None, generator=None, valid_range=None):
        
         self.label = input_value
+
+        self.set_valid_range(valid_range)
 
         if memory is not None:
             self.memory = memory 
@@ -50,8 +51,8 @@ class HRR(VSA):
                     memory[i] += generator[j+1][i]
                 memory[i] /= len(generator)
             self.memory = memory
-        else :
-            self.memory = self.encode(input_value)    
+        else:
+            self.memory = self.encode(input_value, valid_range)
     
     ## Setter for the length of symbolic vectors to be used.
     #  
@@ -64,14 +65,30 @@ class HRR(VSA):
         assert(size > 0)
         HRR.size = size
         HRR.reset_kernel()
-    
+
     ## Method that wipes previous mappings
     #
     #  @param self The object pointer.
     @classmethod
     def reset_kernel(self):
         HRR.mapping = {}     
-   
+
+    def set_valid_range(self, valid_range):
+        if valid_range is None:
+            self.valid_range = valid_range
+            return
+        assert(not isinstance(valid_range, basestring))  # test if this is a list
+        assert(len(valid_range) == 2)
+        if isinstance(valid_range[0], float) or isinstance(valid_range[0], numbers.Integral):
+            assert(isinstance(valid_range[1], float) or isinstance(valid_range[1], numbers.Integral))
+        else:
+            assert(len(valid_range[0]) == len(valid_range[1]))
+            for i in valid_range[0]:
+                assert(isinstance(i, float) or isinstance(i, numbers.Integral))
+            for i in valid_range[1]:
+                assert(isinstance(i, float) or isinstance(i, numbers.Integral))
+        self.valid_range = valid_range
+
     ## Overload of the "+" operand.
     #
     #  Creates a new HRR containing the sum of the other two memories as its own.
@@ -146,7 +163,7 @@ class HRR(VSA):
             print("Output:")
             self.plot(memory)
         
-        return self.decode(memory)
+        return self.decode(memory, self.valid_range)
     
     ## Overload of the "**" operand.
     #
@@ -174,10 +191,15 @@ class HRR(VSA):
     #  @param return_dict Whether to return a dictionary of all values or just the first value.
     #  @param suppress_value The given value (if any) will be suppressed from the result.
     #  @return A dictionary containing the decoded content or the first one depending on suppress_value.
-    def decode(self, memory=None, return_dict=False, suppress_value=None):
+    def decode(self, memory=None, return_dict=False, suppress_value=None, decode_range=None):
         
         if memory == None:
             memory = self.memory
+
+        if decode_range is None:
+            decode_range = self.valid_range
+        if decode_range is None:
+            raise ValueError("Decoding scalar values requires valid range (valid_range or decode_range parameter)")
         
         # Dictionary lookup for existing mapping.
         result = {}
@@ -202,13 +224,13 @@ class HRR(VSA):
                 self.plot(memory)
             if suppress_value is not None:
                 # suppress the given value in the memory
-                compensate = self.scalar_encoder(suppress_value, len(memory))
+                compensate = self.scalar_encoder(suppress_value, len(memory), decode_range)
                 compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
                 memory += compensate
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
-                spot = helpers.reverse_scale(np.argmax(memory), len(memory), self.input_range)
+                spot = helpers.reverse_scale(np.argmax(memory), len(memory), decode_range)
                 result[spot] = 1
-                compensate = self.scalar_encoder(spot, len(memory))
+                compensate = self.scalar_encoder(spot, len(memory), decode_range)
                 compensate[:] = [x * -abs(np.max(memory)) for x in compensate]     
                 memory += compensate 
                 if self.visualize:
@@ -229,7 +251,12 @@ class HRR(VSA):
     #  @param self The object pointer.
     #  @param input_value The input to be encoded.
     #  @return The encoded vector.     
-    def encode(self, input_value):
+    def encode(self, input_value, encode_range=None):
+        if encode_range is None:
+            encode_range = self.valid_range
+        if encode_range is None:
+            raise ValueError("Encoding scalar values requires valid range (valid_range or encode_range parameter)")
+
         if input_value in HRR.mapping:
             return HRR.mapping[input_value]
         else:
@@ -237,7 +264,7 @@ class HRR(VSA):
             result = np.empty(self.size, dtype=float)
          
             if isinstance(input_value, float) or isinstance(input_value, numbers.Integral):
-                result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size)))
+                result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size, encode_range)))
             elif type(input_value) == tuple:
                 result = self.permute(helpers.normalize(self.coordinate_encoder(input_value)))
             else:    
@@ -258,12 +285,12 @@ class HRR(VSA):
     #  @param scalar The scalar value that will be the peak of the Gaussian.
     #  @param length The desired length of the resulting vector.
     #  @return The encoded vector.  
-    def scalar_encoder(self,scalar,length):       
+    def scalar_encoder(self, scalar, length, scale_range):
         
         result = np.empty(length, dtype=float)
         
         for i in range(length):
-            result[i] = helpers.gaussian(i,helpers.scale(scalar, length, self.input_range),self.stddev * length) 
+            result[i] = helpers.gaussian(i, helpers.scale(scalar, length, scale_range), self.stddev * length)
             
         return result
         
