@@ -77,16 +77,6 @@ class HRR(VSA):
         if valid_range is None:
             self.valid_range = valid_range
             return
-        assert(not isinstance(valid_range, basestring))  # test if this is a list
-        assert(len(valid_range) == 2)
-        if isinstance(valid_range[0], float) or isinstance(valid_range[0], numbers.Integral):
-            assert(isinstance(valid_range[1], float) or isinstance(valid_range[1], numbers.Integral))
-        else:
-            assert(len(valid_range[0]) == len(valid_range[1]))
-            for i in valid_range[0]:
-                assert(isinstance(i, float) or isinstance(i, numbers.Integral))
-            for i in valid_range[1]:
-                assert(isinstance(i, float) or isinstance(i, numbers.Integral))
         self.valid_range = valid_range
 
     ## Overload of the "+" operand.
@@ -228,16 +218,25 @@ class HRR(VSA):
                 compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
                 memory += compensate
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
-                spot = helpers.reverse_scale(np.argmax(memory), len(memory), decode_range)
+                spot = []
+                if type(decode_range) == tuple:
+                    num_rng = len(decode_range)
+                    for i, rng in enumerate(decode_range):
+                        spot.append(helpers.reverse_scale(np.argmax(memory[i*num_rng:(i+1)*num_rng]), int(HRR.size/num_rng), rng))
+                else:
+                    spot = helpers.reverse_scale(np.argmax(memory), len(memory), decode_range)
                 result[spot] = 1
-                compensate = self.scalar_encoder(spot, len(memory), decode_range)
+                if return_dict == False:
+                    return spot
+                if type(decode_range) == tuple:
+                    compensate = self.coordinate_encoder(spot, decode_range)
+                else:
+                    compensate = self.scalar_encoder(spot, len(memory), decode_range)
                 compensate[:] = [x * -abs(np.max(memory)) for x in compensate]     
                 memory += compensate 
                 if self.visualize:
                     print("Output Smooth:")
                     self.plot(memory)
-                if return_dict == False:
-                    return spot
         if len(result) == 0 and suppress_value is not None:
             return np.nan
         return result
@@ -266,7 +265,7 @@ class HRR(VSA):
             if isinstance(input_value, float) or isinstance(input_value, numbers.Integral):
                 result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size, encode_range)))
             elif type(input_value) == tuple:
-                result = self.permute(helpers.normalize(self.coordinate_encoder(input_value)))
+                result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
             else:    
                 result = array([random.gauss(0,1) for i in range(self.size)])
                 HRR.mapping[input_value] = result
@@ -299,10 +298,11 @@ class HRR(VSA):
     #  @param self The object pointer.
     #  @param coordinates The coordinates that will be encoded.
     #  @return The encoded vector.      
-    def coordinate_encoder(self, coordinates):   
+    def coordinate_encoder(self, coordinates, encode_range):
         
         # get number of coordinates
         nr = len(coordinates)
+        assert(len(encode_range) == nr)
         
         # compute individual lengths
         length = int(HRR.size / nr)
@@ -310,10 +310,10 @@ class HRR(VSA):
         
         out = []
         for i in range(nr-1):
-            enc = self.scalar_encoder(coordinates[i], length)
+            enc = self.scalar_encoder(coordinates[i], length, encode_range[i])
             out.extend(enc)
         # encode the last segment
-        enc = self.scalar_encoder(coordinates[n-1], length_last)
+        enc = self.scalar_encoder(coordinates[nr-1], length_last, encode_range[nr-1])
         out.extend(enc)
         
         return out
