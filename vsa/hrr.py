@@ -408,7 +408,7 @@ class HRR(VSA):
     #  @param unpermute Boolean that widens the margins of the displayed plotting window.
     #  @return The resulting permuted vector.     
     def plot(self, vect=None, unpermute=False, smooth=False, wide=False):
-        if vect == None:
+        if vect is None:
             vect = self.memory
         if unpermute:
             vect = self.reverse_permute(vect)
