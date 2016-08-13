@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numbers
 from hrr import HRR
 
@@ -15,11 +18,12 @@ class bcolors:
 
 class Approximation:
 
-    fn = None
-    T = None
+    verbose_learn = False
+    verbose_probe = False
 
     def __init__(self, fn=None, size=1000):
         self.fn = fn
+        self.T = None
         HRR.reset_kernel()
         if size is not None:
             HRR.set_size(size)
@@ -87,10 +91,15 @@ class Approximation:
                         HRR_A = HRR((A_x_i, A_y_i), valid_range=input_range)
                         HRR_B = HRR(B_i, valid_range=output_range)
                         samples[i] = (HRR_B % HRR_A).memory  # probe HRR
-                        #print("learning f({}, {}) = {}".format(A_x_i, A_y_i, B_i))
-                        #HRR_A.plot(HRR_A.reverse_permute(HRR_A.memory))
-                        #HRR_B.plot(HRR_B.reverse_permute(HRR_B.memory))
-                        #HRR_B.plot(HRR_B.reverse_permute(samples[i]))
+                        if Approximation.verbose_learn:
+                            print("learning f({}, {}) = {}".format(A_x_i, A_y_i, B_i))
+                            HRR_A.plot(HRR_A.reverse_permute(HRR_A.memory))
+                            HRR_B.plot(HRR_B.reverse_permute(HRR_B.memory))
+                            #print("sample mem:")
+                            #HRR_B.plot(HRR_B.reverse_permute(samples[i]))
+                            temp_B = HRR_A * HRR('', memory=samples[i])
+                            print("probed sample:")
+                            temp_B.plot(temp_B.reverse_permute(temp_B.memory))
                 self.T = HRR(0, generator=samples)
         else:
             raise ValueError("Dimensions > 2 not implemented yet")
@@ -107,27 +116,29 @@ class Approximation:
         for i, x in enumerate(X):
             A = HRR(x, valid_range=input_range)
             B = A * self.T
-            #A.plot(A.reverse_permute(A.memory))
-            #B.plot(B.reverse_permute(B.memory))
-            temp = B.decode(return_dict=True, decode_range=output_range)
+            if Approximation.verbose_probe:
+                print("A * T = B")
+                A.plot(A.reverse_permute(A.memory))
+                B.plot(B.reverse_permute(B.memory))
+            temp = B.decode(return_list=True, decode_range=output_range)
             if len(temp) > 1:
-                Y_hrr[i] = temp.keys()[1]
-                Y_hrr2[i] = temp.keys()[0]
+                Y_hrr[i] = temp[1][0]
+                Y_hrr2[i] = temp[0][0]
             elif len(temp) > 0:
-                Y_hrr[i] = temp.keys()[0]
-                Y_hrr2[i] = temp.keys()[0]
+                Y_hrr[i] = temp[0][0]
+                Y_hrr2[i] = temp[0][0]
             else:
                 Y_hrr[i] = np.nan
                 Y_hrr2[i] = np.nan
             if len(temp) > 1:
-                temp = B.decode(return_dict=False, suppress_value=x, decode_range=output_range)
+                temp = B.decode(return_list=False, suppress_value=x, decode_range=output_range)
                 #print("suppress_value: {}".format(temp))
                 Y_hrrsupp[i] = temp
             else:
                 Y_hrrsupp[i] = np.nan
             #Y_hrr[i] = temp
             Y_np[i] = self.fn(x)
-            print("HRR: f({}) = 2nd({}) 1st({}) suppr({}) / truth: {} error: {}".format(x, Y_hrr[i], Y_hrr2[i], Y_hrrsupp[i], Y_np[i], Y_hrrsupp[i] - Y_np[i]))
+            #print("HRR: f({}) = 2nd({}) 1st({}) suppr({}) / truth: {} error: {}".format(x, Y_hrr[i], Y_hrr2[i], Y_hrrsupp[i], Y_np[i], Y_hrrsupp[i] - Y_np[i]))
         plt.figure()
         h_np, = plt.plot(X, Y_np, 'g', label="Ground truth")
         h_hrr, = plt.plot(X, Y_hrr, 'cx--', label="2nd peak if avail")
@@ -137,25 +148,91 @@ class Approximation:
         plt.legend(handles=plt_handles, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
         plt.show()
 
+    def plot3d_result(self, input_range, output_range, n_samples=(10, 10)):
+        # only 2d input is supported
+        assert(len(input_range) == 2)
+        assert(isinstance(input_range[0], (frozenset, list, np.ndarray, set, tuple)))
+        assert(len(input_range[0]) == 2)
+        # only scalar output is supported
+        assert(len(output_range) == 2)
+        assert(isinstance(output_range[0], float) or isinstance(output_range[0], numbers.Integral))
+
+        X = np.linspace(input_range[0][0], input_range[0][1], n_samples[0])
+        Y = np.linspace(input_range[1][0], input_range[1][1], n_samples[1])
+        X, Y = np.meshgrid(X, Y)
+
+        # reserve memory for Z values
+        Z_hrr, Z_np = np.meshgrid(np.empty(n_samples[0], dtype=float), np.empty(n_samples[1], dtype=float))
+        Z_hrr2, Z_hrrsupp = np.meshgrid(np.empty(n_samples[0], dtype=float), np.empty(n_samples[1], dtype=float))
+
+        for i, row in enumerate(X):
+            for j, cell in enumerate(row):
+                A = HRR((X[i][j], Y[i][j]), valid_range=input_range)
+                B = A * self.T
+                #A.plot(A.reverse_permute(A.memory))
+                #B.plot(B.reverse_permute(B.memory))
+                temp = B.decode(return_list=True, decode_range=output_range)
+                if len(temp) > 1:
+                    Z_hrr[i][j] = temp[1][0]
+                    Z_hrr2[i][j] = temp[0][0]
+                elif len(temp) > 0:
+                    Z_hrr[i][j] = temp[0][0]
+                    Z_hrr2[i][j] = temp[0][0]
+                else:
+                    Z_hrr[i][j] = np.nan
+                    Z_hrr2[i][j] = np.nan
+                if len(temp) > 1:
+                    temp = B.decode(return_list=False, suppress_value=x, decode_range=output_range)
+                    #print("suppress_value: {}".format(temp))
+                    Z_hrrsupp[i] = temp
+                else:
+                    Z_hrrsupp[i] = np.nan
+                Z_np[i][j] = self.fn(X[i][j], Y[i][j])
+        fig = plt.figure()
+        ax = fig.gca(projection="3d")
+        surf = ax.plot_surface(X, Y, Z_hrr, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+        ax.set_zlim(output_range[0] - 0.01, output_range[1] + 0.01)
+        ax.zaxis.set_major_locator(LinearLocator(10))
+        ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+        fig.colorbar(surf, shrink=0.5, aspect=5)
+        plt.show()
+
     def verify(self, input_tuples, input_range, output_range):
         for tpl in input_tuples:
             truth = self.fn(*tpl)
+            truth = [truth] if isinstance(truth, float) or isinstance(truth, numbers.Integral) else truth # convert to list
+            truth_s = ["{:10.3f}".format(v) for v in truth] # format numbers nicely
             A = HRR(tpl, valid_range=input_range)
             B = A * self.T
-            val = B.decode(return_dict=True, decode_range=output_range)
-            #print("f({}) = {} / truth: {} diff: ".format(tpl, val, truth))
-            val1 = val.keys()[0] if len(val) > 0 else 0.0
-            err1 = val1 - truth
-            val2 = val.keys()[1] if len(val) > 1 else 0.0
-            err2 = val2 - truth
-            print("{}/{}{}{} {}/{}{}{}".format(
-                val1,
-                bcolors.WARNING if err1 > 0.01 or err1 < -0.01 else bcolors.OKGREEN,
-                err1,
+            if Approximation.verbose_probe:
+                print("A * T = B")
+                A.plot(A.reverse_permute(A.memory))
+                B.plot(B.reverse_permute(B.memory))
+            val = B.decode(return_list=True, decode_range=output_range)
+            # val is a list of tuples -> extract up to two values
+            # at least one results:
+            val1 = val[0][0] if len(val) > 0 else [np.nan]
+            val1 = [val1] if isinstance(val1, float) or isinstance(val1, numbers.Integral) else val1 # convert to list
+            val1_s = ["{:10.3f}".format(v) for v in val1] if len(val) > 0 else ["{:10.3f}".format(np.nan)] # format numbers nicely
+            assert(len(val1) == len(truth))
+            err1 = [v - t for v, t in zip(val1, truth)] # difference
+            err1_s = ["{:10.3f}".format(v) for v in err1] # format numbers nicely
+            # at least two results:
+            val2 = val[1][0] if len(val) > 1 else [np.nan]
+            val2 = [val2] if isinstance(val2, float) or isinstance(val2, numbers.Integral) else val2 # convert to list
+            val2_s = ["{:10.3f}".format(v) for v in val2] if len(val) > 1 else ["{:10.3f}".format(np.nan)] # format numbers nicely
+            assert(len(val2) == len(truth))
+            err2 = [v - t for v, t in zip(val2, truth)] # difference
+            err2_s = ["{:10.3f}".format(v) for v in err2] # format numbers nicely
+            print("truth: {}  HRR: {}/{}{}{}  {}/{}{}{}".format(
+                truth_s,
+                val1_s,
+                bcolors.WARNING if any(e > 0.01 for e in err1) or any(e < -0.01 for e in err1) else bcolors.OKGREEN,
+                err1_s,
                 bcolors.ENDC,
-                val2,
-                bcolors.WARNING if err2 > 0.01 or err2 < -0.01 else bcolors.OKGREEN,
-                err2,
+                val2_s,
+                bcolors.WARNING if any(e > 0.01 for e in err2) or any(e < -0.01 for e in err2) else bcolors.OKGREEN,
+                err2_s,
                 bcolors.ENDC))
 
 
