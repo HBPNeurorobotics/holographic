@@ -208,10 +208,24 @@ class HRR(VSA):
             if self.visualize:
                 print("Output Reverse:")
                 self.plot(self.reverse_permute(memory))
-            memory = helpers.smooth(self.reverse_permute(memory),self.size/50)  
+            # check if elements (here: first) of decode_range are tuples -> multidimensional case
+            if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
+                assert(False)
+                # decoding tuple -> smooth individual chunks
+                num_rng = len(decode_range) # number of ranges, e.g. 3 for 3D output
+                for i, rng in enumerate(decode_range):
+                    start_idx = int(i * (self.size / num_rng))
+                    end_idx = int((i + 1) * (self.size / num_rng))
+                    chunk_size = end_idx - start_idx
+                    this_hrr = memory[start_idx:end_idx]
+                    this_hrr = helpers.smooth(self.reverse_permute(this_hrr), self.size/50)[:chunk_size]
+            else:
+                # decoding single scalar value -> smooth complete memory
+                memory = helpers.smooth(self.reverse_permute(memory), self.size/50)[:self.size]
             if self.visualize:
                 print("Output Smooth:")
                 self.plot(memory)
+
             if suppress_value is not None:
                 # suppress the given value in the memory
                 compensate = self.scalar_encoder(suppress_value, len(memory), decode_range)
@@ -219,16 +233,24 @@ class HRR(VSA):
                 memory += compensate
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
                 spot = []
-                if isinstance(decode_range, (frozenset, list, np.ndarray, set, tuple)):
-                    num_rng = len(decode_range)
+                # check if elements (here: first) of decode_range are tuples -> multidimensional case
+                if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
+                    assert(False)
+                    # decoding tuple -> split memory in len(decode_range) chunks
+                    num_rng = len(decode_range) # number of ranges, e.g. 3 for 3D output
                     for i, rng in enumerate(decode_range):
-                        spot.append(helpers.reverse_scale(np.argmax(memory[i*num_rng:(i+1)*num_rng]), int(HRR.size/num_rng), rng))
+                        start_idx = int(i * (self.size / num_rng))
+                        end_idx = int((i + 1) * (self.size / num_rng))
+                        this_hrr = memory[start_idx:end_idx]
+                        value = np.argmax(this_hrr)
+                        spot.append(helpers.reverse_scale(value, int(HRR.size/num_rng), rng))
                 else:
+                    # decoding single scalar value (non-tuple)
                     spot = helpers.reverse_scale(np.argmax(memory), len(memory), decode_range)
                 result.append((spot, 1))
                 if return_list == False:
                     return spot
-                if isinstance(decode_range, (frozenset, list, np.ndarray, set, tuple)):
+                if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
                     compensate = self.coordinate_encoder(spot, decode_range)
                 else:
                     compensate = self.scalar_encoder(spot, len(memory), decode_range)
