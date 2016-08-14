@@ -168,7 +168,8 @@ class Approximation:
 
         for i, row in enumerate(X):
             for j, cell in enumerate(row):
-                A = HRR((X[i][j], Y[i][j]), valid_range=input_range)
+                x, y = X[i][j], Y[i][j]
+                A = HRR((x, y), valid_range=input_range)
                 B = A * self.T
                 #A.plot(A.reverse_permute(A.memory))
                 #B.plot(B.reverse_permute(B.memory))
@@ -183,23 +184,28 @@ class Approximation:
                     Z_hrr[i][j] = np.nan
                     Z_hrr2[i][j] = np.nan
                 if len(temp) > 1:
-                    #temp = B.decode(return_list=False, suppress_value=x, decode_range=output_range)
-                    #print("suppress_value: {}".format(temp))
-                    #Z_hrrsupp[i] = temp
-                    pass
+                    temp = B.decode(return_list=False, suppress_value=(x, y), decode_range=output_range)
+                    print("suppress_value: {}".format(temp))
+                    Z_hrrsupp[i][j] = temp
                 else:
-                    Z_hrrsupp[i] = np.nan
-                Z_np[i][j] = self.fn(X[i][j], Y[i][j])
+                    #Z_hrrsupp[i][j] = np.nan
+                    Z_hrrsupp[i][j] = temp[0][0]
+                Z_np[i][j] = self.fn(x, y)
+                print("{}, {} -> {}".format(x, y, Z_np[i][j]))
         fig = plt.figure()
         ax = fig.gca(projection="3d")
-        surf = ax.plot_surface(X, Y, Z_hrr, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+        #surf = ax.plot_surface(X, Y, Z_hrrsupp, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=1, antialiased=False)
+        surf = ax.plot_wireframe(X, Y, Z_np, rstride=1, cstride=1, color="green")
+        surf = ax.plot_wireframe(X, Y, Z_hrr, rstride=1, cstride=1, color="cyan")
+        surf = ax.plot_wireframe(X, Y, Z_hrr2, rstride=1, cstride=1, color="blue")
+        surf = ax.plot_wireframe(X, Y, Z_hrrsupp, rstride=1, cstride=1, color="red")
         ax.set_zlim(output_range[0] - 0.01, output_range[1] + 0.01)
-        ax.zaxis.set_major_locator(LinearLocator(10))
-        ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-        fig.colorbar(surf, shrink=0.5, aspect=5)
+        #ax.zaxis.set_major_locator(LinearLocator(10))
+        #ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+        #fig.colorbar(surf, shrink=0.5, aspect=5)
         plt.show()
 
-    def verify(self, input_tuples, input_range, output_range):
+    def verify(self, input_tuples, input_range, output_range, suppress_input=True):
         for tpl in input_tuples:
             truth = self.fn(*tpl)
             truth = [truth] if isinstance(truth, float) or isinstance(truth, numbers.Integral) else truth # convert to list
@@ -214,7 +220,9 @@ class Approximation:
                 A.plot(A.reverse_permute(self.T.memory))
                 print("B:")
                 B.plot(B.reverse_permute(B.memory))
-            val = B.decode(return_list=True, decode_range=output_range)
+            suppress_value = tpl if suppress_input else None # suppress values of input parameters if set
+            val = B.decode(return_list=True, suppress_value=suppress_value, decode_range=output_range)
+            val = [val] if not isinstance(val, (frozenset, list, np.ndarray, set, tuple)) else val
             # val is a list of tuples -> extract up to two values
             # at least one result:
             val1 = val[0][0] if len(val) > 0 else [np.nan]
