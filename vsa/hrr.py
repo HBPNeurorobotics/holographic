@@ -159,7 +159,7 @@ class HRR(VSA):
     #  @param return_list Whether to return a list of all values or just the first value.
     #  @param suppress_value The given value (if any) will be suppressed from the result.
     #  @return A dictionary containing the decoded content or the first one depending on return_list.
-    def decode(self, memory=None, return_list=False, suppress_value=None, decode_range=None):
+    def decode(self, memory=None, return_list=False, suppress_value=None, input_range=None, decode_range=None):
         
         if memory == None:
             memory = self.memory
@@ -196,13 +196,26 @@ class HRR(VSA):
                 self.plot(memory)
 
             if suppress_value is not None:
+                #result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
+                assert(input_range is not None)
                 # suppress the given values in the memory
                 if not isinstance(suppress_value, (frozenset, list, np.ndarray, set, tuple)):
                     suppress_value = [suppress_value]
-                for v in suppress_value:
-                    compensate = self.scalar_encoder(v, len(memory), decode_range)
-                    compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
-                    memory += compensate
+                compensate = array(self.coordinate_encoder(suppress_value, input_range))
+                # we have to smooth this to ensure correct alignment with the current memory
+                compensate = helpers.smooth(compensate, self.size/50)[:self.size]
+                if self.visualize:
+                    self.plot(compensate)
+                compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
+                memory += compensate
+                #for i, v in enumerate(suppress_value):
+                #    assert(len(suppress_value) == len(input_range))
+                #    compensate = self.scalar_encoder(v, len(memory), input_range[i])
+                #    compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
+                #    memory += compensate
+                if self.visualize:
+                    print("Output Smooth (after suppression):")
+                    self.plot(memory)
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
                 spot = []
                 # check if elements (here: first) of decode_range are tuples -> multidimensional case
