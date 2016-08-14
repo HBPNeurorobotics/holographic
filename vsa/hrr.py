@@ -227,10 +227,13 @@ class HRR(VSA):
                 self.plot(memory)
 
             if suppress_value is not None:
-                # suppress the given value in the memory
-                compensate = self.scalar_encoder(suppress_value, len(memory), decode_range)
-                compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
-                memory += compensate
+                # suppress the given values in the memory
+                if not isinstance(suppress_value, (frozenset, list, np.ndarray, set, tuple)):
+                    suppress_value = [suppress_value]
+                for v in suppress_value:
+                    compensate = self.scalar_encoder(v, len(memory), decode_range)
+                    compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
+                    memory += compensate
             while np.max(memory) > self.peak_min * abs(np.mean(memory)):
                 spot = []
                 # check if elements (here: first) of decode_range are tuples -> multidimensional case
@@ -260,7 +263,7 @@ class HRR(VSA):
                     print("Output Smooth:")
                     self.plot(memory)
         if len(result) == 0 and suppress_value is not None:
-            return np.nan
+            return [(np.nan, 1)] if return_list else np.nan
         return result
     
     ## Creates an encoding for a given input.
