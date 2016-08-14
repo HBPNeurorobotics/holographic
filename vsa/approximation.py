@@ -87,7 +87,7 @@ class Approximation:
                 samples = np.empty((n_samples[0] * n_samples[1], HRR.size), dtype=float)
                 for i, A_x_i in enumerate(A_x):
                     for j, A_y_i in enumerate(A_y):
-                        idx = i * n_samples[0] + j
+                        idx = j * len(A_x) + i
                         B_i = self.fn(A_x_i, A_y_i)  # evaluate ith sample
                         HRR_A = HRR((A_x_i, A_y_i), valid_range=input_range)
                         HRR_B = HRR(B_i, valid_range=output_range)
@@ -216,7 +216,7 @@ class Approximation:
                 B.plot(B.reverse_permute(B.memory))
             val = B.decode(return_list=True, decode_range=output_range)
             # val is a list of tuples -> extract up to two values
-            # at least one results:
+            # at least one result:
             val1 = val[0][0] if len(val) > 0 else [np.nan]
             val1 = [val1] if isinstance(val1, float) or isinstance(val1, numbers.Integral) else val1 # convert to list
             val1_s = ["{:10.3f}".format(v) for v in val1] if len(val) > 0 else ["{:10.3f}".format(np.nan)] # format numbers nicely
