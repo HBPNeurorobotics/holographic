@@ -10,6 +10,9 @@ def fn_square(x):
 def fn_hyp_parab(x, y):
     return x * y
 
+def fn_2dparab(x, y):
+    return x * x
+
 def fn_plane(x, y):
     return x + y
 
@@ -25,18 +28,19 @@ print("input_range: {} output_range: {}".format(input_range, output_range))
 
 #HRR.incremental_weight = 0.5
 
-#appr = Approximation(fn=fn_square, size=3000)
+#appr = Approximation(fn=fn_2dparab, size=3000)
 #appr.learn(input_range=input_range, output_range=output_range, n_samples=200, stddev=0.02, use_incremental=False)
 #appr.plot_result(input_range=input_range, output_range=output_range, n_samples=19)
-appr = Approximation(fn=fn_hyp_parab, size=30000)
-appr.learn(input_range=input_range, output_range=output_range, n_samples=(20, 20), stddev=0.02, use_incremental=False)
+appr = Approximation(fn=fn_2dparab, size=6000)
+appr.learn(input_range=input_range, output_range=output_range, n_samples=(200, 1), stddev=0.02, use_incremental=False)
 
 
 input_tuples = []
-S = np.linspace(-1.0, 1.0, 10)
-for x in S:
-    for y in S:
+X = np.linspace(-1.0, 1.0, 20)
+Y = np.linspace(-1.0, 1.0, 1)
+for x in X:
+    for y in Y:
         input_tuples.append((x, y))
 appr.verify(input_tuples=input_tuples, input_range=input_range, output_range=output_range)
 
-appr.plot3d_result(input_range=input_range, output_range=output_range, n_samples=(10, 10))
+appr.plot3d_result(input_range=input_range, output_range=output_range, n_samples=(20, 1))
