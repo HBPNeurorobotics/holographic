@@ -87,19 +87,20 @@ class Approximation:
                 samples = np.empty((n_samples[0] * n_samples[1], HRR.size), dtype=float)
                 for i, A_x_i in enumerate(A_x):
                     for j, A_y_i in enumerate(A_y):
+                        idx = i * n_samples[0] + j
                         B_i = self.fn(A_x_i, A_y_i)  # evaluate ith sample
                         HRR_A = HRR((A_x_i, A_y_i), valid_range=input_range)
                         HRR_B = HRR(B_i, valid_range=output_range)
-                        samples[i] = (HRR_B % HRR_A).memory  # probe HRR
+                        samples[idx] = (HRR_B % HRR_A).memory  # probe HRR
                         if Approximation.verbose_learn:
                             print("learning f({}, {}) = {}".format(A_x_i, A_y_i, B_i))
                             HRR_A.plot(HRR_A.reverse_permute(HRR_A.memory))
                             HRR_B.plot(HRR_B.reverse_permute(HRR_B.memory))
-                            #print("sample mem:")
-                            #HRR_B.plot(HRR_B.reverse_permute(samples[i]))
-                            temp_B = HRR_A * HRR('', memory=samples[i])
-                            print("probed sample:")
+                            temp_B = HRR_A * HRR('', memory=samples[idx])
+                            print("probed sample {}:".format(idx))
                             temp_B.plot(temp_B.reverse_permute(temp_B.memory))
+                            print("sample mem:")
+                            HRR_B.plot(HRR_B.reverse_permute(samples[idx]))
                 self.T = HRR(0, generator=samples)
         else:
             raise ValueError("Dimensions > 2 not implemented yet")
@@ -182,9 +183,10 @@ class Approximation:
                     Z_hrr[i][j] = np.nan
                     Z_hrr2[i][j] = np.nan
                 if len(temp) > 1:
-                    temp = B.decode(return_list=False, suppress_value=x, decode_range=output_range)
+                    #temp = B.decode(return_list=False, suppress_value=x, decode_range=output_range)
                     #print("suppress_value: {}".format(temp))
-                    Z_hrrsupp[i] = temp
+                    #Z_hrrsupp[i] = temp
+                    pass
                 else:
                     Z_hrrsupp[i] = np.nan
                 Z_np[i][j] = self.fn(X[i][j], Y[i][j])
@@ -205,8 +207,12 @@ class Approximation:
             A = HRR(tpl, valid_range=input_range)
             B = A * self.T
             if Approximation.verbose_probe:
-                print("A * T = B")
+                print("A * T = B (expect {})".format(truth_s))
+                print("A:")
                 A.plot(A.reverse_permute(A.memory))
+                print("T:")
+                A.plot(A.reverse_permute(self.T.memory))
+                print("B:")
                 B.plot(B.reverse_permute(B.memory))
             val = B.decode(return_list=True, decode_range=output_range)
             # val is a list of tuples -> extract up to two values
