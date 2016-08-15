@@ -14,6 +14,34 @@ from numpy.linalg import norm
 def gaussian(pos, mu, sig):
     return np.exp(-np.power(pos - mu, 2.) / (2 * np.power(sig, 2.)))
 
+## Compute the sampled array of an 1-dimensional Gaussian
+#
+#  @param srange Range for input values [x_min, x_max]
+#  @param num_samples Number of samples
+#  @param mu The expected value of the Gaussian
+#  @param sig The standard deviation of the Gaussian
+#  @return The linearly sampled array of a Gaussian
+def gaussian1d(srange, num_samples, mu, sig):
+    x = np.linspace(srange[0], srange[1], num_samples)
+    return np.exp(-np.true_divide(np.power(x - mu, 2.0), np.multiply(np.power(sig, 2.0), 2.0)))
+
+## Compute the meshgrid of a 2-dimensional Gaussian
+#
+#  @param ranges List of ranges for input values [[x_min, x_max], [y_min, y_max]]
+#  @param num_samples List of number of samples for each dimension [num_smpl_x, num_smpl_y]
+#  @param mu1 The expected value of x-dimension
+#  @param mu2 The expected value of y-dimension
+#  @param sig1 The standard deviation of x-dimension
+#  @param sig2 The standard deviation of y-dimension
+#  @return The bi-linearly sampled meshgrid of a Gaussian
+def gaussian2d(ranges, num_samples, mu1, mu2, sig1, sig2):
+    x = np.linspace(ranges[0][0], ranges[0][1], num_samples[0])
+    y = np.linspace(ranges[1][0], ranges[1][1], num_samples[1])
+    xx, yy = np.meshgrid(x, y, sparse=True)
+    x_val = np.true_divide(np.power(np.subtract(xx, mu1), 2.0), np.multiply(np.power(sig1, 2.0), 2.0))
+    y_val = np.true_divide(np.power(np.subtract(yy, mu2), 2.0), np.multiply(np.power(sig2, 2.0), 2.0))
+    return np.exp(-np.add(x_val, y_val))
+
 ## Normalizez a vector.
 #
 #  This is done in such a way that the norm of the vector becomes one
