@@ -19,16 +19,10 @@ from vsa import VSA
 
 class HRR(VSA):
 
-    mapping = {}                    # List of known mappings.
     permutation = {}                # List of vector permutations, indexed by vector size.
-    size = 256                      # Length of memory vectors.
     stddev = 0.02                   # Standard deviation of gaussian bells for scalar encoders.
-    distance_threshold = 0.20       # Distance from which similarity is accepted.
     incremental_weight = 0.1        # Weight used for induction.
-    peak_min = 10                    # Minimum factor by which a gaussian peak needs be larger than the average of noise.
-    
-    verbose = True                  # Console verbose output.
-    visualize = False               # Graph plotting of various steps of operations.
+    peak_min = 10                   # Minimum factor by which a gaussian peak needs be larger than the average of noise.
     
     ## The constructor.
     #
@@ -40,6 +34,9 @@ class HRR(VSA):
        
         self.label = input_value
 
+        if valid_range == None:
+            valid_range = [0,100]
+            
         self.set_valid_range(valid_range)
 
         if memory is not None:
@@ -52,26 +49,7 @@ class HRR(VSA):
                 memory[i] /= len(generator)
             self.memory = memory
         else:
-            self.memory = self.encode(input_value, valid_range)
-    
-    ## Setter for the length of symbolic vectors to be used.
-    #  
-    #  Every time this method is run all the previous mappings will be wiped.
-    #
-    #  @param self The object pointer.
-    #  @param size The new size. Must be > 0.
-    @classmethod
-    def set_size(self, size):
-        assert(size > 0)
-        HRR.size = size
-        HRR.reset_kernel()
-
-    ## Method that wipes previous mappings
-    #
-    #  @param self The object pointer.
-    @classmethod
-    def reset_kernel(self):
-        HRR.mapping = {}     
+            self.memory = self.encode(input_value, valid_range) 
 
     def set_valid_range(self, valid_range):
         if valid_range is None:
@@ -115,7 +93,7 @@ class HRR(VSA):
     def __mul__(self, operand):
         if operand.__class__ != self.__class__:
             operand = HRR(operand)
-        memory = self.circconv(self.memory, operand.memory) #perform binding       
+        memory = self.bind(self.memory, operand.memory) #perform binding       
         
         return HRR('-', memory=memory)
     
@@ -130,7 +108,7 @@ class HRR(VSA):
         
         if operand.__class__ != self.__class__:
             operand = HRR(operand)
-        memory = self.periodic_corr(self.memory, operand.memory) #perform unbinding
+        memory = self.probe(self.memory, operand.memory) #perform unbinding
         
         return HRR('-', memory=memory)
     
@@ -147,7 +125,7 @@ class HRR(VSA):
     
         if operand.__class__ != self.__class__:
             operand = HRR(operand)        
-        memory = self.periodic_corr(self.memory, operand.memory) #perform unbinding
+        memory = self.probe(self.memory, operand.memory) #perform unbinding
         
         if self.visualize:
             print("Output:")
@@ -191,17 +169,8 @@ class HRR(VSA):
         if decode_range is None:
             raise ValueError("Decoding scalar values requires valid range (valid_range or decode_range parameter)")
         
-        # Dictionary lookup for existing mapping.
-        result = []
-        match = False
-        for key in HRR.mapping:
-            dist = self.distance(HRR.mapping[key], memory) # determine distance
-            if HRR.verbose :
-                print("Distance from {} is {}".format(key,dist))
-      
-            if dist > self.distance_threshold:
-                result.append((key, dist))
-                match = True
+        result = VSA.decode(self, memory)
+        match = bool(result)
         
         # If no matches have been found in the dictionary try scalar decoder.
         if not match:   
@@ -292,12 +261,19 @@ class HRR(VSA):
             elif isinstance(input_value, (frozenset, list, np.ndarray, set, tuple)):
                 result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
             else:    
-                result = array([random.gauss(0,1) for i in range(self.size)])
+                result = self.generateVector() 
                 HRR.mapping[input_value] = result
             if self.visualize:    
                 print("Encoded ", input_value)    
                 self.plot(result)    
             return result
+
+    ## Generates a vector of random values.
+    #
+    #  @param self The object pointer.
+    #  @return The generated vector.           
+    def generateVector(self):
+        return array([random.gauss(0,1) for i in range(self.size)])
     
     ## Samples a Gaussian bell over a certain range, permutes and stores it in a vector.
     #
@@ -349,7 +325,7 @@ class HRR(VSA):
     #  @param one The first of the two vectors.
     #  @param one The second vector.
     #  @return The result of periodic correlation as a vector.             
-    def periodic_corr(self, one, other):  
+    def probe(self, one, other):  
         return ifft(fft(one) * fft(other).conj()).real
     
     ## Performs circular convolution on two symbolic vectors.
@@ -358,7 +334,7 @@ class HRR(VSA):
     #  @param one The first of the two vectors.
     #  @param one The second vector.
     #  @return The result of circular convolution as a vector.     
-    def circconv(self, one, other):
+    def bind(self, one, other):
         return np.real(ifft(fft(one)*fft(other)))
     
     ## Calculates the distance between two symbolic vectors
