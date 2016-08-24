@@ -49,15 +49,15 @@ class SLAM_MAP:
         x2 = c[0] + self.sight
         y1 = c[1] - self.sight
         y2 = c[1] + self.sight
-        self.adjustCoord(x1)
-        self.adjustCoord(x2)
-        self.adjustCoord(y1)
-        self.adjustCoord(y2)
+        x1 = self.adjustCoord(x1)
+        x2 = self.adjustCoord(x2)
+        y1 = self.adjustCoord(y1)
+        y2 = self.adjustCoord(y2)
         
         d = {}
         
-        for i in range (x1, x2):
-            for j in range (y1, y2):
+        for i in range (x1, x2+1):
+            for j in range (y1, y2+1):
                 if self.smap[i][j] == 1:
                     d[(i,j)] = self.mappings[(i,j)]
         
@@ -68,18 +68,19 @@ class SLAM_MAP:
             val = 0
         elif val > self.length - 1:
             val = self.length - 1
+        return val
         
-    def up(self):
+    def down(self):
         if (self.botPos[0] == self.length - 1 or self.smap[self.botPos[0]+1][self.botPos[1]] != 0):
-            print("Can't go up!")
+            print("Can't go down!")
         else:
             self.smap[self.botPos[0]+1][self.botPos[1]] = 7
             self.smap[self.botPos[0]][self.botPos[1]]   = 0
             self.botPos[0] += 1
         
-    def down(self):
+    def up(self):
         if (self.botPos[0] == 0 or self.smap[self.botPos[0]-1][self.botPos[1]] != 0):
-            print("Can't go down!")
+            print("Can't go up!")
         else:
             self.smap[self.botPos[0]-1][self.botPos[1]] = 7
             self.smap[self.botPos[0]][self.botPos[1]]   = 0
