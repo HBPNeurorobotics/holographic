@@ -73,9 +73,6 @@ class VSA:
         
         result = []
         
-        if memory == None:
-            memory = self.memory
-        
         for key in VSA.mapping:
             dist = self.distance(VSA.mapping[key], memory)
             if VSA.verbose :

@@ -75,7 +75,7 @@ def scale(val,length ,input_range):
 def reverse_scale(val,length ,input_range):
     return float(val) / length * (input_range[1] - input_range[0]) + input_range[0]
 
-def smooth(x,window_len=100,window='hanning'):
+def smooth(x,dim=1,window_len=100,window='hanning'):
     """smooth the data using a window with requested size.
 
     This method is based on the convolution of a scaled window with the signal.
@@ -107,12 +107,14 @@ def smooth(x,window_len=100,window='hanning'):
     NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
     """
 
-    if x.ndim != 1:
-        raise ValueError, "smooth only accepts 1 dimension arrays."
-
-    if x.size < window_len:
-        raise ValueError, "Input vector needs to be bigger than window size."
-
+    assert(dim == 1 || dim == 2 || dim == 3)
+    assert(x.ndim == dim)
+    if dim == 1:
+      assert(x.size < window_len)
+    else:
+      assert(x[0].size < window_len)
+      for i in range(1,dim-1): 
+	assert(x[i].size == x[0].size)
 
     if window_len<3:
         return x

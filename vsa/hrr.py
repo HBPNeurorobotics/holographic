@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
 import scipy.ndimage
+import pywt
 from scipy.signal import argrelextrema
 from numpy.fft import fft, ifft
 from numpy.linalg import norm
@@ -147,6 +148,13 @@ class HRR(VSA):
             
         return HRR('-', memory = self.memory - self.incremental_weight * (self.memory - operand.memory))
     
+    def decode(self, memory=None):
+      
+        if memory == None:
+            memory = self.memory
+            
+        return VSA.decode(self, memory)
+    
     ## Decodes a symbol and retrieves its content.
     #
     #  The result is a list of tuples, in which the left values represent the decoded result.
@@ -159,7 +167,9 @@ class HRR(VSA):
     #  @param return_list Whether to return a list of all values or just the first value.
     #  @param suppress_value The given value (if any) will be suppressed from the result.
     #  @return A dictionary containing the decoded content or the first one depending on return_list.
-    def decode(self, memory=None, return_list=False, suppress_value=None, decode_range=None):
+    def decodeCoordinate(self, memory=None, dim=1, return_list=False, suppress_value=None, decode_range=None):
+           
+	assert(dim == 1 or dim == 2 or dim == 3)
         
         if memory == None:
             memory = self.memory
@@ -168,69 +178,73 @@ class HRR(VSA):
             decode_range = self.valid_range
         if decode_range is None:
             raise ValueError("Decoding scalar values requires valid range (valid_range or decode_range parameter)")
-        
-        result = VSA.decode(self, memory)
-        match = bool(result)
-        
-        # If no matches have been found in the dictionary try scalar decoder.
-        if not match:   
-            if self.visualize:
-                print("Output Reverse:")
-                self.plot(self.reverse_permute(memory))
-            # check if elements (here: first) of decode_range are tuples -> multidimensional case
-            if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
-                assert(False)
-                # decoding tuple -> smooth individual chunks
-                num_rng = len(decode_range) # number of ranges, e.g. 3 for 3D output
-                for i, rng in enumerate(decode_range):
-                    start_idx = int(i * (self.size / num_rng))
-                    end_idx = int((i + 1) * (self.size / num_rng))
-                    chunk_size = end_idx - start_idx
-                    this_hrr = memory[start_idx:end_idx]
-                    this_hrr = helpers.smooth(self.reverse_permute(this_hrr), self.size/50)[:chunk_size]
-            else:
-                # decoding single scalar value -> smooth complete memory
-                memory = helpers.smooth(self.reverse_permute(memory), self.size/50)[:self.size]
-            if self.visualize:
-                print("Output Smooth:")
-                self.plot(memory)
+	
+	memory = self.reverse_permute(memory)
+	
+	if self.visualize:
+	    print("Output Reverse:")
+	    self.plot(memory)
+	    
+	if dim > 1:
+	  l = int(round((memory.size ** (1.0 / dim))))
+	  assert(memory.size == l ** dim)
+	  np.reshape(memory,(l for i in range (dim)))
 
-            if suppress_value is not None:
-                # suppress the given values in the memory
-                if not isinstance(suppress_value, (frozenset, list, np.ndarray, set, tuple)):
-                    suppress_value = [suppress_value]
-                for v in suppress_value:
-                    compensate = self.scalar_encoder(v, len(memory), decode_range)
-                    compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
-                    memory += compensate
-            while np.max(memory) > self.peak_min * abs(np.mean(memory)):
-                spot = []
-                # check if elements (here: first) of decode_range are tuples -> multidimensional case
-                if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
-                    assert(False)
-                    # decoding tuple -> split memory in len(decode_range) chunks
-                    num_rng = len(decode_range) # number of ranges, e.g. 3 for 3D output
-                    for i, rng in enumerate(decode_range):
-                        start_idx = int(i * (self.size / num_rng))
-                        end_idx = int((i + 1) * (self.size / num_rng))
-                        this_hrr = memory[start_idx:end_idx]
-                        value = np.argmax(this_hrr)
-                        spot.append(helpers.reverse_scale(value, int(HRR.size/num_rng), rng))
-                else:
-                    # decoding single scalar value (non-tuple)
-                    spot = helpers.reverse_scale(np.argmax(memory), len(memory), decode_range)
-                result.append((spot, 1))
-                if return_list == False:
-                    return spot
-                if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
-                    compensate = self.coordinate_encoder(spot, decode_range)
-                else:
-                    compensate = self.scalar_encoder(spot, len(memory), decode_range)
-                compensate[:] = [x * -abs(np.max(memory)) for x in compensate]     
-                memory += compensate 
-                if self.visualize:
-                    print("Output Smooth:")
-                    self.plot(memory)
+	# check if elements (here: first) of decode_range are tuples -> multidimensional case
+	if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
+	    assert(False)
+	    # decoding tuple -> smooth individual chunks
+	    num_rng = len(decode_range) # number of ranges, e.g. 3 for 3D output
+	    for i, rng in enumerate(decode_range):
+		start_idx = int(i * (self.size / num_rng))
+		end_idx = int((i + 1) * (self.size / num_rng))
+		chunk_size = end_idx - start_idx
+		this_hrr = memory[start_idx:end_idx]
+		this_hrr = helpers.smooth(this_hrr, self.size/50)[:chunk_size]
+	else:
+	    # decoding single scalar value -> smooth complete memory
+	    memory = helpers.smooth(memory, self.size/50)[:self.size]
+	if self.visualize:
+	    print("Output Smooth:")
+	    self.plot(memory)
+
+	if suppress_value is not None:
+	    # suppress the given values in the memory
+	    if not isinstance(suppress_value, (frozenset, list, np.ndarray, set, tuple)):
+		suppress_value = [suppress_value]
+	    for v in suppress_value:
+		compensate = self.scalar_encoder(v, len(memory), decode_range)
+		compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
+		memory += compensate
+	while np.max(memory) > self.peak_min * abs(np.mean(memory)):
+	    spot = []
+	    # check if elements (here: first) of decode_range are tuples -> multidimensional case
+	    if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
+		assert(False)
+		# decoding tuple -> split memory in len(decode_range) chunks
+		num_rng = len(decode_range) # number of ranges, e.g. 3 for 3D output
+		for i, rng in enumerate(decode_range):
+		    start_idx = int(i * (self.size / num_rng))
+		    end_idx = int((i + 1) * (self.size / num_rng))
+		    this_hrr = memory[start_idx:end_idx]
+		    value = np.argmax(this_hrr)
+		    spot.append(helpers.reverse_scale(value, int(HRR.size/num_rng), rng))
+	    else:
+		# decoding single scalar value (non-tuple)
+		spot = helpers.reverse_scale(np.argmax(memory), len(memory), decode_range)
+	    result.append((spot, 1))
+	    if return_list == False:
+		return spot
+	    if isinstance(decode_range[0], (frozenset, list, np.ndarray, set, tuple)):
+		compensate = self.coordinate_encoder(spot, decode_range)
+	    else:
+		compensate = self.scalar_encoder(spot, len(memory), decode_range)
+	    compensate[:] = [x * -abs(np.max(memory)) for x in compensate]     
+	    memory += compensate 
+	    if self.visualize:
+		print("Output Smooth:")
+		self.plot(memory)
+		  
         if len(result) == 0 and suppress_value is not None:
             return [(np.nan, 1)] if return_list else np.nan
         return result
@@ -304,19 +318,37 @@ class HRR(VSA):
         # get number of coordinates
         nr = len(coordinates)
         assert(len(encode_range) == nr)
+        assert(self.size == int(round((self.size ** (1.0 / nr)))) ** nr)
         
-        # compute individual lengths
-        length = int(HRR.size / nr)
-        length_last = HRR.size - length * (nr - 1)
+        ## compute individual lengths
+        #length = int(HRR.size / nr)
+        #length_last = HRR.size - length * (nr - 1)
+        #out = []
+        #for i in range(nr-1):
+        #    enc = self.scalar_encoder(coordinates[i], length, encode_range[i])
+        #    out.extend(enc)
+        ## encode the last segment
+        #enc = self.scalar_encoder(coordinates[nr-1], length_last, encode_range[nr-1])
+        #out.extend(enc)
         
-        out = []
+        vlen = int(self.size ** (1.0 / nr))
+        
+        out = self.scalar_encoder(coordinates[0], vlen, encode_range[0])
+        if self.visualize:
+            print("First dimension:")
+            self.plot(out)    
+            (cA, cD) = pywt.dwt(out, 'db1')
+            self.plot(cA)    
+            self.plot(cD)    
         for i in range(nr-1):
-            enc = self.scalar_encoder(coordinates[i], length, encode_range[i])
-            out.extend(enc)
-        # encode the last segment
-        enc = self.scalar_encoder(coordinates[nr-1], length_last, encode_range[nr-1])
-        out.extend(enc)
-        
+            out = np.kron(out, self.scalar_encoder(coordinates[i+1], vlen, encode_range[i+1]))        
+            if self.visualize:
+                print("Dimension ",i+2)
+                self.plot(out)       
+                (cA, cD) = pywt.dwt(out, 'haar')
+                self.plot(cA)    
+                self.plot(cD)    
+                
         return out
     
     ## Performs periodic correlation on two symbolic vectors.
