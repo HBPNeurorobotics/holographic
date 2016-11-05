@@ -23,7 +23,8 @@ class HRR(VSA):
     permutation = {}                # List of vector permutations, indexed by vector size.
     stddev = 0.02                   # Standard deviation of gaussian bells for scalar encoders.
     incremental_weight = 0.1        # Weight used for induction.
-    peak_min = 10                   # Minimum factor by which a gaussian peak needs be larger than the average of noise.
+    peak_min = 0                    # Absolute value used to detect Gaussian peaks
+    peak_min_ratio =  10            # Minimum factor by which a gaussian peak needs be larger than the average of noise.
     window_ratio = 50		        # Ratio by which window length for smoothing is divided
     valid_range = [0,100]           # Standard valid range for scalar or coordinate encoding
     
@@ -149,22 +150,24 @@ class HRR(VSA):
             
         return VSA.decode(self, memory)
     
-    def deductValue(self, memory, value, input_range):
+    def deductValue(self, memory, value, input_range, dim = 1, height = 1):
       
         #result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
         assert(input_range is not None)
         # suppress the given values in the memory
         if not isinstance(value, (frozenset, list, np.ndarray, set, tuple)):
             value = [value]
-        compensate = array(self.coordinate_encoder(value, input_range))
+        compensate = self.coordinate_encoder(value, input_range)
         # we have to smooth this to ensure correct alignment with the current memory
+        compensate = helpers.reShape(compensate,dim)
         compensate = helpers.smooth(compensate, self.window_ratio)
-
+        compensate[:] = [x * -height for x in compensate]
+        
         if self.visualize:
             print("Output Supressed Value:")
-            self.plot(compensate)
+            self.plot(np.reshape(compensate,self.size))
 
-        compensate[:] = [x * -abs(np.max(memory)) for x in compensate]
+        
         memory += compensate
         return memory
         #for i, v in enumerate(suppress_value):
@@ -193,6 +196,8 @@ class HRR(VSA):
         if memory == None:
             memory = self.memory
             
+        memory = helpers.normalize(memory)
+            
         if decode_range is None:
             decode_range = self.valid_range
         if decode_range is None:
@@ -204,24 +209,28 @@ class HRR(VSA):
 
         if self.visualize:
             print("Output Reverse:")
-            self.plot(memory)
+            self.plot(np.reshape(memory,self.size))
 
         memory = helpers.smooth(helpers.reShape(memory, dim),self.window_ratio) 
         l = helpers.sideLength(memory.size, dim)
         
         if self.visualize:
             print("Output Smooth pre:")
-            self.plot(np.reshape(memory,l**dim))
+            self.plot(np.reshape(memory,self.size))
 
         if suppress_value is not None:
             memory = self.deductValue(memory,supress_value,HRR.valid_range)
             if self.visualize:
                 print("Output Smooth (after suppression):")
-                self.plot(np.reshape(memory,l**dim))
+                self.plot(np.reshape(memory,self.size))
 
         result = []
                 
-        while np.max(memory) > self.peak_min * abs(np.mean(memory)):
+        if(self.peak_min == 0):
+            self.peak_min = np.max(memory)/2
+            
+        while np.max(memory) > self.peak_min_ratio * abs(np.mean(memory)) + self.peak_min:
+            
             spot = list(np.unravel_index(np.argmax(memory),memory.shape))
             
             for i in range(dim):
@@ -230,16 +239,14 @@ class HRR(VSA):
             result.append((spot, 1))
             if return_list == False:
                 return spot
-            print('YES')
-            memory = self.deductValue(memory,spot,HRR.valid_range)
-            print('YES')
+            memory = self.deductValue(memory,spot,HRR.valid_range,dim, np.max(memory))
             if self.visualize:
                 print("Output Post Deduction:")
-                self.plot(np.reshape(memory,l**dim))
+                self.plot(np.reshape(memory,self.size))
 
-            if len(result) == 0 and suppress_value is not None:
-                return [(np.nan, 1)] if return_list else np.nan
-            return result
+        if len(result) == 0 and suppress_value is not None:
+            return [(np.nan, 1)] if return_list else np.nan
+        return result
 
     ## Creates an encoding for a given input.
     #
@@ -251,12 +258,12 @@ class HRR(VSA):
     #  @param input_value The input to be encoded.
     #  @return The encoded vector.     
     def encode(self, input_value, encode_range=None):
-        
+       
         if encode_range is None:
             encode_range = self.valid_range
         if encode_range is None:
             raise ValueError("Encoding scalar values requires valid range (valid_range or encode_range parameter)")
-
+            
         if not isinstance(input_value, np.ndarray) and input_value in HRR.mapping:
             return HRR.mapping[input_value]
         else:
