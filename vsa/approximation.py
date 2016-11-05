@@ -6,6 +6,8 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numbers
 from hrr import HRR
 
+import pdb
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -86,12 +88,18 @@ class Approximation:
             else:
                 samples = np.empty((n_samples[0] * n_samples[1], HRR.size), dtype=float)
                 for i, A_x_i in enumerate(A_x):
+                    print("{}".format(i))
                     for j, A_y_i in enumerate(A_y):
                         idx = j * len(A_x) + i
                         B_i = self.fn(A_x_i, A_y_i)  # evaluate ith sample
                         HRR_A = HRR((A_x_i, A_y_i), valid_range=input_range)
                         HRR_B = HRR(B_i, valid_range=output_range)
                         samples[idx] = (HRR_B % HRR_A).memory  # probe HRR
+                        #print("Probe sample {} for ({}, {}) and ({}, {}):".format(idx, A_x_i, A_y_i, -1.0, -1.0))
+                        #probe1 = HRR_A * HRR('', memory=samples[idx])
+                        #probe2 = HRR((-1.0, -1.0), valid_range=input_range) * HRR('', memory=samples[idx])
+                        #probe1.plot(probe1.reverse_permute(probe1.memory))
+                        #probe2.plot(probe2.reverse_permute(probe2.memory))
                         if Approximation.verbose_learn:
                             print("learning f({}, {}) = {}".format(A_x_i, A_y_i, B_i))
                             HRR_A.plot(HRR_A.reverse_permute(HRR_A.memory))
@@ -102,6 +110,15 @@ class Approximation:
                             print("sample mem:")
                             HRR_B.plot(HRR_B.reverse_permute(samples[idx]))
                 self.T = HRR(0, generator=samples)
+                #print("final T:")
+                #self.T.plot(self.T.reverse_permute(self.T.memory))
+                #print("probe (-1.0, -1.0):")
+                #probe1 = HRR((-1.0, -1.0), valid_range=input_range) * self.T
+                #probe1.plot(probe1.reverse_permute(probe1.memory))
+                #print("probe (-1.0, 1.0):")
+                #probe2 = HRR((-1.0, -1.0), valid_range=input_range) * self.T
+                #probe2.plot(probe2.reverse_permute(probe2.memory))
+
         else:
             raise ValueError("Dimensions > 2 not implemented yet")
 
@@ -132,7 +149,7 @@ class Approximation:
                 Y_hrr[i] = np.nan
                 Y_hrr2[i] = np.nan
             if len(temp) > 1:
-                temp = B.decode(return_list=False, suppress_value=x, decode_range=output_range)
+                temp = B.decode(return_list=False, suppress_value=x, decode_range=output_range, input_range=input_range)
                 #print("suppress_value: {}".format(temp))
                 Y_hrrsupp[i] = temp
             else:
@@ -167,6 +184,7 @@ class Approximation:
         Z_hrr2, Z_hrrsupp = np.meshgrid(np.empty(n_samples[0], dtype=float), np.empty(n_samples[1], dtype=float))
 
         for i, row in enumerate(X):
+            print("x")
             for j, cell in enumerate(row):
                 x, y = X[i][j], Y[i][j]
                 A = HRR((x, y), valid_range=input_range)
@@ -175,29 +193,29 @@ class Approximation:
                 #B.plot(B.reverse_permute(B.memory))
                 temp = B.decode(return_list=True, decode_range=output_range)
                 if len(temp) > 1:
-                    Z_hrr[i][j] = temp[1][0]
-                    Z_hrr2[i][j] = temp[0][0]
+                    Z_hrr[i][j] = temp[1][0] # 2nd if avail
+                    Z_hrr2[i][j] = temp[0][0] # always 1st
                 elif len(temp) > 0:
-                    Z_hrr[i][j] = temp[0][0]
-                    Z_hrr2[i][j] = temp[0][0]
+                    Z_hrr[i][j] = temp[0][0] # 2nd if avail
+                    Z_hrr2[i][j] = temp[0][0] # always 1st
                 else:
-                    Z_hrr[i][j] = np.nan
-                    Z_hrr2[i][j] = np.nan
+                    Z_hrr[i][j] = np.nan # 2nd if avail
+                    Z_hrr2[i][j] = np.nan # always 1st
                 if len(temp) > 1:
-                    temp = B.decode(return_list=False, suppress_value=(x, y), decode_range=output_range)
-                    print("suppress_value: {}".format(temp))
-                    Z_hrrsupp[i][j] = temp
+                    temp = B.decode(return_list=False, suppress_value=(x, y), decode_range=output_range, input_range=input_range)
+                    #print("suppress_value: {}".format(temp))
+                    Z_hrrsupp[i][j] = temp # suppressed if avail
                 else:
                     #Z_hrrsupp[i][j] = np.nan
-                    Z_hrrsupp[i][j] = temp[0][0]
-                Z_np[i][j] = self.fn(x, y)
-                print("{}, {} -> {}".format(x, y, Z_np[i][j]))
+                    Z_hrrsupp[i][j] = Z_hrr[i][j] # if there is no suppressed result, use the one from "2nd if avail"
+                Z_np[i][j] = self.fn(x, y) # ground truth (numpy)
+                #print("{}, {} -> {}".format(x, y, Z_np[i][j]))
         fig = plt.figure()
         ax = fig.gca(projection="3d")
         #surf = ax.plot_surface(X, Y, Z_hrrsupp, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=1, antialiased=False)
         surf = ax.plot_wireframe(X, Y, Z_np, rstride=1, cstride=1, color="green")
-        surf = ax.plot_wireframe(X, Y, Z_hrr, rstride=1, cstride=1, color="cyan")
-        surf = ax.plot_wireframe(X, Y, Z_hrr2, rstride=1, cstride=1, color="blue")
+        #surf = ax.plot_wireframe(X, Y, Z_hrr, rstride=1, cstride=1, color="cyan")
+        #surf = ax.plot_wireframe(X, Y, Z_hrr2, rstride=1, cstride=1, color="blue")
         surf = ax.plot_wireframe(X, Y, Z_hrrsupp, rstride=1, cstride=1, color="red")
         ax.set_zlim(output_range[0] - 0.01, output_range[1] + 0.01)
         #ax.zaxis.set_major_locator(LinearLocator(10))
@@ -221,8 +239,7 @@ class Approximation:
                 print("B:")
                 B.plot(B.reverse_permute(B.memory))
             suppress_value = tpl if suppress_input else None # suppress values of input parameters if set
-            val = B.decode(return_list=True, suppress_value=suppress_value, decode_range=output_range)
-            val = [val] if not isinstance(val, (frozenset, list, np.ndarray, set, tuple)) else val
+            val = B.decode(return_list=True, suppress_value=suppress_value, decode_range=output_range, input_range=input_range)
             # val is a list of tuples -> extract up to two values
             # at least one result:
             val1 = val[0][0] if len(val) > 0 else [np.nan]
