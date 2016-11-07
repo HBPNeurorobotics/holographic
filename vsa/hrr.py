@@ -412,11 +412,13 @@ class HRR(VSA):
     #  @param smooth Boolean that prompts a smoothing operation prior to plotting.
     #  @param unpermute Boolean that widens the margins of the displayed plotting window.
     #  @return The resulting permuted vector.     
-    def plot(self, vect=None, unpermute=False, smooth=False, wide=False, multidim=False):
+    def plot(self, vect=None, unpermute=False, smooth=False, normalize=True, wide=False, multidim=False):
         if vect is None:
             vect = self.memory
         if unpermute:
             vect = self.reverse_permute(vect)
+        if normalize:
+            vect = helpers.normalize(vect)
         if smooth:
             vect = helpers.smooth(vect)
             
@@ -439,7 +441,7 @@ class HRR(VSA):
             Y = np.arange(0,len(vect[0]),1)
             X, Y = np.meshgrid(X, Y)
             ax = fig.gca(projection='3d')
-            surf = ax.plot_surface(X, Y, vect, rstride=1, cstride=1, cmap='coolwarm', linewidth=0, antialiased=False)
+            surf = ax.plot_surface(X, Y, vect, rstride=1, cstride=1, cmap='coolwarm', linewidth=0, antialiased=True)
             ax.set_zlim(np.min(vect)/3, 1.1*np.max(vect))
             fig.colorbar(surf, shrink=0.5, aspect=5)
         else:
