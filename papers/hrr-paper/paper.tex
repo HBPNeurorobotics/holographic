@@ -628,8 +628,47 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 	- SIFT + label
 	\subsection{Localization and mapping}
 	- SIFT + location
-	\subsection{Holographic state machines (holographic controllers)}
-	- sensory\_data + current\_state + next state
+\subsection{Symbolic scripting (holographic controllers)}
+
+We have used our system to demonstrate a mechanism for encoding neural programs and processes through series of associated action, perception and actuator symbols. We call this mechanism for defining controllers using holographic memories "symbolic scripting".
+
+
+\begin{figure}[th!]
+	\center
+	\begin{subfigure}{1\columnwidth}
+		\includegraphics[width=\columnwidth]{img/control_pipeline.png}
+		\caption{Symbolic scripting pipeline}
+		\label{fig:symbolic-scripting-a}
+	\end{subfigure}
+	
+	
+	\begin{subfigure}{0.7\columnwidth}
+		\center
+		\includegraphics[width=\columnwidth]{img/symbol_table.png}
+		\caption{Symbol table}
+		\label{fig:symbolic-scripting-b}
+	\end{subfigure}
+	\begin{subfigure}{1\columnwidth}
+		\includegraphics[width=\columnwidth]{img/controller.png}
+		\caption{Holographic program (script)}
+		\label{fig:symbolic-scripting-c}
+	\end{subfigure}
+	\caption{Symbolic scripting example for light following behavior of a two-wheeled robot}
+	\label{fig:symbolic-scripting}
+\end{figure}
+
+
+The basic idea is centered around symbolic representations of all three parts involved:
+\begin{enumerate}
+	\item \textbf{actions} are symbolic constants representing groups of control signals, such as "forward", "backward", "stop", "flex", etc.
+	
+	\item \textbf{actuators} are named controllable parts of the system on which actions can be performed on, such as "right\_wheel", "left\_wheel", etc.
+	
+	\item \textbf{senses} are preprocessed (classified) sensory stream labels, such as "bright", "dark", "touching", "falling\_down", "rolling", etc.
+\end{enumerate}
+
+An example of this kind of symbolic script is given on figure \ref{fig:symbolic-scripting}. Memory encodes light following behavior.
+
 	\subsection{Reinforcement learning}
 	- sensory\_data + action + reward
 	\subsection{Language understanding}
