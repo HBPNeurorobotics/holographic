@@ -9,6 +9,7 @@ from numpy import array, sqrt, dot
 import random
 import matplotlib.pyplot as plt
 import numbers
+from mpl_toolkits.mplot3d import Axes3D
 
 import helpers
 from vsa import VSA
@@ -411,15 +412,16 @@ class HRR(VSA):
     #  @param smooth Boolean that prompts a smoothing operation prior to plotting.
     #  @param unpermute Boolean that widens the margins of the displayed plotting window.
     #  @return The resulting permuted vector.     
-    def plot(self, vect=None, unpermute=False, smooth=False, wide=False):
+    def plot(self, vect=None, unpermute=False, smooth=False, wide=False, multidim=False):
         if vect is None:
             vect = self.memory
         if unpermute:
             vect = self.reverse_permute(vect)
         if smooth:
             vect = helpers.smooth(vect)
-        plt.figure()
-        xx = range(len(vect))
+            
+        fig = plt.figure()
+        
         if wide:
             widen = len(vect) * 0.1 
             down = np.amin(vect)
@@ -428,7 +430,22 @@ class HRR(VSA):
             down -= mean * 0.1
             up += mean * 0.1
             plt.axis([-widen, len(vect) + widen, down, up])
-        plt.plot(xx, vect)
+        
+        if multidim:
+            assert(len(vect.shape) != 3)
+            if (len(vect.shape) == 1):
+                vect = helpers.reShape(vect,2)
+            X = np.arange(0,len(vect),1)
+            Y = np.arange(0,len(vect[0]),1)
+            X, Y = np.meshgrid(X, Y)
+            ax = fig.gca(projection='3d')
+            surf = ax.plot_surface(X, Y, vect, rstride=1, cstride=1, cmap='coolwarm', linewidth=0, antialiased=False)
+            ax.set_zlim(np.min(vect)/3, 1.1*np.max(vect))
+            fig.colorbar(surf, shrink=0.5, aspect=5)
+        else:
+            xx = range(len(vect))
+            plt.plot(xx, vect)
+        
         plt.show()
 
 #    def decode(self):
