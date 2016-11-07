@@ -92,23 +92,30 @@
 
 % *** CITATION PACKAGES ***
 %
-\usepackage{cite}
-% cite.sty was written by Donald Arseneau
-% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
-% \cite{} output to follow that of the IEEE. Loading the cite package will
-% result in citation numbers being automatically sorted and properly
-% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
-% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
-% \cite will automatically add leading space, if needed. Use cite.sty's
-% noadjust option (cite.sty V3.8 and later) if you want to turn this off
-% such as if a citation ever needs to be enclosed in parenthesis.
-% cite.sty is already installed on most LaTeX systems. Be sure and use
-% version 5.0 (2009-03-20) and later if using hyperref.sty.
-% The latest version can be obtained at:
-% http://www.ctan.org/pkg/cite
-% The documentation is contained in the cite.sty file itself.
+%% Use biber instead of BibTeX
+%\usepackage[citestyle=numeric,style=numeric,backend=biber]{biblatex}
+\usepackage[
+	hyperref=true,
+	url=false,
+	isbn=false,
+	citestyle=alphabetic,
+	style=alphabetic,
+	maxcitenames=3,
+	maxbibnames=100,
+	backref=true,
+	backend=biber
+]{biblatex}
+\usepackage[babel,german=quotes,english=american]{csquotes} 
 
+%TODO check 
+%\appto{\bibsetup}{\raggedright}
+\appto{\bibsetup}{\sloppy}
+\addbibresource{paper.bib}
 
+%\DefineBibliographyStrings{english}{%
+%    backrefpage  = {see p.}, % for single page number
+%    backrefpages = {see pp.} % for multiple page numbers
+%}
 
 
 
@@ -299,8 +306,6 @@
 % http://www.ctan.org/pkg/url
 % Basically, \url{my_url_here}.
 
-\usepackage{cite}
-
 %\usepackage{asmfonts}
 
 % *** Do not adjust lengths that control margins, column widths, etc. ***
@@ -393,7 +398,7 @@
 	
 	\section{Introduction}
 	
-	Vector Symbolic Architectures (VSA) define a set of operations for storage (compression) and retrieval of symbolic concepts in fixed size vectors. As described in \cite{vsa1}, every VSA has to implement three basic operations:
+	Vector Symbolic Architectures (VSA) define a set of operations for storage (compression) and retrieval of symbolic concepts in fixed size vectors. As described in \cite{Levy:2008:VectorSymbolicArchitectures}, every VSA has to implement three basic operations:
 	\begin{enumerate}
 		\item association (binding) $\mapsto \otimes$
 		\item superposition (appending) $\mapsto +$
@@ -402,7 +407,7 @@
 	
 	In addition, every VSA can be considered as a lossy compression technique, since binary operations on N-element vectors return N-element vectors as well.
 	
-	Depending of the way these three operations are implemented we can distinguish several popular VSAs, such as Holographic Reduced Representations \cite{hrr-1}, Circular HRRs \cite{circular-hrr}, Binary Spatter Codes \cite{bsc-1}, Holographic Graph Neurons\cite{holographic-graph-nouron}, Geometric Algebras\cite{geometric-algebra} and Random Permutations. The most widely used ones are HRRs and they are briefly explained in section \ref{sec:hrr}. Authors in \cite{learning-language} have used them to solve word embedding problem for extremely large dataset by replacing computationally expensive big matrix factorization with iterative estimation algorithm based on HRRs. Some of the other work is centered around pattern recognition \cite{pattern-recognition}, functional large-scale cognitive architecture models \cite{spaun} and representing scene structure \cite{scene-structure}. Some preliminary theoretical assumptions have been made about ability to use them as agent controllers\cite{embedding-behaviour}, where a symbolic program is represented with a set of combined symbolic actions associated with actuator symbols and symbolic sensing.
+	Depending of the way these three operations are implemented we can distinguish several popular VSAs, such as Holographic Reduced Representations \cite{hrr-1}, Circular HRRs \cite{circular-hrr}, Binary Spatter Codes \cite{bsc-1}, Holographic Graph Neurons\cite{Kleyko:2016:HolographicGraphNeuron}, Geometric Algebras\cite{Patyk-Lonska:2011:DistributedRepresentationsBased} and Random Permutations. The most widely used ones are HRRs and they are briefly explained in section \ref{sec:hrr}. Authors in \cite{learning-language} have used them to solve word embedding problem for extremely large dataset by replacing computationally expensive big matrix factorization with iterative estimation algorithm based on HRRs. Some of the other work is centered around pattern recognition \cite{Kleyko:2016:PatternRecognitionVector}, functional large-scale cognitive architecture models \cite{spaun} and representing scene structure \cite{scene-structure}. Some preliminary theoretical assumptions have been made about ability to use them as agent controllers\cite{embedding-behaviour}, where a symbolic program is represented with a set of combined symbolic actions associated with actuator symbols and symbolic sensing.
 	
 	
 	\begin{figure}
@@ -587,7 +592,8 @@
 	% leaving this as is.
 	The authors would like to thank... Manchester developers. :slowclap:
 	
-	\include{bibliography}
+	%% Add entry to the table of contents for the bibliography
+	\printbibliography[heading=bibintoc]
 	
 	% that's all folks
 \end{document}
