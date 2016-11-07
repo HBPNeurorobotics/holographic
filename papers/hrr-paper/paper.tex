@@ -116,22 +116,22 @@
 % *** GRAPHICS RELATED PACKAGES ***
 %
 \ifCLASSINFOpdf
-  \usepackage[pdftex]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../pdf/}{../jpeg/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\usepackage[pdftex]{graphicx}
+% declare the path(s) where your graphic files are
+% \graphicspath{{../pdf/}{../jpeg/}}
+% and their extensions so you won't have to specify these with
+% every instance of \includegraphics
+% \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
 \else
-  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
-  % will default to the driver specified in the system graphics.cfg if no
-  % driver is specified.
-  % \usepackage[dvips]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../eps/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.eps}
+% or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+% will default to the driver specified in the system graphics.cfg if no
+% driver is specified.
+% \usepackage[dvips]{graphicx}
+% declare the path(s) where your graphic files are
+% \graphicspath{{../eps/}}
+% and their extensions so you won't have to specify these with
+% every instance of \includegraphics
+% \DeclareGraphicsExtensions{.eps}
 \fi
 % graphicx was written by David Carlisle and Sebastian Rahtz. It is
 % required if you want graphics, photos, etc. graphicx.sty is already
@@ -299,6 +299,7 @@
 % http://www.ctan.org/pkg/url
 % Basically, \url{my_url_here}.
 
+\usepackage{cite}
 
 %\usepackage{asmfonts}
 
@@ -314,270 +315,281 @@
 
 
 \begin{document}
-%
-% paper title
-% Titles are generally capitalized except for words such as a, an, and, as,
-% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
-% not capitalized unless they are the first or last word of the title.
-% Linebreaks \\ can be used within to get better formatting as desired.
-% Do not put math or special symbols in the title.
-\title{Semantic Holographic Memories}
-
-
-% author names and affiliations
-% use a multiple column layout for up to three different
-% affiliations
-\author{\IEEEauthorblockN{Igor Peric, Stefan Ulbrich, Alexandru Lesi, R{\"u}diger Dillman, Marius Z{\"o}llner}
-\IEEEauthorblockA{FZI Forschungszentrum Informatik\\
-Karlsruhe, Germany\\
-Email: $\{$peric, ulbrich, dillmann, zoellner$\}$@fzi.de}
-}
-
-% conference papers do not typically use \thanks and this command
-% is locked out in conference mode. If really needed, such as for
-% the acknowledgment of grants, issue a \IEEEoverridecommandlockouts
-% after \documentclass
-
-% for over three affiliations, or if they all won't fit within the width
-% of the page, use this alternative format:
-% 
-%\author{\IEEEauthorblockN{Michael Shell\IEEEauthorrefmark{1},
-%Homer Simpson\IEEEauthorrefmark{2},
-%James Kirk\IEEEauthorrefmark{3}, 
-%Montgomery Scott\IEEEauthorrefmark{3} and
-%Eldon Tyrell\IEEEauthorrefmark{4}}
-%\IEEEauthorblockA{\IEEEauthorrefmark{1}School of Electrical and Computer Engineering\\
-%Georgia Institute of Technology,
-%Atlanta, Georgia 30332--0250\\ Email: see http://www.michaelshell.org/contact.html}
-%\IEEEauthorblockA{\IEEEauthorrefmark{2}Twentieth Century Fox, Springfield, USA\\
-%Email: homer@thesimpsons.com}
-%\IEEEauthorblockA{\IEEEauthorrefmark{3}Starfleet Academy, San Francisco, California 96678-2391\\
-%Telephone: (800) 555--1212, Fax: (888) 555--1212}
-%\IEEEauthorblockA{\IEEEauthorrefmark{4}Tyrell Inc., 123 Replicant Street, Los Angeles, California 90210--4321}}
-
-
-% use for special paper notices
-%\IEEEspecialpapernotice{(Invited Paper)}
-
-
-% make the title area
-\maketitle
-
-% As a general rule, do not put math, special symbols or citations
-% in the abstract
-\begin{abstract}
-Vector Symbolic Architectures (VSA) define a set of operations for storage (compression), manipulation and retrieval of symbolic concepts, represented as fixed-length vectors. A specific instance of VSA, Holographic Reduced Representations (HRR), has proven to exhibit properties similar to human short-term memory and is, as such, interesting for computational modeling.
-
-In this paper we extend HRR approach by introducing topology-preserving, invertible encoding/decoding procedure for all major data types used in robotics and engineering. These encoding schemes play the role of otherwise used clean-up modules after memory retrieval (e.g. self-organizing maps), thus eliminating necessity for them.
-
-We test our memories in three different robotic tasks: mapping and recall, visual object classification and state machine scripting (holographic controllers).
-\end{abstract}
-
-% no keywords
-
-
-
-
-% For peer review papers, you can put extra information on the cover
-% page as needed:
-% \ifCLASSOPTIONpeerreview
-% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
-% \fi
-%
-% For peerreview papers, this IEEEtran command inserts a page break and
-% creates the second title. It will be ignored for other modes.
-\IEEEpeerreviewmaketitle
-
-
-
-\section{Introduction}
-
-Vector Symbolic Architectures (VSA) define a set of operations for storage (compression) and retrieval of symbolic concepts in fixed size vectors. In its basic form every VSA has to implement three basic operations:
-\begin{enumerate}
-\item association (binding) $\mapsto \otimes$
-\item superposition (appending) $\mapsto +$
-\item probing (unbinding) $\mapsto \oslash$
-\end{enumerate}
-
-In addition, every VSA can be considered as a compression technique, since binary operations on N-element vectors return N-element vectors as well.
-
-\textbf{Association} (also called "binding") is operation of linking two operands together, resulting in a vector of same size which is dissimilar (orthogonal) to both original vectors, but contains scrambled information from both of the operands. For instance, linking property "red" to object "triangle" can be done using binding operation:
-
-\begin{equation}
-memory_1 = red \otimes triangle
-\end{equation}
-
-\textbf{Superposition} is operation of extending a set of already memorized items with another item (or binding of two or more of them). As an example, a memory of "red triangle and blue circle" can be formed in following way:
-\begin{equation}
-memory_2 = memory_1 + blue \otimes circle
-\end{equation}
-
-\textbf{Probing} is operation of extracting a noisy version of associated item from a joint set memory. I.e. a question "What is the color of triangle?" could be asked like this:
-
-\begin{equation}
-red \approx memory_2 \oslash triangle
-\end{equation}
-
-Probing operation assumes existence of inverse element to association, so previous equation can be interpreted and explained in following way:
-\begin{multline}
-memory_2 \otimes triangle'=\\
-(red \otimes triangle + blue \otimes circle) \otimes triangle'=\\
-red \otimes triangle  \otimes triangle' + blue \otimes circle \otimes triangle' =\\
-red + blue \otimes circle \otimes triangle'  = red + noise
-\approx red
-\end{multline}
-
-where $triangle'$ represents inverse of $triangle$. Resulting vector will be composition of something that is very similar to $red$ and something that doesn't resemble anything meaningful from symbol table, so it can be treated as neglectable noise.
-
-\begin{figure}
-\center
-\includegraphics[width=0.9\columnwidth]{img/scalar-probe.png}
-\caption{Result of $(80 \otimes A) \oslash A$ for HRR from}
-\end{figure}
-
-Process of converting noisy result of probing into the closest know symbol is called \textbf{clean-up procedure}. Straightforward way of implementing clean-up memory is using lookup table, while other researchers show that any type of attractor network can be used (e.g. self-organizing maps).
-
-\section{Holographic reduced representations}
-
-
-Holographic Reduced Representations are VSAs which implement operation of binding as circular convolution:
-
-\begin{equation}
-z_i=\sum_{k=0}^{N}{x_iy_{i-k}} //TODO
-\end{equation}
-
-where $z$ is the result of convolution, $x$ and $y$ are operands of size $N$. Superposition is implemented as simple element-wise addition. Probing is implemented using inverse of circular convolution - circular correlation:
-
-\begin{equation}
-y_i=\sum_{k=0}^{m}{x_iy_{i-k}} //TODO
-\end{equation} 
-
-- Implementation and building up of HRRs (similarity measures and cosine, lookup table...)
-
-
-\section{Topology-preserving encoding}
-
-- necessity (benefit of having it, querying smth that was not there)
-- implementation
-
-In order to use various types of inputs with HRRs it is necessary to encode them in vectors of fixed size. The basic approach is to generate these vectors randomly for each distinct input and store these pairs in a map. This will consequently take its toll on the space complexity and may become infeasible, depending on the type of input used. The following section presents ways to encode values in a deterministic manner, removing the need to store these, as long as decoding is robust against noise. 
-
-\subsection{Scalars}
-
-Encoding scalars is a good example for the necessity of preserving topology. Depending on what dataset is in use it may be required to store mappings for any number of values. Furthermore, using random encoding, there would be no similarity in neighbouring values. As such the following probe will yield no result:
-
-\begin{equation}
-(10000 \otimes A) \oslash 10001
-\end{equation}
-
-To facilitate these two qualities scalar encoding can be achieved with the help of Gaussian distributions. The encoded vector will simply represent a Gaussian bell sampled over a fixed input range. Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what the result of binding it to a generic random vector is. With this result it becomes obvious that lots of information is lost. If this result is probed with the same random vector used in binding something similar to the initial Gaussian bell is expected. And yet figure \ref{no-perm-b} presents no such outcome. While there is a peak at the initial value lots of other peaks also arise, making it impossible to detect which one is correct. 
-
-\begin{figure}
-\begin{subfigure}{1\columnwidth}
-\includegraphics[width=\columnwidth]{img/scalar-pre-perm.png}
-\caption{Binging}
-\label{no-perm-a}
-\end{subfigure}
-\begin{subfigure}{1\columnwidth}
-\includegraphics[width=\columnwidth]{img/scalar-pre-perm-probe.png}
-\caption{Probing}
-\label{no-perm-b}
-\end{subfigure}
-\caption{Plot of vector values. Figure \ref{no-perm-a} shows the binding of the value 8 on a scale to 10 with the symbolic representation of "ball", which is random. In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
-\label{no-perm}
-\end{figure}
-
-This effect is due to the fact that circular convolution is based on Fourier transformations and the lack of frequencies present in encoded vectors becomes apparent in Fourier space as well. Figure \ref{fft} highlights this. All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation. In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and does not come close to resembling the original Gaussian. 
-
-\begin{figure}
-\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
-\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
-\caption{Fourier space conversions of a Gaussian bell and a random vector.}
-\label{fft}
-\end{figure}
-
-This inconvenience is removed with the help of permutations. Depending on the size of the memory vectors used a fixed permutation is generated. Whenever a scalar is encoded the Gaussian bell is first sampled over the range, after which the sampled values swap places accordingly. As such the resulting vector will present lots of jumps in value, which have a significant impact on the Fourier space, as can be seen in figure \ref{perm-fft}.
-
-\begin{figure}
-\includegraphics[width=\columnwidth]{img/scalar-perm-step-fft.png}
-\caption{Plots on the effect of permuting a Gaussian bell, and the impact on Fourier space.}
-\label{perm-fft}
-\end{figure}
-
-Working with such a vector makes it possible to successfully probe for scalars and receive a Gaussian bell overlapped with some noise. All of this can be seen in figure \ref{perm}, which depicts the exact same operations as figure \ref{no-perm}, but using a permuted version of a Gaussian bell. The result in figure \ref{perm-b} clearly shows an according spike. This vector can be smoothed out, after which the peak can easily be identified and the initial scalar can be recovered.
-
-\begin{figure}
-\begin{subfigure}{1\columnwidth}
-\includegraphics[width=\columnwidth]{img/scalar-post-perm.png}
-\caption{Binging}
-\label{perm-a}
-\end{subfigure}
-\begin{subfigure}{1\columnwidth}
-\includegraphics[width=\columnwidth]{img/scalar-post-perm-probe.png}
-\caption{Probing}
-\label{perm-b}
-\end{subfigure}
-\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian for value 8 on a scale to 10 with the symbolic representation of "ball", which is random. In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
-\label{perm}
-\end{figure}
-
-On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up a small issue. Adding multiple such bindings on top of each other would constantly increase the values in the resulting vector. Due to this, when probing, we would receive vectors which had the correct distance between their values, i.e. the correct "shape", but would be shifted on the Y-axis. This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n x_i = 0\), and is achieved with this simple operation:
-
-\[ \forall x_i \in x: x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|} \]
-
-\subsection{Coordinate encoder}
-
-\subsection{String encoder}
-
-\section{Properties of SHM}
-
-- you can't extract the items memorized, number of them, you can just query
-- they are probabilistic
-- you can modify them online (no separate learning/probing phases)
-\subsection{Capacity}
-\subsubsection{SHM size vs. number of items}
-\subsubsection{Model of human forgetting}
-\subsubsection{Model of intentional forgetting}
-
-\subsection{Fan-out effect - multiple probing outputs}
-
-\subsection{Limitations}
-
-- introducing problem of lookup (symbol grounding)
-- solution using implicit encoding and decoding
-
-\section{Experiments}
-
-\subsection{Visual object classification}
-- SIFT + label
-\subsection{Localization and mapping}
-- SIFT + location
-\subsection{Holographic state machines (holographic controllers)}
-- sensory\_data + current\_state + next state
-\subsection{Reinforcement learning}
-- sensory\_data + action + reward
-\subsection{Language understanding}
-- TensorFlow (role) + word = question answering
-\subsection{Implicit inductive reasoning}
-
-\section{Conclusions}
-
-
-% use section* for acknowledgment
-\section*{Acknowledgment}
-
-% leaving this as is.
-The authors would like to thank... Manchester developers. :slowclap:
-
-
-\bibliographystyle{IEEEtran}
- 
-\bibliography{IEEEabrv,bibliography}
-
-
-
-
-% that's all folks
+	%
+	% paper title
+	% Titles are generally capitalized except for words such as a, an, and, as,
+	% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+	% not capitalized unless they are the first or last word of the title.
+	% Linebreaks \\ can be used within to get better formatting as desired.
+	% Do not put math or special symbols in the title.
+	\title{Perceptual symbol grounding in \\holographic memories}
+	
+	
+	% author names and affiliations
+	% use a multiple column layout for up to three different
+	% affiliations
+	\author{\IEEEauthorblockN{Igor Peric, Stefan Ulbrich, Alexandru Lesi, Daniel Spies, R{\"u}diger Dillman, Marius Z{\"o}llner}
+		\IEEEauthorblockA{FZI Forschungszentrum Informatik\\
+			Karlsruhe, Germany\\
+			Email: $\{$peric, ulbrich, lesi, spies, dillmann, zoellner$\}$@fzi.de}
+	}
+	
+	% conference papers do not typically use \thanks and this command
+	% is locked out in conference mode. If really needed, such as for
+	% the acknowledgment of grants, issue a \IEEEoverridecommandlockouts
+	% after \documentclass
+	
+	% for over three affiliations, or if they all won't fit within the width
+	% of the page, use this alternative format:
+	% 
+	%\author{\IEEEauthorblockN{Michael Shell\IEEEauthorrefmark{1},
+	%Homer Simpson\IEEEauthorrefmark{2},
+	%James Kirk\IEEEauthorrefmark{3}, 
+	%Montgomery Scott\IEEEauthorrefmark{3} and
+	%Eldon Tyrell\IEEEauthorrefmark{4}}
+	%\IEEEauthorblockA{\IEEEauthorrefmark{1}School of Electrical and Computer Engineering\\
+	%Georgia Institute of Technology,
+	%Atlanta, Georgia 30332--0250\\ Email: see http://www.michaelshell.org/contact.html}
+	%\IEEEauthorblockA{\IEEEauthorrefmark{2}Twentieth Century Fox, Springfield, USA\\
+	%Email: homer@thesimpsons.com}
+	%\IEEEauthorblockA{\IEEEauthorrefmark{3}Starfleet Academy, San Francisco, California 96678-2391\\
+	%Telephone: (800) 555--1212, Fax: (888) 555--1212}
+	%\IEEEauthorblockA{\IEEEauthorrefmark{4}Tyrell Inc., 123 Replicant Street, Los Angeles, California 90210--4321}}
+	
+	
+	% use for special paper notices
+	%\IEEEspecialpapernotice{(Invited Paper)}
+	
+	
+	% make the title area
+	\maketitle
+	
+	% As a general rule, do not put math, special symbols or citations
+	% in the abstract
+	\begin{abstract}
+		Vector Symbolic Architectures (VSA) define a set of operations for storage (compression), manipulation and retrieval of symbolic concepts, represented as fixed-length vectors from ${\rm I\!R}^N$. A specific instance of VSA, Holographic Reduced Representations (HRR), has proven to exhibit properties similar to human short-term memory and is, as such, interesting for computational modeling.
+		
+		In this paper we extend HRR approach by introducing implicit, topology-preserving, encoding/decoding procedure using radial basis functions. Extended approach involves randomly chosen permutation (for encoding) and its inverse (for decoding), necessary for uniform distribution of signal in Fourier space in which embedding takes place. These novel encoding schemes, together with extended operation pipeline, play the role of so called clean-up modules after memory retrieval (e.g. self-organizing maps). Effectively, encoding implicitly represents the symbol, so no further lookup is needed.
+		
+		We show that newly introduced encoding scheme didn't have negative impact on memory capacity in comparison with original author's capacity benchmark. We also test our memories in three different robotics tasks: mapping and recall of an area by a mobile agent, top-down visual attention shift and state machine scripting (holographic controllers).
+	\end{abstract}
+	
+	% no keywords
+	
+	
+	
+	
+	% For peer review papers, you can put extra information on the cover
+	% page as needed:
+	% \ifCLASSOPTIONpeerreview
+	% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
+	% \fi
+	%
+	% For peerreview papers, this IEEEtran command inserts a page break and
+	% creates the second title. It will be ignored for other modes.
+	\IEEEpeerreviewmaketitle
+	
+	
+	
+	\section{Introduction}
+	
+	Vector Symbolic Architectures (VSA) define a set of operations for storage (compression) and retrieval of symbolic concepts in fixed size vectors. As described in \cite{vsa1}, every VSA has to implement three basic operations:
+	\begin{enumerate}
+		\item association (binding) $\mapsto \otimes$
+		\item superposition (appending) $\mapsto +$
+		\item probing (unbinding) $\mapsto \oslash$
+	\end{enumerate}
+	
+	In addition, every VSA can be considered as a lossy compression technique, since binary operations on N-element vectors return N-element vectors as well.
+	
+	Depending of the way these three operations are implemented we can distinguish several popular VSAs, such as Holographic Reduced Representations \cite{hrr-1}, Circular HRRs \cite{circular-hrr}, Binary Spatter Codes \cite{bsc-1}, Holographic Graph Neurons\cite{holographic-graph-nouron}, Geometric Algebras\cite{geometric-algebra} and Random Permutations. The most widely used ones are HRRs and they are briefly explained in section \ref{sec:hrr}. Authors in \cite{learning-language} have used them to solve word embedding problem for extremely large dataset by replacing computationally expensive big matrix factorization with iterative estimation algorithm based on HRRs. Some of the other work is centered around pattern recognition \cite{pattern-recognition}, functional large-scale cognitive architecture models \cite{spaun} and representing scene structure \cite{scene-structure}. Some preliminary theoretical assumptions have been made about ability to use them as agent controllers\cite{embedding-behaviour}, where a symbolic program is represented with a set of combined symbolic actions associated with actuator symbols and symbolic sensing.
+	
+	
+	\begin{figure}
+		\center
+		\includegraphics[width=0.9\columnwidth]{img/cover_photo.png}
+		\caption{In-memory representation of top-down attention shift for visual scene short-term  memory}
+	\end{figure}
+	
+	
+	Authors in \cite{spaun} have demonstrated functional cognitive model Spaun, implemented as HRRs using biologically plausible models of neuron dynamics, is capable of performing 7 different cognitive tasks. In serial memory task they show that model of forgetting exhibits similar behavior as human working memory due to limited capacity. Besides that, they report similarity between human working memory capacity and average number of items (symbols) that their model is capable of holding in memory. This successful model of forgetting is one of the reasons our work is centered around HRRs.
+	
+	Second reason is the fact that HRRs are the only VSAs up to date operating on convolution operations in their core. This is appealing if we take into consideration numerous recent advancement in deep learning and convolutional neural networks. There are two basic reasons for success of these networks: training on big data and using convolution as the main architectural constraint. Although description of biophysical mechanism underlying convolution and concept of weight sharing is still missing, it is important to reuse already proven concepts (such as convolutional filtering) in as general way as possible. In other words, addressing multiple fundamentally different problems with the same or similar computational principles can be considered as a step towards unified brain processing theory.
+	
+	\section{Vector Symbolic Architectures}
+	
+	\textbf{Association} (also called "binding") is an operation of linking two operands together, resulting in a vector of the same size which is dissimilar (orthogonal) to both original vectors, but contains scrambled information from both of the operands. For instance, linking the property "red" to object "triangle" can be done using binding operation:
+	
+	\begin{equation}
+	memory_1 = red \otimes triangle
+	\end{equation}
+	
+	\textbf{Superposition} is operation of extending a set of already memorized items with another item (or binding of two or more of them). As an example, a memory of "red triangle and blue circle" can be formed in following way:
+	\begin{equation}
+	memory_2 = memory_1 + blue \otimes circle
+	\end{equation}
+	
+	\textbf{Probing} is operation of extracting a noisy version of associated item from a joint set memory. I.e. a question "What is the color of triangle?" could be asked like this:
+	
+	\begin{equation}
+	red \approx memory_2 \oslash triangle
+	\end{equation}
+	
+	Probing operation assumes existence of inverse element to association, so previous equation can be interpreted and explained in following way:
+	\begin{multline}
+	memory_2 \otimes triangle'=\\
+	(red \otimes triangle + blue \otimes circle) \otimes triangle'=\\
+	red \otimes triangle  \otimes triangle' + blue \otimes circle \otimes triangle' =\\
+	red + blue \otimes circle \otimes triangle'  = red + noise
+	\approx red
+	\end{multline}
+	
+	where $triangle'$ represents inverse of $triangle$. Resulting vector will be composition of something that is very similar to $red$ and something that doesn't resemble anything meaningful from symbol table, so it can be treated as neglectable noise.
+	
+	\begin{figure}
+		\center
+		\includegraphics[width=0.9\columnwidth]{img/scalar-probe.png}
+		\caption{Result of $(80 \otimes A) \oslash A$ for HRR from}
+	\end{figure}
+	
+	Process of converting noisy result of probing into the closest know symbol is called \textbf{clean-up procedure}. Straightforward way of implementing clean-up memory is using a lookup table, while other researchers show that any type of attractor network can be used (e.g. self-organizing maps).
+	
+	\subsection{Holographic reduced representations}
+	\label{sec:hrr}
+	
+	Holographic Reduced Representations are VSAs which implement operation of binding as circular convolution:
+	
+	\begin{equation}
+	z_i=\sum_{k=0}^{N}{x_iy_{i-k}} //TODO
+	\end{equation}
+	
+	where $z$ is the result of convolution, $x$ and $y$ are operands of size $N$. Superposition is implemented as simple element-wise addition. Probing is implemented using inverse of circular convolution - circular correlation:
+	
+	\begin{equation}
+	y_i=\sum_{k=0}^{m}{x_iy_{i-k}} //TODO
+	\end{equation} 
+	
+	- Implementation and building up of HRRs (similarity measures and cosine, lookup table...)
+	
+	
+	\section{Topology-preserving encoding}
+	
+	- necessity (benefit of having it, querying smth that was not there)
+	- implementation
+	
+	In order to use various types of inputs with HRRs it is necessary to encode them in vectors of fixed size. The basic approach is to generate these vectors randomly for each distinct input and store these pairs in a map. This will consequently take its toll on the space complexity and may become infeasible, depending on the type of input used. The following section presents ways to encode values in a deterministic manner, removing the need to store these, as long as decoding is robust against noise. 
+	
+	\subsection{Scalars}
+	
+	Encoding scalars is a good example for the necessity of preserving topology. Depending on what dataset is in use it may be required to store mappings for any number of values. Furthermore, using random encoding, there would be no similarity in neighbouring values. As such the following probe will yield no result:
+	
+	\begin{equation}
+	(10000 \otimes A) \oslash 10001
+	\end{equation}
+	
+	To facilitate these two qualities scalar encoding can be achieved with the help of Gaussian distributions. The encoded vector will simply represent a Gaussian bell sampled over a fixed input range. Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what the result of binding it to a generic random vector is. With this result it becomes obvious that lots of information is lost. If this result is probed with the same random vector used in binding something similar to the initial Gaussian bell is expected. And yet figure \ref{no-perm-b} presents no such outcome. While there is a peak at the initial value lots of other peaks also arise, making it impossible to detect which one is correct. 
+	
+	\begin{figure}
+		\begin{subfigure}{1\columnwidth}
+			\includegraphics[width=\columnwidth]{img/scalar-pre-perm.png}
+			\caption{Binding}
+			\label{no-perm-a}
+		\end{subfigure}
+		\begin{subfigure}{1\columnwidth}
+			\includegraphics[width=\columnwidth]{img/scalar-pre-perm-probe.png}
+			\caption{Probing}
+			\label{no-perm-b}
+		\end{subfigure}
+		\caption{Plot of vector values. Figure \ref{no-perm-a} shows the binding of the value 8 on a scale to 10 with the symbolic representation of "ball", which is random. In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
+		\label{no-perm}
+	\end{figure}
+	
+	This effect is due to the fact that circular convolution is based on Fourier transformations and the lack of frequencies present in encoded vectors becomes apparent in Fourier space as well. Figure \ref{fft} highlights this. All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation. In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and does not come close to resembling the original Gaussian. 
+	
+	\begin{figure}
+		\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
+		\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
+		\caption{Fourier space conversions of a Gaussian bell and a random vector.}
+		\label{fft}
+	\end{figure}
+	
+	This inconvenience is removed with the help of permutations. Depending on the size of the memory vectors used a fixed permutation is generated. Whenever a scalar is encoded the Gaussian bell is first sampled over the range, after which the sampled values swap places accordingly. As such the resulting vector will present lots of jumps in value, which have a significant impact on the Fourier space, as can be seen in figure \ref{perm-fft}.
+	
+	\begin{figure}
+		\includegraphics[width=\columnwidth]{img/scalar-perm-step-fft.png}
+		\caption{Plots on the effect of permuting a Gaussian bell, and the impact on Fourier space.}
+		\label{perm-fft}
+	\end{figure}
+	
+	Working with such a vector makes it possible to successfully probe for scalars and receive a Gaussian bell overlapped with some noise. All of this can be seen in figure \ref{perm}, which depicts the exact same operations as figure \ref{no-perm}, but using a permuted version of a Gaussian bell. The result in figure \ref{perm-b} clearly shows an according spike. This vector can be smoothed out, after which the peak can easily be identified and the initial scalar can be recovered.
+	
+	\begin{figure}
+		\begin{subfigure}{1\columnwidth}
+			\includegraphics[width=\columnwidth]{img/scalar-post-perm.png}
+			\caption{Binding}
+			\label{perm-a}
+		\end{subfigure}
+		\begin{subfigure}{1\columnwidth}
+			\includegraphics[width=\columnwidth]{img/scalar-post-perm-probe.png}
+			\caption{Probing}
+			\label{perm-b}
+		\end{subfigure}
+		\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian for value 8 on a scale to 10 with the symbolic representation of "ball", which is random. In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
+		\label{perm}
+	\end{figure}
+	
+	On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up a small issue. Adding multiple such bindings on top of each other would constantly increase the values in the resulting vector. Due to this, when probing, we would receive vectors which had the correct distance between their values, i.e. the correct "shape", but would be shifted on the Y-axis. This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n x_i = 0\), and is achieved with this simple operation:
+	
+	\[ \forall x_i \in x: x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|} \]
+	
+	\subsection{Coordinate encoder}
+	
+	\subsection{String encoder}
+	
+	\section{Properties of SHM}
+	
+	- you can't extract the items memorized, number of them, you can just query
+	- they are probabilistic
+	- you can modify them online (no separate learning/probing phases)
+	\subsection{Capacity}
+	\subsubsection{SHM size vs. number of items}
+	\subsubsection{Model of human forgetting}
+	\subsubsection{Model of intentional forgetting}
+	
+	\subsection{Fan-out effect - multiple probing outputs}
+	
+	\subsection{Limitations}
+	
+	- introducing problem of lookup (symbol grounding)
+	- solution using implicit encoding and decoding
+	
+	\section{Experiments}
+	
+	\subsection{Visual object classification}
+	- SIFT + label
+	\subsection{Localization and mapping}
+	- SIFT + location
+	\subsection{Holographic state machines (holographic controllers)}
+	- sensory\_data + current\_state + next state
+	\subsection{Reinforcement learning}
+	- sensory\_data + action + reward
+	\subsection{Language understanding}
+	- TensorFlow (role) + word = question answering
+	\subsection{Implicit inductive reasoning}
+	
+	\section{Conclusions}
+	We have introduced a mechanism for intrinsic symbol encoding/decoding for Holographic Reduced Representations. As a consequence, our approach eliminates the need for clean-up memories as they are described in literature. Instead, result of probing operation directly gives interpretable symbol, which can be decoded in constant computational time. In other words, time needed for encoding/decoding is completely ignorant of total number of symbols memorized, allowing memories that can store large corpus of different symbols.
+	A concrete biophysical evidence and theoretical model of implementation of convolution in brain is, unfortunately, still missing.
+	
+	% use section* for acknowledgment
+	\section*{Acknowledgment}
+	
+	% leaving this as is.
+	The authors would like to thank... Manchester developers. :slowclap:
+	
+	\include{bibliography}
+	
+	% that's all folks
 \end{document}
 
 
