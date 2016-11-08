@@ -330,7 +330,7 @@
 	% not capitalized unless they are the first or last word of the title.
 	% Linebreaks \\ can be used within to get better formatting as desired.
 	% Do not put math or special symbols in the title.
-	\title{Perceptual symbol grounding in \\holographic memories}
+	\title{Perceptual symbol grounding in \\Holographic memories}
 	
 	
 	% author names and affiliations
@@ -560,7 +560,7 @@ In these circumstances, when probing for a scalar, the vector received is in tur
 	\begin{figure}
 		\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
 		\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
-		\caption{Fourier space conversions of a Gaussian bell and a random vector.}
+		\caption{Fourier analysis of 1D symbols: radial basis kernel (top row) and same dimensional vector randomly sampled from normal distribution (bottom row). It is obvious that latter is uniformly spread across the whole vector, while the former is concentrated around 2 boundary values leading to increased interference between multiple items stored one over another (when added in Fourier space).}
 		\label{fft}
 	\end{figure}
 	
@@ -604,33 +604,85 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 	
 	\[ \forall x_i \in x: x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|} \]
 	
-	\subsection{Coordinate encoder}
+	\section{Properties of holographic memories}
 	
-	\subsection{String encoder}
+	Vector Symbolic Architectures in general have following properties:
+	\begin{itemize}
+		\item Number of items stored in a single memory vector is not known based only on it's content.
+		\item Existence of item in memory cannot be explicitly checked. The closest equivalent is probing the memory for item of interest and comparing similarity of decoding result to anything meaningful.
+		\item Chances of successful recall depend on the actual data stored.
+		\item Memories can be changed in online fashion. There is no need to recreate memories from scratch - symbols can be appended to or removed from (if presents) already existing memory vectors.
+	\end{itemize}
 	
-	\section{Properties of SHM}
-	
-	- you can't extract the items memorized, number of them, you can just query
-	- they are probabilistic
-	- you can modify them online (no separate learning/probing phases)
 	\subsection{Capacity}
-	\subsubsection{SHM size vs. number of items}
-	\subsubsection{Model of human forgetting}
-	\subsubsection{Model of intentional forgetting}
 	
-	\subsection{Fan-out effect - multiple probing outputs}
+	As done by Plate et. al. in original HRR paper\cite{Plate:1995:HolographicReducedRepresentations} we have tested memory capacity in terms of accuracy of successful recall for variable number of bound pairs. Results are show in figure \ref{fig:capacity}.
 	
-	\subsection{Limitations}
+		\begin{figure}[th!]
+			\center
+			\includegraphics[width=0.8\columnwidth]{img/capacity.png}
+			\caption{Memory capacity analysis for storing variable number of pair associations in a single memory vector. Different lines show vector length, while horizontal axis shows number of pairs and vertical axis accuracy of successful recall.}
+			\label{fig:capacity}
+		\end{figure}
 	
-	- introducing problem of lookup (symbol grounding)
-	- solution using implicit encoding and decoding
+	As we can see, a 512 element vector starts decreasing accuracy of recall after 10 pairs stored in a single memory block. A 4096 and 8192 element vectors can almost perfectly recall 20 associated pairs, which matches the results of Plate using lookup table and cleanup process. As we can see, newly introduced perceptual symbol grounding did not have significant effect on memory capacity.
 	
 	\section{Experiments}
 	
-	\subsection{Visual object classification}
-	- SIFT + label
+	\subsection{Visual short term memory and top-down attention model}
+	
+	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length N, sampled from normal distribution (figure \ref{fig:encoding-object}). Locations of object in image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
+	
+	
+	\begin{figure}[th!]
+		\center
+		\begin{subfigure}{0.8\columnwidth}
+			\includegraphics[width=\columnwidth]{img/map_original.jpg}
+			\caption{Original scene and set of detected objects}
+			\label{fig:object-detection}
+		\end{subfigure}
+		
+		\begin{subfigure}{0.45\columnwidth}
+			\center
+			\includegraphics[width=\linewidth]{img/coord_example_1.png}
+			\caption{Encoding of (x,y) location of an object}
+			\label{fig:encoding-coord}
+		\end{subfigure}
+		\begin{subfigure}{0.45\columnwidth}
+			\center
+			\includegraphics[width=\linewidth]{img/coord_example_2.png}
+			\caption{Encoding of an object ID as randomly sampled vector}
+			\label{fig:encoding-object}
+		\end{subfigure}
+		
+				\begin{subfigure}{0.8\columnwidth}
+					\center
+					\includegraphics[width=\linewidth]{img/coord_example_3.png}
+					\caption{Encoding of the complete visual scene, containing information about all 7 objects and their locations}
+					\label{fig:encoding-scene}
+				\end{subfigure}
+			
+			\begin{subfigure}{0.45\columnwidth}
+				\center
+				\includegraphics[width=\linewidth]{img/probe_for_mug.png}
+				\caption{Probing for "mug" returns location probability mug}
+				\label{fig:probing-single}
+			\end{subfigure}
+			\begin{subfigure}{0.45\columnwidth}
+				\center
+				\includegraphics[width=\linewidth]{img/probe_for_pen.png}
+				\caption{Probing for "pen" return mixture of Gaussians}
+				\label{fig:probing-double}
+			\end{subfigure}
+						
+		
+		\caption{Representation of visual scene in short term symbolic memory. }
+		\label{fig:visual-scene-exp}
+	\end{figure}
+	
 	\subsection{Localization and mapping}
-	- SIFT + location
+	- TBD
+	
 \subsection{Symbolic scripting (holographic controllers)}
 
 We have used our system to demonstrate a mechanism for encoding neural programs and processes through series of associated action, perception and actuator symbols. We call this mechanism for defining controllers using holographic memories "symbolic scripting".
@@ -672,12 +724,6 @@ The basic idea is centered around symbolic representations of all three parts in
 
 An example of this kind of symbolic script is given on figure \ref{fig:symbolic-scripting}. Memory encodes light following behavior.
 
-	\subsection{Reinforcement learning}
-	- sensory\_data + action + reward
-	\subsection{Language understanding}
-	- TensorFlow (role) + word = question answering
-	\subsection{Implicit inductive reasoning}
-	
 	\section{Conclusions}
 	We have introduced a mechanism for intrinsic symbol encoding/decoding for Holographic Reduced Representations.
 As a consequence, our approach eliminates the need for clean-up memories as they are described in literature.
