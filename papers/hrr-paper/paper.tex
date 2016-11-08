@@ -96,8 +96,6 @@
 %\usepackage[citestyle=numeric,style=numeric,backend=biber]{biblatex}
 \usepackage[
 	hyperref=true,
-	url=false,
-	isbn=false,
 	%citestyle=alphabetic,
 	citestyle=numeric,
 	%style=alphabetic,
@@ -105,10 +103,28 @@
 	sorting=none,
 	maxcitenames=3,
 	maxbibnames=100,
-	backref=true,
+	%backref=true,
 	backend=biber
 ]{biblatex}
 \usepackage[babel,german=quotes,english=american]{csquotes} 
+
+% disable unimportant stuff in bibliography
+\DeclareSourcemap{
+  \maps[datatype=bibtex, overwrite]{
+    \map{
+      \step[fieldset=language, null]
+      \step[fieldset=notes, null]
+      \step[fieldset=issn, null]
+      \step[fieldset=doi, null]
+      \step[fieldset=url, null]
+      \step[fieldset=eprint, null]
+      \step[fieldset=abstract, null]
+      \step[fieldset=pages, null]
+      \step[fieldset=address, null]
+      \step[fieldset=editors, null]
+    }
+  }
+}
 
 %TODO check 
 %\appto{\bibsetup}{\raggedright}
