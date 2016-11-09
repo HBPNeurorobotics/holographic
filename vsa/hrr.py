@@ -453,7 +453,8 @@ class HRR(VSA):
         else:
             xx = range(len(vect))
             plt.plot(xx, vect)
-        
+            
+        #fig.savefig('temp.png', transparent=True)
         plt.show()
 
 #    def decode(self):
