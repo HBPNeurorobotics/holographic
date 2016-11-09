@@ -609,7 +609,7 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 	Vector Symbolic Architectures in general have following properties:
 	\begin{itemize}
 		\item Number of items stored in a single memory vector is not known based only on it's content.
-		\item Existence of item in memory cannot be explicitly checked. The closest equivalent is probing the memory for item of interest and comparing similarity of decoding result to anything meaningful.
+		\item Existence of an item in memory cannot be explicitly verified. The closest equivalent is probing the memory for item of interest and comparing similarity of decoding result to anything meaningful.
 		\item Chances of successful recall depend on the actual data stored.
 		\item Memories can be changed in online fashion. There is no need to recreate memories from scratch - symbols can be appended to or removed from (if presents) already existing memory vectors.
 	\end{itemize}
@@ -658,14 +658,14 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 				\begin{subfigure}{0.8\columnwidth}
 					\center
 					\includegraphics[width=\linewidth]{img/coord_example_3.png}
-					\caption{Representation of the complete visual scene, containing information about all 7 objects and their locations}
+					\caption{Representation of the complete visual scene, containing information about all 7 objects and their locations scrambled together}
 					\label{fig:encoding-scene}
 				\end{subfigure}
 			
 			\begin{subfigure}{0.45\columnwidth}
 				\center
 				\includegraphics[width=\linewidth]{img/probe_for_mug.png}
-				\caption{Probing for "mug" returns location probability mug}
+				\caption{Probing for "mug" returns location probability for a mug}
 				\label{fig:probing-single}
 			\end{subfigure}
 			\begin{subfigure}{0.45\columnwidth}
