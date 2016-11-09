@@ -128,7 +128,7 @@ class HRR(VSA):
             print("Output:")
             self.plot(memory)
         
-        return self.decode(memory, self.valid_range)
+        return self.decode(memory)
     
     ## Overload of the "**" operand.
     #
@@ -437,12 +437,18 @@ class HRR(VSA):
             assert(len(vect.shape) != 3)
             if (len(vect.shape) == 1):
                 vect = helpers.reShape(vect,2)
-            X = np.arange(0,len(vect),1)
-            Y = np.arange(0,len(vect[0]),1)
+            X = np.arange(-len(vect)/2,len(vect)/2,1)
+            Y = np.arange(-len(vect[0])/2,len(vect[0])/2,1)
             X, Y = np.meshgrid(X, Y)
             ax = fig.gca(projection='3d')
             surf = ax.plot_surface(X, Y, vect, rstride=1, cstride=1, cmap='coolwarm', linewidth=0, antialiased=True)
             ax.set_zlim(np.min(vect)/3, 1.1*np.max(vect))
+            ax.set_xlabel('Y Index')
+            ax.set_ylabel('X Index')
+            ax.set_zlabel('Encoded Value')
+            ax.set_xlim3d(-len(vect)/2,len(vect)/2)
+            ax.set_ylim3d(-len(vect[0])/2,len(vect[0])/2)
+            ax.azim = 200
             fig.colorbar(surf, shrink=0.5, aspect=5)
         else:
             xx = range(len(vect))

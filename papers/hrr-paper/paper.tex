@@ -96,8 +96,6 @@
 %\usepackage[citestyle=numeric,style=numeric,backend=biber]{biblatex}
 \usepackage[
 	hyperref=true,
-	url=false,
-	isbn=false,
 	%citestyle=alphabetic,
 	citestyle=numeric,
 	%style=alphabetic,
@@ -105,10 +103,28 @@
 	sorting=none,
 	maxcitenames=3,
 	maxbibnames=100,
-	backref=true,
+	%backref=true,
 	backend=biber
 ]{biblatex}
 \usepackage[babel,german=quotes,english=american]{csquotes} 
+
+% disable unimportant stuff in bibliography
+\DeclareSourcemap{
+  \maps[datatype=bibtex, overwrite]{
+    \map{
+      \step[fieldset=language, null]
+      \step[fieldset=notes, null]
+      \step[fieldset=issn, null]
+      \step[fieldset=doi, null]
+      \step[fieldset=url, null]
+      \step[fieldset=eprint, null]
+      \step[fieldset=abstract, null]
+      \step[fieldset=pages, null]
+      \step[fieldset=address, null]
+      \step[fieldset=editors, null]
+    }
+  }
+}
 
 %TODO check 
 %\appto{\bibsetup}{\raggedright}
@@ -416,11 +432,11 @@ As described in \cite{Levy:2008:VectorSymbolicArchitectures}, every VSA has to i
 	
 	In addition, every VSA can be considered as a lossy compression technique, since binary operations on N-element vectors return N-element vectors as well.
 	
-	Depending of the way these three operations are implemented we can distinguish several popular VSAs, such as Holographic Reduced Representations \cite{Plate:1995:HolographicReducedRepresentations}, Circular HRRs \cite{circular-hrr}, Binary Spatter Codes \cite{Kanerva:1994:SpatterCodeEncoding}, Holographic Graph Neurons \cite{Kleyko:2016:HolographicGraphNeuron}, Geometric Algebras \cite{Patyk-Lonska:2011:DistributedRepresentationsBased} and Random Permutations.
+	Depending of the way these three operations are implemented we can distinguish several popular VSAs, such as Holographic Reduced Representations \cite{Plate:1995:HolographicReducedRepresentations}, Circular HRRs \cite{DeVine:2010:Semanticoscillations}, Binary Spatter Codes \cite{Kanerva:1994:SpatterCodeEncoding}, Holographic Graph Neurons \cite{Kleyko:2016:HolographicGraphNeuron}, Geometric Algebras \cite{Patyk-Lonska:2011:DistributedRepresentationsBased} and Random Permutations \cite{Recchia:2015:EncodingSequentialInformation}.
 The most widely used ones are HRRs and they are briefly explained in section \ref{sec:hrr}.
-Authors in \cite{learning-language} have used them to solve word embedding problem for extremely large dataset by replacing computationally expensive big matrix factorization with iterative estimation algorithm based on HRRs.
+Authors in \cite{Golosio:2015:CognitiveNeuralArchitecture} have used them to solve word embedding problem for extremely large dataset by replacing computationally expensive big matrix factorization with iterative estimation algorithm based on HRRs.
 Some of the other work is centered around pattern recognition \cite{Kleyko:2016:PatternRecognitionVector}, functional large-scale cognitive architecture models \cite{Eliasmith:2012:LargeScaleModel} and representing scene structure \cite{scene-structure}.
-Some preliminary theoretical assumptions have been made about ability to use them as agent controllers\cite{embedding-behaviour}, where a symbolic program is represented with a set of combined symbolic actions associated with actuator symbols and symbolic sensing.
+Some preliminary theoretical assumptions have been made about ability to use them as agent controllers \cite{Levy:2013:LearningBehaviorHierarchies}, where a symbolic program is represented with a set of combined symbolic actions associated with actuator symbols and symbolic sensing.
 	
 	
 	\begin{figure}
@@ -616,7 +632,7 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 	
 	\subsection{Capacity}
 	
-	As done by Plate et. al. in original HRR paper\cite{Plate:1995:HolographicReducedRepresentations} we have tested memory capacity in terms of accuracy of successful recall for variable number of bound pairs. Results are show in figure \ref{fig:capacity}.
+	As done by Plate et. al. in original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested memory capacity in terms of accuracy of successful recall for variable number of bound pairs. Results are show in figure \ref{fig:capacity}.
 	
 		\begin{figure}[th!]
 			\center
@@ -679,6 +695,16 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 		\caption{Representation of visual scene in short term symbolic memory. }
 		\label{fig:visual-scene-exp}
 	\end{figure}
+	
+	FOR BAR CHART:
+	
+	Probe at (19,-26.75):
+	
+	[('keys', 0.22827929349034107), ('Watch', -0.018549398363469777), ('mug', -0.025309361445942102), ('wallet', -0.034187368731921304), ('pen', 0.2098596398998358), ('mouse', -0.023035819302988644)]
+	
+	Probe at (-13,21.5):
+	
+[('keys', -0.020032173214673016), ('Watch', -0.034034204029029354), ('mug', 0.03443254630997427), ('wallet', 0.16100011074269183), ('pen', 0.089801145874187763), ('mouse', -0.027742071303527464)]
 	
 	\subsection{Localization and mapping}
 	- TBD

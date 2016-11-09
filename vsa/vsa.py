@@ -78,8 +78,7 @@ class VSA:
             if VSA.verbose :
                 print("Distance from {} is {}".format(key,dist))
       
-            if dist > self.distance_threshold:
-                result.append((key, dist))
+            result.append((key, dist))
                
         return result 
     
