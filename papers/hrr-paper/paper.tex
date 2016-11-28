@@ -696,12 +696,18 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 		
 	\end{figure}
 	
-	Probe at (19,-26.75):
+	Due to the noisy nature of probing given by the slight loss of information in the binding process each symbol may have some amount of similarity to whatever other symbol it is compared to. However, even though this is the case, the similarity measure of bound symbols is consistently higher and can be clearly distinguished from others. Chart \ref{pgf:bar1} represents the result of probing at (19, -26.75), which is somewhere in between the keys and the red pen, as seen in figure \ref{fig:object-detection}.
 	
-	    \begin{tikzpicture}
+	 As we can see all symbols that are nowhere near the position present similarities well below 5 \%, while both close matches scored over 20 \%. Spot on probes may even attain values of over 50 \%. The example in chart \ref{pgf:bar2} is for a probe at(-13, 21.5), which is further away from the center of an object region. But even though the dark pen and the wallet are further apart the result of probing still yields distinctly higher similarities for them as opposed to objects further away. 
+	
+	\begin{figure}[th!]
+	\center
+		\begin{subfigure}{0.49\columnwidth}
+	    \begin{tikzpicture}[yscale=0.5, xscale=0.5]
         \begin{axis}[
             symbolic x coords={keys, mouse, mug, pen, wallet, watch},
-            xtick=data
+            xlabel = Symbol,
+            ylabel = Similarity
           ]
             \addplot[ybar,fill=blue] coordinates {
                 (keys,   0.22827929349034107)
@@ -713,12 +719,15 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
             };
         \end{axis}
     \end{tikzpicture}
-	Probe at (-13,21.5):
-	
-	    \begin{tikzpicture}
+        \caption{Probe at (19, -26.75).}
+        \label{pgf:bar1}
+    \end{subfigure}
+		\begin{subfigure}{0.49\columnwidth}
+    	    \begin{tikzpicture}[yscale=0.5, xscale=0.5]
         \begin{axis}[
             symbolic x coords={keys, mouse, mug, pen, wallet, watch},
-            xtick=data
+            xlabel = Symbol,
+            ylabel = Similarity
           ]
             \addplot[ybar,fill=blue] coordinates {
                 (keys,   0.020032173214673016)
@@ -730,6 +739,13 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
             };
         \end{axis}
     \end{tikzpicture}	
+        \caption{Probe at (-13, 21.5).}
+        \label{pgf:bar2}
+    \end{subfigure}
+    \end{figure}
+
+	
+
 			
 		\label{fig:visual-scene-exp}
 
