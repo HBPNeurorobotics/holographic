@@ -391,7 +391,7 @@
 	% As a general rule, do not put math, special symbols or citations
 	% in the abstract
 	\begin{abstract}
-		Vector Symbolic Architectures (VSA) define a set of operations for storage (compression), manipulation and retrieval of symbolic concepts, represented as fixed-length vectors from ${\rm I\!R}^N$.
+		Vector Symbolic Architectures (VSA) define a set of operations for association, (compressed) storage, manipulation and retrieval of symbolic concepts, represented as fixed-length vectors from ${\rm I\!R}^N$.
 A specific instance of VSA, Holographic Reduced Representations (HRR), has proven to exhibit properties similar to human short-term memory and is, as such, interesting for computational modeling.
 		
 		In this paper we extend HRR approach by introducing implicit, topology-preserving, encoding/decoding procedure using radial basis functions.
@@ -442,7 +442,7 @@ Some preliminary theoretical assumptions have been made about ability to use the
 	\begin{figure}
 		\center
 		\includegraphics[width=0.9\columnwidth]{img/probe_for_pen_w_img.png}
-		\caption{In-memory representation of top-down attention shift for visual scene short-term memory. Result shows attention distribution for a symbol "pen".}
+		\caption{In-memory representation of top-down attention shift for visual scene short-term memory. Result shows attention distribution for a symbol "pen". In probabilistic sense it can be understood as probability of pen being at a certain position.}
 	\end{figure}
 	
 	
@@ -494,7 +494,7 @@ Resulting vector will be composition of something that is very similar to $red$ 
 	\begin{figure}
 		\center
 		\includegraphics[width=0.9\columnwidth]{img/scalar-probe.png}
-		\caption{Result of $(80 \otimes A) \oslash A$ for HRR from}
+		\caption{Result of $(80 \otimes A) \oslash A$ for a 2000-element HRR encoding values from range [0,100].}
 	\end{figure}
 	
 	Process of converting noisy result of probing into the closest know symbol is called \textbf{clean-up procedure}.
@@ -509,13 +509,23 @@ Straightforward way of implementing clean-up memory is using a lookup table, whi
 	z_i=\sum_{k=0}^{N}{x_iy_{i-k}} //TODO
 	\end{equation}
 	
-	where $z$ is the result of convolution, $x$ and $y$ are operands of size $N$.
+	where $z$ is the result of convolution, $x$ and $y$ are symbolic vectors of size $N$.
 Superposition is implemented as simple element-wise addition.
-Probing is implemented using inverse of circular convolution - circular correlation:
+Probing is implemented using inverse of circular convolution (circular correlation):
 	
 	\begin{equation}
 	y_i=\sum_{k=0}^{m}{x_iy_{i-k}} //TODO
 	\end{equation} 
+	
+	In order to use various types of inputs with HRRs it is necessary to encode them in vectors of fixed size.
+	The basic approach is to pick these vectors randomly once for each symbol and maintain these pairs in a separate data structure.
+	This will consequently increase space complexity and may become infeasible, depending on the type of input used. For example, handling scalar symbolic encoding can be done by discretization of the whole input range into bins and assigning a random vector to each discrete value. In order to decode a specific symbolic vector, one must find maximum similarity element from symbol table, which requires O(M), where M is the number of symbols known to the system.
+	
+	Usual way of computing similarity is cosine distance:
+	
+	(INSERT FORMULA)
+	
+	This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding. These will be discussed in the following section.
 	
 	- Implementation and building up of HRRs (similarity measures and cosine, lookup table...)
 	
@@ -525,12 +535,10 @@ Probing is implemented using inverse of circular convolution - circular correlat
 	- necessity (benefit of having it, querying smth that was not there)
 	- implementation
 	
-	In order to use various types of inputs with HRRs it is necessary to encode them in vectors of fixed size.
-The basic approach is to generate these vectors randomly for each distinct input and store these pairs in a map.
-This will consequently take its toll on the space complexity and may become infeasible, depending on the type of input used.
-The following section presents ways to encode values in a deterministic manner, removing the need to store these, as long as decoding is robust against noise. 
+
+ 
 	
-	\subsection{Scalars}
+	\subsection{Encoding scalar symbol as p.d.f.}
 	
 	Encoding scalars is a good example for the necessity of preserving topology.
 Depending on what dataset is in use it may be required to store mappings for any number of values.
@@ -742,11 +750,12 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
         \caption{Probe at (-13, 21.5).}
         \label{pgf:bar2}
     \end{subfigure}
+    
+    			\caption{Test}
     \end{figure}
 
 	
 
-			
 		\label{fig:visual-scene-exp}
 
 	
