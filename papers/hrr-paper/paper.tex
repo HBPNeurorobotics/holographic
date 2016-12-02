@@ -506,7 +506,7 @@ Straightforward way of implementing clean-up memory is using a lookup table, whi
 	Holographic Reduced Representations are VSAs which implement operation of binding as circular convolution:
 	
 	\begin{equation}
-	z_i=\sum_{k=0}^{N}{x_iy_{i-k}} //TODO
+	z_i=\sum_{j=0}^{N-1}{x_jy_{i-j}} 
 	\end{equation}
 	
 	where $z$ is the result of convolution, $x$ and $y$ are symbolic vectors of size $N$.
@@ -514,16 +514,18 @@ Superposition is implemented as simple element-wise addition.
 Probing is implemented using inverse of circular convolution (circular correlation):
 	
 	\begin{equation}
-	y_i=\sum_{k=0}^{m}{x_iy_{i-k}} //TODO
+	y_i=\sum_{j=0}^{N-1}{x_jz_{j+1}} 
 	\end{equation} 
 	
 	In order to use various types of inputs with HRRs it is necessary to encode them in vectors of fixed size.
 	The basic approach is to pick these vectors randomly once for each symbol and maintain these pairs in a separate data structure.
 	This will consequently increase space complexity and may become infeasible, depending on the type of input used. For example, handling scalar symbolic encoding can be done by discretization of the whole input range into bins and assigning a random vector to each discrete value. In order to decode a specific symbolic vector, one must find maximum similarity element from symbol table, which requires O(M), where M is the number of symbols known to the system.
 	
-	Usual way of computing similarity is cosine distance:
+	Usual way of computing similarity is cosine distance, which for two vectors \pmb x and \pmb y is calculated as follows:
 	
-	(INSERT FORMULA)
+	\begin{equation}
+cos(\pmb x, \pmb y) = \frac {\pmb x \cdot \pmb y}{||\pmb x|| \cdot ||\pmb y||}
+	\end{equation} 
 	
 	This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding. These will be discussed in the following section.
 	
