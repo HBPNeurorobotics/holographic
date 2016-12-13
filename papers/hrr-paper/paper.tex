@@ -403,7 +403,7 @@
 		topology-preserving, encoding/decoding procedures using radial
 		basis functions.
 		This involves randomly chosen permutations for encoding and
-		their corresponding inverse for decoding, which is necessary
+		their corresponding inverse for decoding. These are necessary
 		for the uniform distribution of signals in Fourier space where
 		embedding takes place.
 		These novel encoding schemes, together with the extended operation
@@ -539,16 +539,23 @@ A straightforward way of implementing clean-up memory is using a lookup table, w
 	Holographic Reduced Representations are VSAs which implement the operation of binding as circular convolution:
 	
 	\begin{equation}
-	z_i=\sum_{j=0}^{N-1}{x_jy_{i-j}} 
+	a_i=\sum_{j=0}^{N-1}{x_j y_{i-j}} 
 	\end{equation}
 	
-	where $z$ is the result of convolution, and $x$ and $y$ are symbolic vectors of size $N$.
-Superposition is implemented as a simple element-wise vector addition.
-Probing is implemented using inverse of circular convolution (circular correlation):
+	where \pmb a is the result of convolution, and \pmb x and \pmb y are symbolic vectors of size $N$.
+Superposition is implemented as a simple element-wise vector addition. Taking the result of the previously displayed convolution superposing it with some vector \pmb b is done as follows:
+
+	\begin{equation}
+	m_i = a_i + b_i
+	\end{equation}
+
+The resulting vector of the superposition operation \pmb m can then be probed by using the inverse of circular convolution, which is circular correlation:
 	
 	\begin{equation}
-	y_i=\sum_{j=0}^{N-1}{x_jz_{j+1}} 
+	y'_i=\sum_{j=0}^{N-1}{x_jm_{j+1}} 
 	\end{equation} 
+
+Following the previous formulas as a series of operations the vector \pmb y' will be very similar to vector \pmb y, but not entirely the same due to the noisy influence of vector \pmb b.
 		
 	- Implementation and building up of HRRs (similarity measures and cosine, lookup table...)
 	
@@ -561,24 +568,24 @@ Probing is implemented using inverse of circular convolution (circular correlati
 
  
 	
-	\subsection{Encoding scalar symbol as p.d.f.}
+	\subsection{Encoding scalar symbol as radial basis functions}
 	
 	Encoding scalars is a good example for the necessity of preserving topology.
-Depending on what dataset is in use it may be required to store mappings for any number of values.
-Furthermore, using random encoding, there would be no similarity in neighbouring values.
+Depending on what dataset is in use it may be required to store mappings for any number of values, which can drastically increase space requirements.
+Furthermore, using a separate random encoding for each scalar, regardless of whether they are very close to each other or not, there would be no similarity in neighbouring values.
 As such the following probe will yield no result:
 	
 	\begin{equation}
-	(10000 \otimes A) \oslash 10001
+	(10000 \otimes a) \oslash 10001
 	\end{equation}
 	
-	To facilitate these two qualities scalar encoding can be achieved with the help of Gaussian distributions.
-The encoded vector will simply represent a Gaussian bell sampled over a fixed input range.
+	To facilitate these two qualities scalar encoding can be achieved with the help of radial basis functions. Among these functions one of the options are Gaussian distributions.
+The encoded vector can simply represent a Gaussian sampled over a fixed input range.
 Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what the result of binding it to a generic random vector is.
-With this result it becomes obvious that lots of information is lost.
+With this result it becomes obvious that unfortunately lots of information is lost.
 If this result is probed with the same random vector used in binding something similar to the initial Gaussian bell is expected.
 And yet figure \ref{no-perm-b} presents no such outcome.
-While there is a peak at the initial value lots of other peaks also arise, making it impossible to detect which one is correct.
+While there is a peak at the initial value which is probed for lots of other peaks also arise, making it impossible to detect which one is correct.
 
 	
 	\begin{figure}
@@ -600,8 +607,8 @@ In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a G
 	
 	This effect is due to the fact that circular convolution is based on Fourier transformations and the lack of frequencies present in encoded vectors becomes apparent in Fourier space as well.
 Figure \ref{fft} highlights this.
-All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation.
-In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and does not come close to resembling the original Gaussian.
+All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation, resulting in a high loss.
+In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and will not come close to resembling the original Gaussian distribution.
 
 	
 	\begin{figure}
@@ -612,8 +619,8 @@ In these circumstances, when probing for a scalar, the vector received is in tur
 	\end{figure}
 	
 	This inconvenience is removed with the help of permutations.
-Depending on the size of the memory vectors used a fixed permutation is generated.
-Whenever a scalar is encoded the Gaussian bell is first sampled over the range, after which the sampled values swap places accordingly.
+Depending on the size of the memory vectors used a fixed permutation is generated once.
+Whenever a scalar is encoded the Gaussian distribution is first sampled over the given range, after which the sampled values swap places accordingly.
 As such the resulting vector will present lots of jumps in value, which have a significant impact on the Fourier space, as can be seen in figure \ref{perm-fft}.
 	
 	\begin{figure}
@@ -623,8 +630,8 @@ As such the resulting vector will present lots of jumps in value, which have a s
 	\end{figure}
 	
 	Working with such a vector makes it possible to successfully probe for scalars and receive a Gaussian bell overlapped with some noise.
-All of this can be seen in figure \ref{perm}, which depicts the exact same operations as figure \ref{no-perm}, but using a permuted version of a Gaussian bell.
-The result in figure \ref{perm-b} clearly shows an according spike.
+All of this can be seen in figure \ref{perm}, which depicts the exact same operations as figure \ref{no-perm}, but using a permuted version of a Gaussian distribution.
+The result in figure \ref{perm-b} clearly shows a spike at the expected spot in the sample range.
 This vector can be smoothed out, after which the peak can easily be identified and the initial scalar can be recovered.
 	
 	\begin{figure}
@@ -643,7 +650,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 		\label{perm}
 	\end{figure}
 	
-	On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up a small issue.
+	On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up an issue.
 Adding multiple such bindings on top of each other would constantly increase the values in the resulting vector.
 Due to this, when probing, we would receive vectors which had the correct distance between their values, i.e.
 the correct "shape", but would be shifted on the Y-axis.
@@ -653,17 +660,17 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 	
 	\section{Properties of holographic memories}
 	
-	Vector Symbolic Architectures in general have following properties:
+	Vector Symbolic Architectures in general have the following properties:
 	\begin{itemize}
-		\item Number of items stored in a single memory vector is not known based only on it's content.
-		\item Existence of an item in memory cannot be explicitly checked. The closest equivalent is probing the memory for item of interest and comparing similarity of decoding result to anything meaningful.
-		\item Chances of successful recall depend on the actual data stored.
-		\item Memories can be changed in online fashion. There is no need to recreate memories from scratch - symbols can be appended to or removed from (if presents) already existing memory vectors.
+		\item The number of items stored in a single memory vector is not known based solely on it's content.
+		\item Existence of an item in memory cannot be checked explicitly. The closest equivalent is to probe the memory for the item of interest and to compare the similarity of the decoded result to anything meaningful. Even then it could be that the result of probing for anything might still require to be probed by a further symbol to retrieve the sought out item.
+		\item Chances of successful recall depend on the actual stored data.
+		\item Memories can be changed in an online fashion. There is no need to recreate memories from scratch - symbols can be appended to or removed from already existing memory vectors if present.
 	\end{itemize}
 	
 	\subsection{Capacity}
 	
-	As done by Plate et. al. in original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested memory capacity in terms of accuracy of successful recall for variable number of bound pairs. Results are show in figure \ref{fig:capacity}.
+	Just as Plate has done in the original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested the memory capacity in terms of accuracy of successful recall for variable number of bound pairs. Results are show in figure \ref{fig:capacity}.
 	
 		\begin{figure}[th!]
 			\center
@@ -672,7 +679,7 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 			\label{fig:capacity}
 		\end{figure}
 	
-	As we can see, a 512 element vector starts decreasing accuracy of recall after 10 pairs stored in a single memory block. A 4096 and 8192 element vectors can almost perfectly recall 20 associated pairs, which matches the results of Plate using lookup table and cleanup process. As we can see, newly introduced perceptual symbol grounding did not have significant effect on memory capacity.
+	As we can see, a 512 element vector starts decreasing accuracy of recall after 10 pairs stored in a single memory block. A 4096 and 8192 element vectors can almost perfectly recall 20 associated pairs, which matches the results of Plate using a lookup table and a clean-up process. As we can see, newly introduced perceptual symbol grounding did not have a significant effect on memory capacity.
 	
 	\section{Experiments}
 	\label{sec:experiments}
