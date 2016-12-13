@@ -391,16 +391,34 @@
 	% As a general rule, do not put math, special symbols or citations
 	% in the abstract
 	\begin{abstract}
-		Vector Symbolic Architectures (VSA) define a set of operations for association, (compressed) storage, manipulation and retrieval of symbolic concepts, represented as fixed-length vectors from ${\rm I\!R}^N$.
-A specific instance of VSA, Holographic Reduced Representations (HRR), has proven to exhibit properties similar to human short-term memory and is, as such, interesting for computational modelling.
-		
-		In this paper we extend the HRR approach by introducing implicit, topology-preserving, encoding/decoding procedure using radial basis functions.
-Extended approach involves randomly chosen permutation (for encoding) and its inverse (for decoding), necessary for uniform distribution of signal in Fourier space in which embedding takes place.
-These novel encoding schemes, together with extended operation pipeline, play the role of so called clean-up modules after memory retrieval (e.g. self-organizing maps).
-Effectively, encoding implicitly represents the symbol, so no further lookup is needed.
-		
-		We show that this newly introduced encoding scheme didn't have a negative impact on memory capacity in comparison with the original author's capacity benchmark.
-We also test our memories in three different robotics tasks: mapping and recall of an area by a mobile agent, top-down visual attention shift and state machine scripting (holographic controllers). 
+		Vector Symbolic Architectures (VSAs) define a set of operations
+		for association, (compressed) storage, manipulation and retrieval
+		of symbolic concepts, represented as fixed-length vectors in
+		${\rm I\!R}^N$.
+		A subset of VSAs, Holographic Reduced Representations (HRRs),
+		have proven to exhibit properties similar to human short-term
+		memory and are, as such, interesting for computational modeling.
+
+		In this paper we extend the HRR approach by introducing implicit,
+		topology-preserving, encoding/decoding procedures using radial
+		basis functions.
+		This involves randomly chosen permutations for encoding and
+		their corresponding inverse for decoding, which is necessary
+		for the uniform distribution of signals in Fourier space where
+		embedding takes place.
+		These novel encoding schemes, together with the extended operation
+		pipeline, are akin to so-called \emph{clean-up modules after memory
+		retrieval} (e.g., self-organizing maps). Effectively, encoding
+		implicitly represents the symbol, so no further lookup is needed.
+
+		We show that our encoding scheme does not have a negative impact
+		on memory capacity in comparison to the original capacity
+		benchmark for HRRs by Plate
+		\cite{Plate:1995:HolographicReducedRepresentations}.
+		We also evaluate our memories in three different robotics tasks:
+		mapping and recall of an area by a mobile agent, top-down visual
+		attention shift and state machine scripting (holographic
+		controllers).
 	\end{abstract}
 	
 	% no keywords
