@@ -84,8 +84,8 @@
 % \ifCLASSINFOpdf conditional that works the same way.
 % When switching from latex to pdflatex and vice-versa, the compiler may
 % have to be run twice to clear warning/error messages.
-
-
+\usepackage{algorithm}
+\usepackage{algpseudocode} 
 \usepackage{subcaption}
 
 
@@ -649,6 +649,34 @@ This vector can be smoothed out, after which the peak can easily be identified a
 In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
 		\label{perm}
 	\end{figure}
+	
+	Algorithms 1 and 2 show, respectively, pseudo code for pipeline before and after the suggested modification are introduced.
+	
+	\begin{algorithm}
+		\caption{Original pipeline}
+	\begin{algorithmic}[1]
+		\If {$i\geq maxval$}
+		\State $i\gets 0$
+		\Else
+		\If {$i+k\leq maxval$}
+		\State $i\gets i+k$
+		\EndIf
+		\EndIf
+		\end{algorithmic}
+	\end{algorithm}
+	
+		\begin{algorithm}
+			\caption{Proposed pipeline}
+			\begin{algorithmic}[1]
+				\If {$i\geq maxval$}
+				\State $i\gets 0$
+				\Else
+				\If {$i+k\leq maxval$}
+				\State $i\gets i+k$
+				\EndIf
+				\EndIf
+			\end{algorithmic}
+		\end{algorithm}
 	
 	On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up an issue.
 Adding multiple such bindings on top of each other would constantly increase the values in the resulting vector.
