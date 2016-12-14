@@ -654,29 +654,53 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	
 	\begin{algorithm}
 		\caption{Original pipeline}
-	\begin{algorithmic}[1]
-		\If {$i\geq maxval$}
-		\State $i\gets 0$
-		\Else
-		\If {$i+k\leq maxval$}
-		\State $i\gets i+k$
-		\EndIf
-		\EndIf
+		\begin{algorithmic}[1]
+			\ForAll{$symbol$}
+			\State $t_{symbol} \gets chooseRandomVector()$
+			\EndFor
+			\State $m \gets initEmptyMemory()$
+			\ForAll{$(symbol_1, symbol_2)$}
+			\State $enc_1 \gets FFT(t_{symbol_1})$
+			\State $enc_2 \gets FFT(t_{symbol_2})$
+			\State $m \gets m + enc_1 \otimes enc_2$
+			\EndFor		
+			\Function{ProbeMemory}{memory, operand}
+			\State $result \gets IFFT(memory \oslash operand)$
+			\ForAll{$symbol$}
+			\State $s \gets cosineSimilarity(t_{symbol}, result)$
+			\If {$s \geq cleanResultSimilarity$}
+			\State $cleanResultSimilarity \gets s$
+			\State $cleanResult \gets t_{symbol}$
+			\EndIf
+			\EndFor \\
+			\Return $cleanResult$
+			\EndFunction
 		\end{algorithmic}
 	\end{algorithm}
 	
-		\begin{algorithm}
-			\caption{Proposed pipeline}
-			\begin{algorithmic}[1]
-				\If {$i\geq maxval$}
-				\State $i\gets 0$
-				\Else
-				\If {$i+k\leq maxval$}
-				\State $i\gets i+k$
-				\EndIf
-				\EndIf
-			\end{algorithmic}
-		\end{algorithm}
+	
+	Lines 1-3 assign a random vector representation to each symbol known to the system prior to any other operations. This lookup table is stored in array $t$. Lines 4-9 initialize the memory $m$ with arbitrary amount of pairs of associated scalars. Function $ProbeMemory(memory, operand)$ returns symbol associated with provided $operand$. Line 11 performs circular correlation and stores noisy result of unbinding in $s$. Lines 12-18 loop through the whole lookup table and find the maximum similarity vector to $s$.
+		
+		In contrast, Algorithm 2 shows pipeline with proposed changes. First line chooses a fixed random permutation of $N$ elements used throughout the whole process. It can bee seen that there is no initial loop to assign symbolic representations to all symbols. They are, instead, constructed according to need using function $enc(value, N)$, which returns discrete sampled normal distribution vector of N elements, centered around $value$. This perfectly sampled normal distribution is permuted using permutation $P$ in lines 4 and 5, so its frequency representation contains uniform spread over the whole spectrum, as explained earlier in this chapter. Probing operation consists of applying inverse permutation $P^{-1}$ after IFFT (line 9). Since this gives a noisy version of initial normal distribution (shown in figure \ref{perm-b}), the only thing that needs to be done is to identify the mean of the distribution. Complexity of this operation is linear w.r.t. length of the vector $N$, while in case of Algorithm 1 it is linear w.r.t. to number of symbols stored in the lookup table.
+		
+	\begin{algorithm}
+		\caption{Modified pipeline}
+		\begin{algorithmic}[1]
+			\State $P \gets chooseRandomPermutation(N)$
+			\State $m \gets initEmptyMemory()$
+			\ForAll{$(symbol_1, symbol_2)$}
+			\State $enc_1 \gets FFT(permute(enc(symbol_1, N), P))$
+			\State $enc_2 \gets FFT(permute(enc(symbol_2, N), P))$
+			\State $m \gets m + enc_1 \otimes enc_2$
+			\EndFor	
+			\Function{ProbeMemory}{memory, operand}
+			\State $r \gets permute(IFFT(memory \oslash operand), P^{-1})$
+			\State $cleanResult \gets argmax(r)$
+			
+			\Return $cleanResult$
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
 	
 	On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up an issue.
 Adding multiple such bindings on top of each other would constantly increase the values in the resulting vector.
