@@ -177,7 +177,6 @@ def smoothWork(x,window_len=100,window='hanning'):
     else:
         w=eval('np.'+window+'(window_len)')
     y = np.convolve(w/w.sum(),s,mode='valid')
-    y = y[(window_len/2-1):-(window_len/2)]
-    
+    y = y[(window_len/2-1):(window_len/2-1)+l]
     assert(len(y) == l)
     return y

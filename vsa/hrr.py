@@ -27,7 +27,7 @@ class HRR(VSA):
     peak_min = 0                    # Absolute value used to detect Gaussian peaks
     peak_min_ratio =  10            # Minimum factor by which a gaussian peak needs be larger than the average of noise.
     window_ratio = 50		        # Ratio by which window length for smoothing is divided
-    valid_range = [0,100]           # Standard valid range for scalar or coordinate encoding
+    valid_range = zip([0],[100])    # Standard valid range for scalar or coordinate encoding
     
     ## The constructor.
     #
@@ -203,6 +203,8 @@ class HRR(VSA):
             decode_range = self.valid_range
         if decode_range is None:
             raise ValueError("Decoding scalar values requires valid range (valid_range or decode_range parameter)")
+               
+        
                 
         assert(len(decode_range) == dim)
                 
@@ -272,7 +274,7 @@ class HRR(VSA):
             result = np.empty(self.size, dtype=float)
          
             if isinstance(input_value, float) or isinstance(input_value, numbers.Integral):
-                result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size, encode_range)))
+                result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size, encode_range[0])))
             elif isinstance(input_value, (frozenset, list, np.ndarray, set, tuple)):
                 result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
             else:    
