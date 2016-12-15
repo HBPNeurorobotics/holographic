@@ -415,8 +415,7 @@
 		on memory capacity in comparison to the original capacity
 		benchmark for HRRs by Plate
 		\cite{Plate:1995:HolographicReducedRepresentations}.
-		We also evaluate our memories in three different robotics tasks:
-		mapping and recall of an area by a mobile agent, top-down visual
+		We also evaluate our memories in different robotics tasks: top-down visual
 		attention shift and state machine scripting (holographic
 		controllers).
 	\end{abstract}
@@ -536,27 +535,39 @@ A straightforward way of implementing clean-up memory is using a lookup table, w
 	\subsection{Holographic reduced representations}
 	\label{sec:hrr}
 	
-	Holographic Reduced Representations are VSAs which implement the operation of binding as circular convolution:
+	Holographic Reduced Representations are VSAs which implement the operation of binding as circular convolution. An option to calculating this is with the help of discrete Fast Fourier Transformations, in short FFTs. Taking $f(x)$ to describe an FFT, with $f^{-1}(x)$ as its inverse, circular convolution can be calculated as follows:
 	
 	\begin{equation}
-	a_i=\sum_{j=0}^{N-1}{x_j y_{i-j}} 
+	\pmb a = f^{-1}(f(\pmb x) * f(\pmb y))
 	\end{equation}
 	
 	where \pmb a is the result of convolution, and \pmb x and \pmb y are symbolic vectors of size $N$.
-Superposition is implemented as a simple element-wise vector addition. Taking the result of the previously displayed convolution superposing it with some vector \pmb b is done as follows:
+Superposition is implemented as a simple element-wise vector addition. Taking the result of the previously displayed convolution and superposing it with some vector \pmb b is done as follows:
 
 	\begin{equation}
-	m_i = a_i + b_i
+	\pmb m = \pmb a + \pmb b
 	\end{equation}
 
-The resulting vector of the superposition operation \pmb m can then be probed by using the inverse of circular convolution, which is circular correlation:
+The resulting vector of the superposition operation \pmb m can then be probed by using the inverse of circular convolution, which is circular correlation. Plainly put probing can be viewed as binding with the "inverse" of a vector in Fourier space:
 	
 	\begin{equation}
-	y'_i=\sum_{j=0}^{N-1}{x_jm_{j+1}} 
+	\pmb y' = f^{-1}(f(\pmb m) * f(\pmb x)^{-1})
 	\end{equation} 
 
-Following the previous formulas as a series of operations the vector \pmb y' will be very similar to vector \pmb y, but not entirely the same due to the noisy influence of vector \pmb b.
+Following the previous formulas as a series of operations the vector \pmb y' will be similar to vector \pmb y, but not entirely the same due to the noisy influence of vector \pmb b. The inverse referred to here is gained by calculating the complex conjugate of the vector's entries. Complex conjugates are simply the same values with negated imaginary parts.
 		
+	Performing FFTs has no invariant regarding the mean of the resulting vector entries and can produce all sorts of results.
+Due to this, when probing, we would receive vectors which had the correct relative distance between their values, i.e.
+the correct "shape", but would be shifted, stretched or squeezed on the Y-axis.This lead to vectors falsely being regarded as dissimilar to each other, and can be solved by performing two normalization steps:
+
+	\begin{equation}
+	x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|}
+	\end{equation} 	
+	
+	\begin{equation}
+	\pmb x = \frac{\pmb x }{ \| \pmb x \|}
+	\end{equation} 	
+	
 	- Implementation and building up of HRRs (similarity measures and cosine, lookup table...)
 	
 	
@@ -583,7 +594,7 @@ As such the following probe will yield no result:
 The encoded vector can simply represent a Gaussian sampled over a fixed input range.
 Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what the result of binding it to a generic random vector is.
 With this result it becomes obvious that unfortunately lots of information is lost.
-If this result is probed with the same random vector used in binding something similar to the initial Gaussian bell is expected.
+If this result is probed with the same random vector used in binding something similar to the initial Gaussian distribution is expected.
 And yet figure \ref{no-perm-b} presents no such outcome.
 While there is a peak at the initial value which is probed for lots of other peaks also arise, making it impossible to detect which one is correct.
 
@@ -601,20 +612,20 @@ While there is a peak at the initial value which is probed for lots of other pea
 		\end{subfigure}
 		\caption{Plot of vector values.
 Figure \ref{no-perm-a} shows the binding of the value 8 on a scale to 10 with the symbolic representation of "ball", which is random.
-In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
+In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a Gaussian distribution for 8, mixed with some noise.}
 		\label{no-perm}
 	\end{figure}
 	
 	This effect is due to the fact that circular convolution is based on Fourier transformations and the lack of frequencies present in encoded vectors becomes apparent in Fourier space as well.
 Figure \ref{fft} highlights this.
-All the information of a Gaussian bell is crammed into the lowest and highest values of the Fourier transformation, resulting in a high loss.
+All the information of a Gaussian distribution is crammed into the lowest and highest values of the Fourier transformation, resulting in a high loss.
 In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and will not come close to resembling the original Gaussian distribution.
 
 	
 	\begin{figure}
 		\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
 		\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
-		\caption{Fourier analysis of 1D symbols: radial basis kernel (top row) and same dimensional vector randomly sampled from normal distribution (bottom row). It is obvious that latter is uniformly spread across the whole vector, while the former is concentrated around 2 boundary values leading to increased interference between multiple items stored one over another (when added in Fourier space).}
+		\caption{Fourier analysis of 1D symbols: Gaussian distribution (top row) and same dimensional vector randomly sampled from normal distribution (bottom row). It is obvious that latter is uniformly spread across the whole vector, while the former is concentrated around 2 boundary values leading to increased interference between multiple items stored one over another (when added in Fourier space).}
 		\label{fft}
 	\end{figure}
 	
@@ -625,11 +636,11 @@ As such the resulting vector will present lots of jumps in value, which have a s
 	
 	\begin{figure}
 		\includegraphics[width=\columnwidth]{img/scalar-perm-step-fft.png}
-		\caption{Plots on the effect of permuting a Gaussian bell, and the impact on Fourier space.}
+		\caption{Plots on the effect of permuting a Gaussian distribution, and the impact on Fourier space.}
 		\label{perm-fft}
 	\end{figure}
 	
-	Working with such a vector makes it possible to successfully probe for scalars and receive a Gaussian bell overlapped with some noise.
+	Working with such a vector makes it possible to successfully probe for scalars and receive a Gaussian distribution overlapped with some noise.
 All of this can be seen in figure \ref{perm}, which depicts the exact same operations as figure \ref{no-perm}, but using a permuted version of a Gaussian distribution.
 The result in figure \ref{perm-b} clearly shows a spike at the expected spot in the sample range.
 This vector can be smoothed out, after which the peak can easily be identified and the initial scalar can be recovered.
@@ -645,8 +656,8 @@ This vector can be smoothed out, after which the peak can easily be identified a
 			\caption{Probing}
 			\label{perm-b}
 		\end{subfigure}
-		\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian for value 8 on a scale to 10 with the symbolic representation of "ball", which is random.
-In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian bell for 8, mixed with some noise.}
+		\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian distribution for value 8 on a scale to 10 with the symbolic representation of "ball", which is random.
+In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian distribution for 8, mixed with some noise.}
 		\label{perm}
 	\end{figure}
 	
@@ -662,10 +673,10 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\ForAll{$(symbol_1, symbol_2)$}
 			\State $enc_1 \gets FFT(t_{symbol_1})$
 			\State $enc_2 \gets FFT(t_{symbol_2})$
-			\State $m \gets m + enc_1 \otimes enc_2$
+			\State $m \gets m + IFFT(enc_1 \otimes enc_2$)
 			\EndFor		
 			\Function{ProbeMemory}{memory, operand}
-			\State $result \gets IFFT(memory \oslash operand)$
+			\State $result\gets IFFT(FFT(memory)\oslash FFT(operand))$
 			\ForAll{$symbol$}
 			\State $s \gets cosineSimilarity(t_{symbol}, result)$
 			\If {$s \geq cleanResultSimilarity$}
@@ -701,15 +712,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\EndFunction
 		\end{algorithmic}
 	\end{algorithm}
-	
-	On a technical note it became apparent that simply sampling Gaussian bells in a vector with all the values greater zero brought up an issue.
-Adding multiple such bindings on top of each other would constantly increase the values in the resulting vector.
-Due to this, when probing, we would receive vectors which had the correct distance between their values, i.e.
-the correct "shape", but would be shifted on the Y-axis.
-This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n x_i = 0\), and is achieved with this simple operation:
-	
-	\[ \forall x_i \in x: x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|} \]
-	
+		
 	\section{Properties of holographic memories}
 	
 	Vector Symbolic Architectures in general have the following properties:
@@ -722,17 +725,35 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 	
 	\subsection{Capacity}
 	
-	Just as Plate has done in the original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested the memory capacity in terms of accuracy of successful recall for variable number of bound pairs. Results are show in figure \ref{fig:capacity}.
-	
+	Just as Plate has done in the original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested the memory capacity in terms of accuracy of successful recall for variable numbers of bound pairs. Results are shown in figure \ref{fig:capacity}.
 		\begin{figure}[th!]
+		\begin{subfigure}{\columnwidth}
 			\center
 			\includegraphics[width=0.8\columnwidth]{img/capacity.png}
-			\caption{Memory capacity analysis for storing variable number of pair associations in a single memory vector. Different lines show vector length, while horizontal axis shows number of pairs and vertical axis accuracy of successful recall.}
+			\caption{Memory capacity analysis for storing a variable number of pair associations in a single memory vector. Different lines show various vector lengths, the horizontal axis shows the number of pairs and vertical axis accuracy of successful recall. Both false positives and false negatives are regarded.}
 			\label{fig:capacity}
-		\end{figure}
+		\end{subfigure}
+				\begin{subfigure}{\columnwidth}
+			\center
+			\includegraphics[width=0.8\columnwidth]{img/capacity_scalar_30.png}
+			\caption{Memory capacity analysis for binding pairs of one scalar and a random symbol, then probing for the scalar.}
+			\label{fig:capacity_scalar}
+		\end{subfigure}	
+		\begin{subfigure}{\columnwidth}
+			\center
+			\includegraphics[width=0.8\columnwidth]{img/capacity_coordinate.png}
+			\caption{Memory capacity analysis for binding pairs of one 2D coordinate and a random symbol, then probing for the scalar.}
+			\label{fig:capacity_coordinate}
+		\end{subfigure}	
+		\end{figure}	
+	As we can see, a 512 element vector starts decreasing accuracy of recall after 10 pairs stored in a single memory block. A 4096 and 8192 element vectors can almost perfectly recall 20 associated pairs, which matches the results of Plate using a lookup table and a clean-up process. 
 	
-	As we can see, a 512 element vector starts decreasing accuracy of recall after 10 pairs stored in a single memory block. A 4096 and 8192 element vectors can almost perfectly recall 20 associated pairs, which matches the results of Plate using a lookup table and a clean-up process. As we can see, newly introduced perceptual symbol grounding did not have a significant effect on memory capacity.
+	The experiment was repeated for binding a random symbol to the encodings of both scalars and to 2D coordinates, to compare performance. Figure \ref{fig:capacity_scalar} shows the result for scalars. In this instance the probe was always done for the scalar value. The total accuracy of the result depends on new factors, the main of which will be the quality of the smoothing function used to clean up the noise from the resulting signal. This will determine how much the peaks position may shift in some direction. In our experiments a Hanning window smoothing technique was used and a 2\% deviance from the exact initial scalar was allowed. With these settings probing performed significantly better than solely among random symbols. Vectors of size 8192 even managed to maintain 100\% accuracy when storing 30 bindings. Intuitively this can be explained as follows: Gaussian distributions are far more noise tolerant than random vectors. Vectors need to maintain a high similarity to be declared identical, whereas Gaussian distributions only need to present peaks after smoothing. 
 	
+	Finally figure \ref{fig:capacity_coordinate} shows the accuracy of stacking bindings of 2D coordinates with random symbols. The same smoothing and deviance settings were used as for the previous experiment. As coordinates are encoded in a vector that is virtually cast to 2D its length would have to be squared to achieve similar performance to scalars. Due to this higher steps in between vector lengths have been used, and most lengths still perform rather poorly. However, increasing the length considerably, like in the case with 65536 elements, near-perfect accuracy can still be upheld up to 20 bindings.
+		
+
+		
 	\section{Experiments}
 	\label{sec:experiments}
 	\subsection{Visual short term memory and top-down attention model}
@@ -777,7 +798,7 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 			\begin{subfigure}{0.45\columnwidth}
 				\center
 				\includegraphics[width=\linewidth]{img/probe_for_pen.png}
-				\caption{Probing for "pen" return mixture of Gaussians}
+				\caption{Probing for "pen" return mixture of Gaussian distributions}
 				\label{fig:probing-double}
 			\end{subfigure}
 						
@@ -839,10 +860,6 @@ This can be solved by editing the permuted Gaussian bell to have \(\sum_{i=0}^n 
 	
 
 		\label{fig:visual-scene-exp}
-
-	
-	\subsection{Localization and mapping}
-	- TBD
 	
 \subsection{Symbolic scripting (holographic controllers)}
 

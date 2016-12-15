@@ -274,9 +274,9 @@ class HRR(VSA):
             result = np.empty(self.size, dtype=float)
          
             if isinstance(input_value, float) or isinstance(input_value, numbers.Integral):
-                result = self.permute(helpers.normalize(self.scalar_encoder(input_value, self.size, encode_range[0])))
+                result = self.permute(self.scalar_encoder(input_value, self.size, encode_range[0]))
             elif isinstance(input_value, (frozenset, list, np.ndarray, set, tuple)):
-                result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
+                result = self.permute(self.coordinate_encoder(input_value, encode_range))
             else:    
                 result = self.generateVector() 
                 HRR.mapping[input_value] = result
