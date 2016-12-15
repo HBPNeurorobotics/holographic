@@ -146,7 +146,7 @@ class HRR(VSA):
     
     def decode(self, memory=None):
       
-        if memory == None:
+        if memory is None:
             memory = self.memory
             
         return VSA.decode(self, memory)
@@ -194,7 +194,7 @@ class HRR(VSA):
            
         assert(dim == 1 or dim == 2 or dim == 3)
         
-        if memory == None:
+        if memory is None:
             memory = self.memory
             
         memory = helpers.normalize(memory)
@@ -240,7 +240,7 @@ class HRR(VSA):
                 spot[i] = helpers.reverse_scale(spot[i], l, decode_range[i])
             
             result.append((spot, 1))
-            if return_list == False:
+            if return_list is False:
                 return spot
             memory = self.deductValue(memory,spot,HRR.valid_range,dim, np.max(memory))
             if self.visualize:
