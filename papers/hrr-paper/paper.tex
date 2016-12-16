@@ -515,13 +515,6 @@ The resulting vector will be a composition of something that is very similar to 
 cos(\pmb x, \pmb y) = \frac {\pmb x \cdot \pmb y}{||\pmb x|| \cdot ||\pmb y||}
 	\end{equation} 
 	
-	
-	\begin{figure}
-		\center
-		\includegraphics[width=0.9\columnwidth]{img/scalar-probe.png}
-		\caption{Result of $(80 \otimes A) \oslash A$ for a 2000-element HRR encoding values from range [0,100].}
-	\end{figure}
-	
 	Obtained values of similarity clearly distinguish the matching vectors. Concrete values that highlight this will be later presented in section \ref{sec:experiments}.	
 	
 	The process of converting a noisy result of probing into the closest known symbol is called the \textbf{clean-up procedure}.
@@ -568,23 +561,14 @@ the correct "shape", but would be shifted, stretched or squeezed on the Y-axis.T
 	\pmb x = \frac{\pmb x }{ \| \pmb x \|}
 	\end{equation} 	
 	
-	- Implementation and building up of HRRs (similarity measures and cosine, lookup table...)
-	
-	
 	\section{Topology-preserving encoding}
-	
-	- necessity (benefit of having it, querying smth that was not there)
-	- implementation
-	
-
- 
 	
 	\subsection{Encoding scalar symbol as radial basis functions}
 	
 	Encoding scalars is a good example for the necessity of preserving topology.
 Depending on what dataset is in use it may be required to store mappings for any number of values, which can drastically increase space requirements.
 Furthermore, using a separate random encoding for each scalar, regardless of whether they are very close to each other or not, there would be no similarity in neighbouring values.
-As such the following probe will yield no result:
+For example, the following probe will yield no result:
 	
 	\begin{equation}
 	(10000 \otimes a) \oslash 10001
@@ -599,7 +583,7 @@ And yet figure \ref{no-perm-b} presents no such outcome.
 While there is a peak at the initial value which is probed for lots of other peaks also arise, making it impossible to detect which one is correct.
 
 	
-	\begin{figure}
+	\begin{figure}[th!]
 		\begin{subfigure}{1\columnwidth}
 			\includegraphics[width=\columnwidth]{img/scalar-pre-perm.png}
 			\caption{Binding}
@@ -621,13 +605,13 @@ Figure \ref{fft} highlights this.
 All the information of a Gaussian distribution is crammed into the lowest and highest values of the Fourier transformation, resulting in a high loss.
 In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and will not come close to resembling the original Gaussian distribution.
 
-	
-	\begin{figure}
-		\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
-		\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
-		\caption{Fourier analysis of 1D symbols: Gaussian distribution (top row) and same dimensional vector randomly sampled from normal distribution (bottom row). It is obvious that latter is uniformly spread across the whole vector, while the former is concentrated around 2 boundary values leading to increased interference between multiple items stored one over another (when added in Fourier space).}
-		\label{fft}
-	\end{figure}
+
+\begin{figure}[th!]
+	\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
+	\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
+	\caption{Fourier analysis of 1D symbols: Gaussian distribution (top row) and same dimensional vector randomly sampled from normal distribution (bottom row). It is obvious that latter is uniformly spread across the whole vector, while the former is concentrated around 2 boundary values leading to increased interference between multiple items stored one over another (when added in Fourier space).}
+	\label{fft}
+\end{figure}
 	
 	This inconvenience is removed with the help of permutations.
 Depending on the size of the memory vectors used a fixed permutation is generated once.
@@ -675,8 +659,9 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\State $enc_2 \gets FFT(t_{symbol_2})$
 			\State $m \gets m + IFFT(enc_1 \otimes enc_2$)
 			\EndFor		
-			\Function{ProbeMemory}{memory, operand}
-			\State $result\gets IFFT(FFT(memory)\oslash FFT(operand))$
+			\Function{ProbeMemory}{memory, op}
+			\State $result\gets IFFT(FFT(memory)\oslash FFT(op))$
+			
 			\ForAll{$symbol$}
 			\State $s \gets cosineSimilarity(t_{symbol}, result)$
 			\If {$s \geq cleanResultSimilarity$}
@@ -690,28 +675,29 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	\end{algorithm}
 	
 	
-	Lines 1-3 assign a random vector representation to each symbol known to the system prior to any other operations. This lookup table is stored in array $t$. Lines 4-9 initialize the memory $m$ with arbitrary amount of pairs of associated scalars. Function $ProbeMemory(memory, operand)$ returns symbol associated with provided $operand$. Line 11 performs circular correlation and stores noisy result of unbinding in $s$. Lines 12-18 loop through the whole lookup table and find the maximum similarity vector to $s$.
+	Lines 1-3 assign a random vector representation to each symbol known to the system prior to any other operations. This lookup table is stored in array $t$. Lines 4-9 initialize the memory $m$ with arbitrary amount of pairs of associated scalars. Function $ProbeMemory(memory, op)$ returns symbol associated with provided $op$. Line 11 performs circular correlation and stores noisy result of unbinding in $s$. Lines 12-18 loop through the whole lookup table and find the maximum similarity vector to $s$.
+		
+		\begin{algorithm}
+			\caption{Modified pipeline}
+			\begin{algorithmic}[1]
+				\State $P \gets chooseRandomPermutation(N)$
+				\State $m \gets initEmptyMemory()$
+				\ForAll{$(symbol_1, symbol_2)$}
+				\State $enc_1 \gets FFT(permute(enc(symbol_1, N), P))$
+				\State $enc_2 \gets FFT(permute(enc(symbol_2, N), P))$
+				\State $m \gets m + enc_1 \otimes enc_2$
+				\EndFor	
+				\Function{ProbeMemory}{memory, op}
+				\State $r \gets permute(IFFT(memory \oslash op), P^{-1})$
+				\State $cleanResult \gets argmax(r)$
+				
+				\Return $cleanResult$
+				\EndFunction
+			\end{algorithmic}
+		\end{algorithm}
 		
 		In contrast, Algorithm 2 shows pipeline with proposed changes. First line chooses a fixed random permutation of $N$ elements used throughout the whole process. It can bee seen that there is no initial loop to assign symbolic representations to all symbols. They are, instead, constructed according to need using function $enc(value, N)$, which returns discrete sampled normal distribution vector of N elements, centered around $value$. This perfectly sampled normal distribution is permuted using permutation $P$ in lines 4 and 5, so its frequency representation contains uniform spread over the whole spectrum, as explained earlier in this chapter. Probing operation consists of applying inverse permutation $P^{-1}$ after IFFT (line 9). Since this gives a noisy version of initial normal distribution (shown in figure \ref{perm-b}), the only thing that needs to be done is to identify the mean of the distribution. Complexity of this operation is linear w.r.t. length of the vector $N$, while in case of Algorithm 1 it is linear w.r.t. to number of symbols stored in the lookup table.
 		
-	\begin{algorithm}
-		\caption{Modified pipeline}
-		\begin{algorithmic}[1]
-			\State $P \gets chooseRandomPermutation(N)$
-			\State $m \gets initEmptyMemory()$
-			\ForAll{$(symbol_1, symbol_2)$}
-			\State $enc_1 \gets FFT(permute(enc(symbol_1, N), P))$
-			\State $enc_2 \gets FFT(permute(enc(symbol_2, N), P))$
-			\State $m \gets m + enc_1 \otimes enc_2$
-			\EndFor	
-			\Function{ProbeMemory}{memory, operand}
-			\State $r \gets permute(IFFT(memory \oslash operand), P^{-1})$
-			\State $cleanResult \gets argmax(r)$
-			
-			\Return $cleanResult$
-			\EndFunction
-		\end{algorithmic}
-	\end{algorithm}
 		
 	\section{Properties of holographic memories}
 	
@@ -723,29 +709,34 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 		\item Memories can be changed in an online fashion. There is no need to recreate memories from scratch - symbols can be appended to or removed from already existing memory vectors if present.
 	\end{itemize}
 	
+		\begin{figure}[th!]
+			\begin{subfigure}{0.45\columnwidth}
+				\center
+				\includegraphics[width=1\columnwidth]{img/capacity.png}
+				\caption{Binding of pairs of random vectors (original pipeline).}
+				\label{fig:capacity}
+			\end{subfigure}
+			\begin{subfigure}{0.45\columnwidth}
+				\center
+				\includegraphics[width=1\columnwidth]{img/capacity_scalar_30.png}
+				\caption{Binding pairs of one scalar and a random symbol, then probing for the scalar.}
+				\label{fig:capacity_scalar}
+			\end{subfigure}	
+			\center
+			\begin{subfigure}{0.45\columnwidth}
+				\center
+				\includegraphics[width=1\columnwidth]{img/capacity_coordinate.png}
+				\caption{Binding pairs of one 2D coordinate and a random symbol, then probing for the scalar.}
+				\label{fig:capacity_coordinate}
+			\end{subfigure}	
+			\caption{Memory capacity analysis for storing a variable number of pair associations in a single memory vector. Different lines show various vector lengths, the horizontal axis shows the number of pairs and vertical axis accuracy of successful recall. Both false positives and false negatives are regarded.}
+		\end{figure}	
+	
+	
 	\subsection{Capacity}
 	
 	Just as Plate has done in the original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested the memory capacity in terms of accuracy of successful recall for variable numbers of bound pairs. Results are shown in figure \ref{fig:capacity}.
-		\begin{figure}[th!]
-		\begin{subfigure}{\columnwidth}
-			\center
-			\includegraphics[width=0.8\columnwidth]{img/capacity.png}
-			\caption{Memory capacity analysis for storing a variable number of pair associations in a single memory vector. Different lines show various vector lengths, the horizontal axis shows the number of pairs and vertical axis accuracy of successful recall. Both false positives and false negatives are regarded.}
-			\label{fig:capacity}
-		\end{subfigure}
-				\begin{subfigure}{\columnwidth}
-			\center
-			\includegraphics[width=0.8\columnwidth]{img/capacity_scalar_30.png}
-			\caption{Memory capacity analysis for binding pairs of one scalar and a random symbol, then probing for the scalar.}
-			\label{fig:capacity_scalar}
-		\end{subfigure}	
-		\begin{subfigure}{\columnwidth}
-			\center
-			\includegraphics[width=0.8\columnwidth]{img/capacity_coordinate.png}
-			\caption{Memory capacity analysis for binding pairs of one 2D coordinate and a random symbol, then probing for the scalar.}
-			\label{fig:capacity_coordinate}
-		\end{subfigure}	
-		\end{figure}	
+	
 	As we can see, a 512 element vector starts decreasing accuracy of recall after 10 pairs stored in a single memory block. A 4096 and 8192 element vectors can almost perfectly recall 20 associated pairs, which matches the results of Plate using a lookup table and a clean-up process. 
 	
 	The experiment was repeated for binding a random symbol to the encodings of both scalars and to 2D coordinates, to compare performance. Figure \ref{fig:capacity_scalar} shows the result for scalars. In this instance the probe was always done for the scalar value. The total accuracy of the result depends on new factors, the main of which will be the quality of the smoothing function used to clean up the noise from the resulting signal. This will determine how much the peaks position may shift in some direction. In our experiments a Hanning window smoothing technique was used and a 2\% deviance from the exact initial scalar was allowed. With these settings probing performed significantly better than solely among random symbols. Vectors of size 8192 even managed to maintain 100\% accuracy when storing 30 bindings. Intuitively this can be explained as follows: Gaussian distributions are far more noise tolerant than random vectors. Vectors need to maintain a high similarity to be declared identical, whereas Gaussian distributions only need to present peaks after smoothing. 
@@ -763,8 +754,9 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	
 	\begin{figure}[th!]
 		\center
-		\begin{subfigure}{0.8\columnwidth}
-			\includegraphics[width=\columnwidth]{img/map_original.jpg}
+		\begin{subfigure}{1.0\columnwidth}
+			\center
+			\includegraphics[width=0.6\columnwidth]{img/map_original.jpg}
 			\caption{Original scene and set of detected objects}
 			\label{fig:object-detection}
 		\end{subfigure}
@@ -781,10 +773,9 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\caption{Encoding of "watch" object ID as randomly sampled vector}
 			\label{fig:encoding-object}
 		\end{subfigure}
-		
 				\begin{subfigure}{0.8\columnwidth}
 					\center
-					\includegraphics[width=\linewidth]{img/coord_example_3.png}
+					\includegraphics[width=0.8\linewidth]{img/coord_example_3.png}
 					\caption{Representation of the complete visual scene, containing information about all 7 objects and their locations scrambled together}
 					\label{fig:encoding-scene}
 				\end{subfigure}
@@ -854,7 +845,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
         \label{pgf:bar2}
     \end{subfigure}
     
-    			\caption{Test}
+    			\caption{Similarity test for each symbol from the lookup table after probing the entire scene memory for a specific location.}
     \end{figure}
 
 	
@@ -908,13 +899,6 @@ As a consequence, our approach eliminates the need for clean-up memories as they
 Instead, result of probing operation directly gives interpretable symbol, which can be decoded in constant computational time.
 In other words, time needed for encoding/decoding is completely ignorant of total number of symbols memorized, allowing memories that can store large corpus of different symbols.
 	A concrete biophysical evidence and theoretical model of implementation of convolution in brain is, unfortunately, still missing.
-	
-	% use section* for acknowledgment
-	\section*{Acknowledgment}
-	
-	% leaving this as is.
-	The authors would like to thank...
-Manchester developers. :slowclap:
 	
 	%% Add entry to the table of contents for the bibliography
 	\printbibliography[heading=bibintoc]
