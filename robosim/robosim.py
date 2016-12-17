@@ -479,8 +479,8 @@ class Visualization(object):
 
 		col = Color[color]
 		if shape is Shape.CIRCLE:
-			r = 5.0
-			pygame.draw.circle(self.screen, col, center, 5)
+			r = 10
+			pygame.draw.circle(self.screen, col, center, r)
 		elif shape is Shape.RECT:
 			l = 5.0
 			v1 = (transform.position + -transform.right * l - transform.forward * l).to_int_array()
