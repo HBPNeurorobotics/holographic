@@ -39,7 +39,6 @@ Color = {
 	"YELLOW" : (255, 255,   0),
 };
 
-
 def approx_equal(a, b, tolerance):
 	return abs(a - b) <= max(abs(a), abs(b)) * tolerance
 
@@ -249,7 +248,8 @@ class Wheel(object):
 
 	@property
 	def value(self):
-		return self._dir_to_val(self._direction) * self.velocity
+		# NOTE: hack from Igor (always move forwards)
+		return self._dir_to_val(self._direction) * self.velocity + 0.2
 
 
 class WheelSet(object):
@@ -374,6 +374,7 @@ class Sensor(VisObject):
 
 class Controller(object):
 	def __init__(self, controller, sensor):
+		self.NO_OBJECT = None
 		self.controller = controller
 		self.sensor = sensor
 
@@ -381,6 +382,7 @@ class Controller(object):
 class Agent(VisObject):
 	def __init__(self, color, velocity=1.0):
 		super(Agent, self).__init__(Shape.HOUSE, color)
+		self.target = None
 		self.controllers = []
 		self._sensors = []
 		self.steering = DiffSteer()
@@ -400,32 +402,58 @@ class Agent(VisObject):
 			self._sensors.append(sensor)
 
 	def step(self, objects, delta_time):
-		self.wheels.left = WheelDir.FORWARDS
-		self.wheels.right = WheelDir.BACKWARDS
+		self.wheels.left = WheelDir.NONE
+		self.wheels.right = WheelDir.NONE
 
 		for c in self.controllers:
 			output = c.sensor.read(objects)
-			max_similarity_left = 0.1  # NOTE: 0.1 as a similarity threshold
-			max_similarity_right = 0.1  # NOTE: 0.1 as a similarity threshold
+
+			max_similarity_left = 0.1
+			wheel_dir_left = None
+			max_similarity_right = 0.1
+			wheel_dir_right = None
+
+			# TODO: make it more beautiful
 			for obj, val in output:
-				obj_ctl = c.controller % HRR(obj)
-				actions_ctl = obj_ctl % float(val)
+				if obj is self.target:
+					actions_ctl = c.controller % val
+					actions = actions_ctl / HRR(self.wheels.left)
+					print("val: {} l: {}".format(val, actions))
+					for a in actions:
+						if a[1] > max_similarity_left:
+							try:
+								wheel_dir_left = WheelDir(a[0])
+								max_similarity_left = a[1]
+							except: pass
+					actions = actions_ctl / HRR(self.wheels.right)
+					print("val: {} r: {}".format(val, actions))
+					for a in actions:
+						if a[1] > max_similarity_right:
+							try:
+								wheel_dir_right = WheelDir(a[0])
+								max_similarity_right = a[1]
+							except: pass
+
+			if wheel_dir_left is None or wheel_dir_right is None:
+				actions_ctl = c.controller % c.NO_OBJECT
 				actions = actions_ctl / HRR(self.wheels.left)
-				print("{} {} al: {}".format(obj.color, val, actions))
 				for a in actions:
 					if a[1] > max_similarity_left:
 						try:
-							self.wheels.left.direction = WheelDir(a[0])
+							wheel_dir_left = WheelDir(a[0])
 							max_similarity_left = a[1]
 						except: pass
 				actions = actions_ctl / HRR(self.wheels.right)
-				print("{} {} ar: {}".format(obj.color, val, actions))
 				for a in actions:
 					if a[1] > max_similarity_right:
 						try:
-							self.wheels.right.direction = WheelDir(a[0])
+							wheel_dir_right = WheelDir(a[0])
 							max_similarity_right = a[1]
 						except: pass
+
+			self.wheels.left = wheel_dir_left
+			self.wheels.right = wheel_dir_right
+
 		print ("al: {} ar: {}".format(self.wheels.left.direction , self.wheels.right.direction))
 
 		pos, rot = self.steering.move(self.wheels,
@@ -547,7 +575,7 @@ WORLD_SIZE = (500, 500)
 
 def main():
 	HRR.valid_range = zip([0.0], [1.0])
-	HRR.set_size(40960)
+	HRR.set_size(4096)
 
 	pygame.init()
 
@@ -556,8 +584,8 @@ def main():
 
 	agent = Agent(color="RED", velocity=0.07)
 	agent.transform.local_position = Vec2(10, 10)
-	#agent.transform.local_orientation = Rot2(-math.pi / 3.0)
-	agent.transform.local_orientation = Rot2(random.random() * 2.0 * math.pi)
+	agent.transform.local_orientation = Rot2(-math.pi / 3.0)
+	#agent.transform.local_orientation = Rot2(random.random() * 2.0 * math.pi)
 	sensor1 = Sensor(color="GREEN", field_of_view=0.2*math.pi)
 	#sensor1.transform.local_position = Vec2(3, 0)
 	#sensor1.transform.local_orientation = Rot2(0.08 * math.pi)
@@ -576,14 +604,14 @@ def main():
 
 	# create controller "follow magenta object"
 	# direction gaussians should overlap to always yield a result
-	HRR.stddev = 0.09
+	HRR.stddev = 0.05
 
 	# sensors return object in [0,1], 0 is left, 1 is right
-	farleft = HRR(0.0)
-	left = HRR(0.25)
+	farleft = HRR(0.1)
+	left = HRR(0.3)
 	front = HRR(0.5)
-	right = HRR(0.75)
-	farright = HRR(1.0)
+	right = HRR(0.7)
+	farright = HRR(0.9)
 
 	# test stddev and result
 	#farleft.plot(unpermute=True)
@@ -601,22 +629,23 @@ def main():
 	left_wheel_forwards = HRR(agent.wheels.left) * HRR(WheelDir.FORWARDS)
 	right_wheel_backwards = HRR(agent.wheels.right) * HRR(WheelDir.BACKWARDS)
 	right_wheel_forwards = HRR(agent.wheels.right) * HRR(WheelDir.FORWARDS)
+
 	farleft_ctl = farleft * (left_wheel_backwards + right_wheel_forwards)
 	left_ctl = left * (left_wheel_backwards + right_wheel_forwards)
 	front_ctl = front * (left_wheel_forwards + right_wheel_forwards)
 	right_ctl = right * (left_wheel_forwards + right_wheel_backwards)
 	farright_ctl = farright * (left_wheel_forwards + right_wheel_backwards)
 
-	sensor_ctl = farleft_ctl + left_ctl + front_ctl + right_ctl + farright_ctl
+	NO_OBJECT = HRR("NO_OBJECT")
+	no_object_ctl = NO_OBJECT * (left_wheel_forwards + right_wheel_backwards)
+
+	sensor_ctl = farleft_ctl + left_ctl + front_ctl + right_ctl + farright_ctl + no_object_ctl
 
 	print(sensor_ctl.distance((sensor_ctl % farleft).memory, (left_wheel_backwards + right_wheel_forwards).memory))
 
-	follow_obj_ctl = HRR(obj2) * sensor_ctl
-	#follow_obj_ctl = HRR(obj1) + HRR(obj2) * sensor_ctl + HRR(obj3)
-
-	print(sensor_ctl.distance((follow_obj_ctl % HRR(obj2)).memory, (sensor_ctl).memory))
-
-	agent.controllers.append(Controller(follow_obj_ctl, sensor1))
+	agent.controllers.append(Controller(sensor_ctl, sensor1))
+	agent.controllers[0].NO_OBJECT = NO_OBJECT
+	agent.target = obj2
 
 	clock = pygame.time.Clock()
 
