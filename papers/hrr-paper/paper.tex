@@ -755,8 +755,29 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	
 	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in a number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length $n$, which are sampled from a Gaussian distribution (figure \ref{fig:encoding-object}). The locations of objects in the image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
 
+	
 	\begin{figure}[th!]
-
+		\center
+		\begin{subfigure}{1.0\columnwidth}
+			\center
+			\includegraphics[width=0.6\columnwidth]{img/map_original.jpg}
+			\caption{Original scene and a set of detected objects}
+			\label{fig:object-detection}
+		\end{subfigure}
+		
+		\begin{subfigure}{0.45\columnwidth}
+			\center
+			\includegraphics[width=\linewidth]{img/coord_example_1.png}
+			\caption{Encoding of location (x,y) for "watch"}
+			\label{fig:encoding-coord}
+		\end{subfigure}
+		\begin{subfigure}{0.45\columnwidth}
+			\center
+			\includegraphics[width=\linewidth]{img/coord_example_2.png}
+			\caption{Encoding of the "watch" object ID as a randomly sampled vector}
+			\label{fig:encoding-object}
+		\end{subfigure}
+		
 		\begin{subfigure}{0.8\columnwidth}
 			\center
 			\includegraphics[width=0.8\linewidth]{img/coord_example_3.png}
