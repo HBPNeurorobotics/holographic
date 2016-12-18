@@ -547,8 +547,8 @@ def main():
 
 	agent = Agent(color="RED", velocity=0.05)
 	agent.transform.local_position = Vec2(10, 10)
-	#agent.transform.local_orientation = Rot2(-math.pi / 4.0)
-	agent.transform.local_orientation = Rot2(-math.pi / 3.0)
+	#agent.transform.local_orientation = Rot2(-math.pi / 3.0)
+	agent.transform.local_orientation = Rot2(random.random() * 2.0 * math.pi)
 	sensor1 = Sensor(color="GREEN", field_of_view=0.2*math.pi)
 	sensor1.transform.local_position = Vec2(-3, 0)
 	sensor1.transform.local_orientation = Rot2(0.08 * math.pi)
