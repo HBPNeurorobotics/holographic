@@ -346,7 +346,7 @@
 	% not capitalized unless they are the first or last word of the title.
 	% Linebreaks \\ can be used within to get better formatting as desired.
 	% Do not put math or special symbols in the title.
-	\title{Making scalars work in  \\Holographic Memories}
+	\title{Probabilistic symbol encoding for \\convolutional associative memories}
 	
 	
 	% author names and affiliations
@@ -395,7 +395,7 @@
 		for association, (compressed) storage, manipulation and retrieval
 		of symbolic concepts, represented as fixed-length vectors in
 		${\rm I\!R}^n$.
-		A subset of VSAs, Holographic Reduced Representations (HRRs),
+		A specific instance of VSAs, Holographic Reduced Representations (HRRs),
 		have proven to exhibit properties similar to human short-term
 		memory and are, as such, interesting for computational modeling.
 		In this paper we extend the HRR approach by introducing implicit,
@@ -415,9 +415,7 @@
 		on memory capacity in comparison to the original capacity
 		benchmark for HRRs by Plate
 		\cite{Plate:1995:HolographicReducedRepresentations}.
-		We also evaluate our memories in two different robotics tasks: top-down visual
-		attention shift and state machine scripting (holographic
-		controllers).
+		We also evaluate our memories in two different robotics tasks: visual scene memory and state machine scripting (holographic controllers).
 	\end{abstract}
 	
 	% no keywords
@@ -459,7 +457,7 @@ Preliminary theoretical assumptions have been made about the ability to use them
 	\begin{figure}
 		\center
 		\includegraphics[width=0.9\columnwidth]{img/probe_for_pen_w_img.png}
-		\caption{In-memory representation of a top-down attention shift for visual scene short-term memory. The result shows attention distribution for a symbol "pen". In probabilistic sense it can be understood as the probability of a pen being at a certain position.}
+		\caption{In-memory representation of visual scene short-term memory. The result shows probability distribution for a symbol "pen" being at certain position in scene.}
 	\end{figure}
 	
 	
@@ -606,7 +604,7 @@ In these circumstances, when probing for a scalar, the vector received is in tur
 \begin{figure}[th!]
 	\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
 	\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
-	\caption{Fourier analysis of 1D symbols: a Gaussian distribution (top row) and a randomly sampled vector of the same size (bottom row). It is obvious that the latter's information in Fourier space is uniformly spread across the whole length, while the former's is concentrated around 2 boundary points.}
+	\caption{Fourier analysis of 1D symbols: a Gaussian distribution (top row) and a randomly sampled vector of the same size (bottom row). It is obvious that the latter's information in Fourier space is uniformly spread across the whole spectrum, while the former's is concentrated around 2 boundary points.}
 	\label{fft}
 \end{figure}
 	
@@ -617,7 +615,7 @@ As such the resulting vector will present lots of jumps in value, which have a s
 	
 	\begin{figure}
 		\includegraphics[width=\columnwidth]{img/scalar-perm-step-fft.png}
-		\caption{Plots on the effect of permuting a Gaussian distribution, and the impact on Fourier space.}
+		\caption{Applying random permutation to a sampled Gaussian distribution results in more discrete changes in signal, which correspond to high-frequency components in Fourier space. This makes frequency spectrum spread more uniform, which is a desirable property for HRRs. Although this scrambling of initial signal makes it seem random, the fact that the same permutation is used in all encodings keeps two semantically close values having very similar representations, thus preserving their semantic proximity. }
 		\label{perm-fft}
 	\end{figure}
 	
@@ -637,8 +635,8 @@ This vector can now be smoothed out, after which the peak can easily be identifi
 			\caption{Probing}
 			\label{perm-b}
 		\end{subfigure}
-		\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian distribution for the value 8 on a scale to 10 with the symbolic representation of "ball", which is random.
-In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian distribution for the value8, mixed with some noise.}
+		\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian distribution for the value 8 from range [1, 10] with the symbolic representation of "ball", which is random.
+In figure \ref{perm-b} "ball" is being probed, and the result after inverse permutation is a Gaussian distribution for the value 8, mixed with some noise.}
 		\label{perm}
 	\end{figure}
 	
