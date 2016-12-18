@@ -298,6 +298,9 @@ class DiffSteer(object):
 		return res
 
 	def move(self, wheel_set, position, rotation, delta_time):
+		# NOTE: when moving forwards/backwards increase speed (hack)
+		if wheel_set.left.direction == wheel_set.right.direction:
+			delta_time *= 30.0
 		pos = self._pos(wheel_set, position, rotation, delta_time)
 		rot = self._rot(wheel_set, rotation, delta_time)
 		return pos, rot
@@ -369,12 +372,12 @@ class Sensor(VisObject):
 
 
 class Agent(VisObject):
-	def __init__(self, color):
+	def __init__(self, color, velocity=1.0):
 		super(Agent, self).__init__(Shape.HOUSE, color)
 		self.controller = None
 		self._sensors = []
 		self.steering = DiffSteer()
-		self.wheels = WheelSet(velocity=1.0)
+		self.wheels = WheelSet(velocity=velocity)
 
 	def __str__(self):
 		return super(Agent, self).__str__()
@@ -542,7 +545,7 @@ def main():
 	world = World(size=WORLD_SIZE)
 	vis = Visualization(world.size)
 
-	agent = Agent(color="RED")
+	agent = Agent(color="RED", velocity=0.05)
 	agent.transform.local_position = Vec2(10, 10)
 	#agent.transform.local_orientation = Rot2(-math.pi / 4.0)
 	agent.transform.local_orientation = Rot2(-math.pi / 3.0)
