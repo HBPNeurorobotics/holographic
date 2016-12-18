@@ -563,7 +563,7 @@ the correct "shape", but would be shifted, stretched or squeezed on the Y-axis.T
 	
 	\section{Topology-preserving encoding}
 	
-	\subsection{Encoding scalar symbol as radial basis functions}
+	\subsection{Encoding scalar symbols}
 	
 	Encoding scalars is a good example for the necessity of preserving topology.
 Depending on what dataset is in use it may be required to store mappings for any number of values, which can drastically increase space requirements.
@@ -698,7 +698,13 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 		
 		In contrast, Algorithm 2 shows pipeline with proposed changes. First line chooses a fixed random permutation of $N$ elements used throughout the whole process. It can bee seen that there is no initial loop to assign symbolic representations to all symbols. They are, instead, constructed according to need using function $enc(value, N)$, which returns discrete sampled normal distribution vector of N elements, centered around $value$. This perfectly sampled normal distribution is permuted using permutation $P$ in lines 4 and 5, so its frequency representation contains uniform spread over the whole spectrum, as explained earlier in this chapter. Probing operation consists of applying inverse permutation $P^{-1}$ after IFFT (line 9). Since this gives a noisy version of initial normal distribution (shown in figure \ref{perm-b}), the only thing that needs to be done is to identify the mean of the distribution. Complexity of this operation is linear w.r.t. length of the vector $N$, while in case of Algorithm 1 it is linear w.r.t. to number of symbols stored in the lookup table.
 		
+
+	\subsection{Encoding coordinate symbols}
+			
+		Encoding coordinate symbols works in a manner very similar to encoding scalar symbols. Depending on the number of coordinates the symbolic vectors shape is reinterpreted. 2D coordinates, for instance, require a matrix. This matrix represents the entire coordinate space and on it 2D Gaussian distributions are sampled. It can be viewed as a heat map, as displayed in figure \ref{fig:encoding-coord}.	The matrix will still be treated as a vector when it comes to running operations on it and must also be permuted. Since the value space now has more dimensions the size of the vector has to be raised accordingly to achieve performance similar to that of scalar symbol encoding. 
 		
+		An attempt has been made to overcome the curse of dimensionality by splitting the vector up in the number of dimensions and simply encoding the value for each dimension in the resulting sub-vectors. Unfortunately it then becomes impossible to differentiate among multiple coordinates encoded in the same vector. Specifically, when decoding, there is no way to know which of the values in separate sub-vectors belong to each other and which don't. On the other hand if only a single coordinate needs to be bound to another symbol this approach is still feasible and will permit the use of smaller vectors for high accuracy. Concretely, for $d$ dimensions, splitting up the vector will require the size to be raised by a factor of $d$ to maintain the same accuracy. Reinterpreting the shape will require the size to increase exponentially by the power of $d$ to keep the accuracy.
+			
 	\section{Properties of holographic memories}
 	
 	Vector Symbolic Architectures in general have the following properties:
