@@ -226,7 +226,7 @@ class Wheel(object):
 	def __init__(self, velocity, wheel_dir=WheelDir.NONE):
 		self.hrr = HRR(random.random())
 		self.velocity = velocity
-		self._value = self.value = wheel_dir
+		self._direction = self.direction = wheel_dir
 
 	def _dir_to_val(self, wheel_dir):
 		assert isinstance(wheel_dir, WheelDir)
@@ -240,12 +240,17 @@ class Wheel(object):
 			raise NotImplementedError
 
 	@property
-	def value(self):
-		return self._value * self.velocity
+	def direction(self):
+		return self._direction
 
-	@value.setter
-	def value(self, value):
-		self._value = self._dir_to_val(value)
+	@direction.setter
+	def direction(self, value):
+		assert isinstance(value, WheelDir)
+		self._direction = value
+
+	@property
+	def value(self):
+		return self._dir_to_val(self._direction) * self.velocity
 
 
 class WheelSet(object):
@@ -259,7 +264,7 @@ class WheelSet(object):
 
 	@left.setter
 	def left(self, value):
-		self._left.value = value
+		self._left.direction = value
 
 	@property
 	def right(self):
@@ -267,7 +272,7 @@ class WheelSet(object):
 
 	@right.setter
 	def right(self, value):
-		self._right.value = value
+		self._right.direction = value
 
 
 class DiffSteer(object):
@@ -405,27 +410,21 @@ class Agent(VisObject):
 			for obj, val in output:
 				obj_ctl = sensor_ctl % obj.hrr
 				actions = obj_ctl / self.wheels.left.hrr
-				print ("s {} actions o {}: {}".format(s.transform.local_position, obj.color, actions))
+				print("s: {} l: {}".format(s.transform.local_position, actions))
 				for a in actions:
 					if a[1] > max_similarity_left:
-						try:
-							self.wheels.left = WheelDir(a[0])
-							max_similarity_left = a[1]
-						except: pass
+						self.wheels.left = WheelDir(a[0])
+						max_similarity_left = a[1]
 				actions = obj_ctl / self.wheels.right.hrr
+				print("s: {} r: {}".format(s.transform.local_position, actions))
 				for a in actions:
 					if a[1] > max_similarity_right:
-						try:
-							self.wheels.right = WheelDir(a[0])
-							max_similarity_right = a[1]
-						except: pass
+						self.wheels.right = WheelDir(a[0])
+						max_similarity_right = a[1]
+			print ("s {} al: {} (sim={}) ar: {} (sim={})".format(s.transform.local_position, self.wheels.left.direction , max_similarity_left, self.wheels.right.direction, max_similarity_right))
 		pos, rot = self.steering.move(self.wheels,
 				self.transform.local_position,
 				self.transform.local_orientation, delta_time)
-
-		# TODO remove
-		#ws = WheelSet(velocity=1.0, left=WheelDir.FORWARDS, right=WheelDir.FORWARDS)
-		#pos, rot = self.steering.move(ws, self.transform.local_position, self.transform.local_orientation, delta_time)
 
 		self.transform.local_position = pos
 		self.transform.local_orientation = rot
@@ -538,7 +537,8 @@ class Visualization(object):
 WORLD_SIZE = (500, 500)
 
 def main():
-	HRR.valid_range = [0,1]
+	HRR.valid_range = [0.0,1.0]
+	HRR.set_size(4096)
 
 	pygame.init()
 
@@ -571,22 +571,56 @@ def main():
 
 	# create controller "follow magenta object"
 	# direction gaussians should overlap to always yield a result
-	HRR.stddev = 0.1
+	HRR.stddev = 0.09
+
 	# sensors return object in [0,1], 0 is left, 1 is right
-	farleft = HRR(0.15)
-	left = HRR(0.35)
+	farleft = HRR(0.0)
+	left = HRR(0.25)
+	forwards = HRR(0.5)
 	right = HRR(0.75)
-	farright = HRR(0.85)
+	farright = HRR(1.0)
+
+	# test stddev and result
+	#farleft.plot(unpermute=True)
+	#left.plot(unpermute=True)
+	#forwards.plot(unpermute=True)
+	#right.plot(unpermute=True)
+	#farright.plot(unpermute=True)
+	#temp = farleft + left + forwards + right + farright
+	#temp.plot(unpermute=True)
+
 	# reset stddev to default
 	HRR.stddev = 0.02
-	# TODO: we don't have rule for driving forward?!
-	farleft_ctl = farleft * (agent.wheels.left.hrr * HRR(WheelDir.BACKWARDS) + agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
-	left_ctl = left * (agent.wheels.left.hrr * HRR(WheelDir.NONE) + agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
-	right_ctl = right * (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS) + agent.wheels.right.hrr * HRR(WheelDir.NONE))
-	farright_ctl = farright * (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS) + agent.wheels.right.hrr * HRR(WheelDir.BACKWARDS))
-	follow_obj2_ctl = obj2.hrr * (farleft_ctl + left_ctl + right_ctl + farright_ctl)
-	controller = obj1.hrr + follow_obj2_ctl + obj3.hrr
-	agent.controller = controller
+
+	# define motor control for directions
+	farleft_steer = (agent.wheels.left.hrr * HRR(WheelDir.BACKWARDS)
+			+ agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
+	#left_steer = (agent.wheels.left.hrr * HRR(WheelDir.NONE)
+	left_steer = (agent.wheels.left.hrr * HRR(WheelDir.BACKWARDS)
+			+ agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
+	forwards_steer = (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS)
+			+ agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
+	right_steer = (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS)
+			#+ agent.wheels.right.hrr * HRR(WheelDir.NONE))
+			+ agent.wheels.right.hrr * HRR(WheelDir.BACKWARDS))
+	farright_steer = (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS)
+			+ agent.wheels.right.hrr * HRR(WheelDir.BACKWARDS))
+
+	# associate sensors with correct directional motor control
+	left_sensor_ctl = sensor1.hrr * (farleft * farleft_steer
+			+ left * left_steer
+			+ forwards * left_steer
+			+ right * forwards_steer
+			+ farright * forwards_steer)
+	right_sensor_ctl = sensor2.hrr * (farleft * forwards_steer
+			+ left * forwards_steer
+			+ forwards * right_steer
+			+ right * right_steer
+			+ farright * farright_steer)
+
+	follow_obj2_ctl = obj2.hrr * (left_sensor_ctl + right_sensor_ctl)
+	#controller = obj1.hrr + follow_obj2_ctl + obj3.hrr
+	agent.controller = follow_obj2_ctl
 
 	clock = pygame.time.Clock()
 
