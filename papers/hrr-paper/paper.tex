@@ -346,7 +346,7 @@
 	% not capitalized unless they are the first or last word of the title.
 	% Linebreaks \\ can be used within to get better formatting as desired.
 	% Do not put math or special symbols in the title.
-	\title{Perceptual Symbol Grounding in \\Holographic Memories}
+	\title{Making scalars work in  \\Holographic Memories}
 	
 	
 	% author names and affiliations
@@ -398,24 +398,24 @@
 		A subset of VSAs, Holographic Reduced Representations (HRRs),
 		have proven to exhibit properties similar to human short-term
 		memory and are, as such, interesting for computational modeling.
-
 		In this paper we extend the HRR approach by introducing implicit,
-		topology-preserving, encoding/decoding procedures using radial
-		basis functions.
-		This involves randomly chosen permutations for encoding and
+		topology-preserving encoding and decoding procedures.
+		We propose moving away from traditional exact symbolic representation
+		to probabilistic one, replacing unique symbol identifiers with 
+		probability density function.
+		As we discover, this requires randomly chosen permutations for encoding and
 		their corresponding inverse for decoding. These are necessary
-		for the uniform distribution of signals in Fourier space where
+		for the uniform distribution of signals across Fourier space where
 		embedding takes place.
 		These novel encoding schemes, together with the extended operation
-		pipeline, are akin to so-called \emph{clean-up modules after memory
-		retrieval} (e.g., self-organizing maps). Effectively, encoding
-		implicitly represents the symbol, so no further lookup is needed.
-
-		We show that our encoding scheme does not have a negative impact
+		pipeline, are eliminating the need for so-called \emph{clean-up modules} after memory
+		retrieval (e.g., self-organizing maps). Effectively, encoding
+		implicitly represents the scalar symbol, so no further lookup is needed.
+		We show that our encoding scheme has a positive impact
 		on memory capacity in comparison to the original capacity
 		benchmark for HRRs by Plate
 		\cite{Plate:1995:HolographicReducedRepresentations}.
-		We also evaluate our memories in different robotics tasks: top-down visual
+		We also evaluate our memories in two different robotics tasks: top-down visual
 		attention shift and state machine scripting (holographic
 		controllers).
 	\end{abstract}
@@ -452,7 +452,7 @@ As described in \cite{Levy:2008:VectorSymbolicArchitectures}, every VSA has to i
 	Depending on the way these three operations are implemented we can distinguish several popular VSAs, such as Holographic Reduced Representations \cite{Plate:1995:HolographicReducedRepresentations}, Circular HRRs \cite{DeVine:2010:Semanticoscillations}, Binary Spatter Codes \cite{Kanerva:1994:SpatterCodeEncoding}, Holographic Graph Neurons \cite{Kleyko:2016:HolographicGraphNeuron}, Geometric Algebras \cite{Patyk-Lonska:2011:DistributedRepresentationsBased} and Random Permutations \cite{Recchia:2015:EncodingSequentialInformation}.
 The most widely used ones are HRRs and they are briefly explained in section \ref{sec:hrr}.
 Authors in \cite{Golosio:2015:CognitiveNeuralArchitecture} have used them to solve word embedding problem for extremely large dataset by replacing computationally expensive big matrix factorization with an iterative estimation algorithm based on HRRs.
-Some of the other work is centered around pattern recognition \cite{Kleyko:2016:PatternRecognitionVector}, functional large-scale cognitive architecture models \cite{Eliasmith:2012:LargeScaleModel} and representing scene structure \cite{scene-structure}.
+Some of the other work is centered around pattern recognition \cite{Kleyko:2016:PatternRecognitionVector} and functional large-scale cognitive architecture models \cite{Eliasmith:2012:LargeScaleModel}.
 Preliminary theoretical assumptions have been made about the ability to use them as agent controllers \cite{Levy:2013:LearningBehaviorHierarchies}, where a symbolic program is represented with a set of combined symbolic actions associated with actuator symbols and symbolic sensing.
 	
 	
@@ -518,12 +518,9 @@ cos(\pmb x, \pmb y) = \frac {\pmb x \cdot \pmb y}{||\pmb x|| \cdot ||\pmb y||}
 	Obtained values of similarity clearly distinguish the matching vectors. Concrete values that highlight this will be later presented in section \ref{sec:experiments}.	
 	
 	The process of converting a noisy result of probing into the closest known symbol is called the \textbf{clean-up procedure}.
-A straightforward way of implementing clean-up memory is using a lookup table, while other researchers show that any type of attractor network can be used (e.g. self-organizing maps).
+A straightforward way of implementing clean-up memory is using a lookup table, while other researchers show that any type of attractor network can be used (e.g. self-organizing maps). //TODO REFERENCE NEEDED
 
-	In the case of look-up tables, in order to decode a specific symbolic vector, the elements from a symbol table are iterated over, the similarity to each of the entries is calculated and the symbol which presented maximum similarity is returned. With the help of a threshold for the similarity value false-positives can be excluded. A look-up requires O(M), where M is the number of symbols known to the system. This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding.
-	//TODO Lookup Example
-	
-	This will consequently increase space complexity and may become infeasible, depending on the type of input used. While looking for existing elements may not require the entire table to be checked probing for non-existent ones will always traverse all entries only to show up empty at the end.When handling scalars symbolic encoding can be done by discretization of the whole input range into bins and assigning a random vector to each discrete value. This however may often prove to not satisfy the task needs any more.
+	In the case of look-up tables, in order to decode a specific symbolic vector, the elements from a symbol table are iterated over, the similarity to each of the entries is calculated and the symbol which presented maximum similarity is returned. With the help of a threshold for the similarity value false-positives can be excluded. A look-up requires O(M), where M is the number of symbols known to the system. This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding, which will be discussed in the following chapters. 
 	
 	\subsection{Holographic reduced representations}
 	\label{sec:hrr}
@@ -749,8 +746,6 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	\label{sec:experiments}
 	\subsection{Visual short term memory and top-down attention model}
 	
-	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length N, sampled from normal distribution (figure \ref{fig:encoding-object}). Locations of object in image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
-	
 	
 	\begin{figure}[th!]
 		\center
@@ -773,30 +768,33 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\caption{Encoding of "watch" object ID as randomly sampled vector}
 			\label{fig:encoding-object}
 		\end{subfigure}
-				\begin{subfigure}{0.8\columnwidth}
-					\center
-					\includegraphics[width=0.8\linewidth]{img/coord_example_3.png}
-					\caption{Representation of the complete visual scene, containing information about all 7 objects and their locations scrambled together}
-					\label{fig:encoding-scene}
-				\end{subfigure}
-			
-			\begin{subfigure}{0.45\columnwidth}
-				\center
-				\includegraphics[width=\linewidth]{img/probe_for_mug.png}
-				\caption{Probing for "mug" returns location probability for a mug}
-				\label{fig:probing-single}
-			\end{subfigure}
-			\begin{subfigure}{0.45\columnwidth}
-				\center
-				\includegraphics[width=\linewidth]{img/probe_for_pen.png}
-				\caption{Probing for "pen" return mixture of Gaussian distributions}
-				\label{fig:probing-double}
-			\end{subfigure}
-						
+		\begin{subfigure}{0.8\columnwidth}
+			\center
+			\includegraphics[width=0.8\linewidth]{img/coord_example_3.png}
+			\caption{Representation of the complete visual scene, containing information about all 7 objects and their locations scrambled together}
+			\label{fig:encoding-scene}
+		\end{subfigure}
+		
+		\begin{subfigure}{0.45\columnwidth}
+			\center
+			\includegraphics[width=\linewidth]{img/probe_for_mug.png}
+			\caption{Probing for "mug" returns location probability for a mug}
+			\label{fig:probing-single}
+		\end{subfigure}
+		\begin{subfigure}{0.45\columnwidth}
+			\center
+			\includegraphics[width=\linewidth]{img/probe_for_pen.png}
+			\caption{Probing for "pen" return mixture of Gaussian distributions}
+			\label{fig:probing-double}
+		\end{subfigure}
+		
 		
 		\caption{Representation of visual scene in short term symbolic memory. }
 		
 	\end{figure}
+	
+	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length N, sampled from normal distribution (figure \ref{fig:encoding-object}). Locations of object in image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
+	
 	
 	Due to the noisy nature of probing given by the slight loss of information in the binding process each symbol may have some amount of similarity to whatever other symbol it is compared to. However, even though this is the case, the similarity measure of bound symbols is consistently higher and can be clearly distinguished from others. Chart \ref{pgf:bar1} represents the result of probing at (19, -26.75), which is somewhere in between the keys and the red pen, as seen in figure \ref{fig:object-detection}.
 	
