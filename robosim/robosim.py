@@ -224,7 +224,6 @@ class Transform(object):
 
 class Wheel(object):
 	def __init__(self, velocity, wheel_dir=WheelDir.NONE):
-		self.hrr = HRR(random.random())
 		self.velocity = velocity
 		self._direction = self.direction = wheel_dir
 
@@ -323,9 +322,6 @@ class VisObject(object):
 	def __init__(self, shape, color):
 		self.transform = Transform()
 
-		# use random value to uniquely identify this object in HRR
-		self.hrr = HRR(random.random())
-
 		assert isinstance(shape, Shape)
 		self.shape = shape
 		assert Color.has_key(color)
@@ -370,16 +366,23 @@ class Sensor(VisObject):
 			if pos_vs >= 0.0 and pos_vs <= 1.0:
 				#print("{} - {}: {}".format(self.transform.local_position, o.color, pos_vs))
 				if output is None:
-					output = o.hrr * pos_vs
+					output = HRR(o) * pos_vs
 				else:
-					output += o.hrr * pos_vs
-		return self.hrr * output if output is not None else self.hrr
+					output += HRR(o) * pos_vs
+		return HRR(self) * output if output is not None else HRR(self)
+
+
+class Controller(object):
+	def __init__(self, controller, sensor, wheel):
+		self.controller = controller
+		self.sensor = sensor
+		self.wheel = wheel
 
 
 class Agent(VisObject):
 	def __init__(self, color, velocity=1.0):
 		super(Agent, self).__init__(Shape.HOUSE, color)
-		self.controller = None
+		self.controllers = []
 		self._sensors = []
 		self.steering = DiffSteer()
 		self.wheels = WheelSet(velocity=velocity)
@@ -400,28 +403,22 @@ class Agent(VisObject):
 	def step(self, objects, delta_time):
 		self.wheels.left = WheelDir.FORWARDS
 		self.wheels.right = WheelDir.BACKWARDS
-		max_similarity_left = 0.0
-		max_similarity_right = 0.0
-		for s in self._sensors:
-			#print("S: {}".format(s))
-			output = s.read(objects)
-			# probe controller with sensed value for current sensor
-			sensor_ctl = self.controller % s.hrr
+
+		for c in self.controllers:
+			output = c.sensor.read(objects)
+			max_similarity = 0.1  # NOTE: 0.1 as a similarity threshold
 			for obj, val in output:
-				obj_ctl = sensor_ctl % obj.hrr
-				actions = obj_ctl / self.wheels.left.hrr
-				print("s: {} l: {}".format(s.transform.local_position, actions))
+				obj_ctl = c.controller % HRR(obj)
+				actions = obj_ctl / float(val)
+				print("s: {} {} a: {}".format(c.sensor.transform.local_position, val, actions))
 				for a in actions:
-					if a[1] > max_similarity_left:
-						self.wheels.left = WheelDir(a[0])
-						max_similarity_left = a[1]
-				actions = obj_ctl / self.wheels.right.hrr
-				print("s: {} r: {}".format(s.transform.local_position, actions))
-				for a in actions:
-					if a[1] > max_similarity_right:
-						self.wheels.right = WheelDir(a[0])
-						max_similarity_right = a[1]
-			print ("s {} al: {} (sim={}) ar: {} (sim={})".format(s.transform.local_position, self.wheels.left.direction , max_similarity_left, self.wheels.right.direction, max_similarity_right))
+					if a[1] > max_similarity:
+						try:
+							c.wheel.direction = WheelDir(a[0])
+							max_similarity = a[1]
+						except: pass
+		print ("al: {} ar: {}".format(self.wheels.left.direction , self.wheels.right.direction))
+
 		pos, rot = self.steering.move(self.wheels,
 				self.transform.local_position,
 				self.transform.local_orientation, delta_time)
@@ -461,6 +458,9 @@ class World(object):
 	def step(self, delta_time):
 		for a in self.agents:
 			a.step(self.objects, delta_time)
+			# check world space limits
+			a.transform.local_position.x = min(max(a.transform.local_position.x, 0.0), self.size[0])
+			a.transform.local_position.y = min(max(a.transform.local_position.y, 0.0), self.size[1])
 
 
 class Visualization(object):
@@ -537,8 +537,8 @@ class Visualization(object):
 WORLD_SIZE = (500, 500)
 
 def main():
-	HRR.valid_range = [0.0,1.0]
-	HRR.set_size(4096)
+	HRR.valid_range = zip([0.0], [1.0])
+	HRR.set_size(40960)
 
 	pygame.init()
 
@@ -576,7 +576,7 @@ def main():
 	# sensors return object in [0,1], 0 is left, 1 is right
 	farleft = HRR(0.0)
 	left = HRR(0.25)
-	forwards = HRR(0.5)
+	front = HRR(0.5)
 	right = HRR(0.75)
 	farright = HRR(1.0)
 
@@ -592,35 +592,25 @@ def main():
 	# reset stddev to default
 	HRR.stddev = 0.02
 
-	# define motor control for directions
-	farleft_steer = (agent.wheels.left.hrr * HRR(WheelDir.BACKWARDS)
-			+ agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
-	#left_steer = (agent.wheels.left.hrr * HRR(WheelDir.NONE)
-	left_steer = (agent.wheels.left.hrr * HRR(WheelDir.BACKWARDS)
-			+ agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
-	forwards_steer = (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS)
-			+ agent.wheels.right.hrr * HRR(WheelDir.FORWARDS))
-	right_steer = (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS)
-			#+ agent.wheels.right.hrr * HRR(WheelDir.NONE))
-			+ agent.wheels.right.hrr * HRR(WheelDir.BACKWARDS))
-	farright_steer = (agent.wheels.left.hrr * HRR(WheelDir.FORWARDS)
-			+ agent.wheels.right.hrr * HRR(WheelDir.BACKWARDS))
+	left_sensor_ctl = (farleft * HRR(WheelDir.FORWARDS)
+			+ left * HRR(WheelDir.FORWARDS)
+			+ front * HRR(WheelDir.FORWARDS)
+			+ right * HRR(WheelDir.FORWARDS)
+			+ farright * HRR(WheelDir.FORWARDS))
 
-	# associate sensors with correct directional motor control
-	left_sensor_ctl = sensor1.hrr * (farleft * farleft_steer
-			+ left * left_steer
-			+ forwards * left_steer
-			+ right * forwards_steer
-			+ farright * forwards_steer)
-	right_sensor_ctl = sensor2.hrr * (farleft * forwards_steer
-			+ left * forwards_steer
-			+ forwards * right_steer
-			+ right * right_steer
-			+ farright * farright_steer)
+	right_sensor_ctl = (farleft * HRR(WheelDir.FORWARDS)
+			+ left * HRR(WheelDir.FORWARDS)
+			+ front * HRR(WheelDir.FORWARDS)
+			+ right * HRR(WheelDir.FORWARDS)
+			+ farright * HRR(WheelDir.FORWARDS))
 
-	follow_obj2_ctl = obj2.hrr * (left_sensor_ctl + right_sensor_ctl)
-	#controller = obj1.hrr + follow_obj2_ctl + obj3.hrr
-	agent.controller = follow_obj2_ctl
+	left_follow_obj_ctl = HRR(obj2) * left_sensor_ctl
+	#left_follow_obj_ctl = HRR(obj1) + HRR(obj2) * left_sensor_ctl + HRR(obj3)
+	right_follow_obj_ctl = HRR(obj2) * right_sensor_ctl
+	#right_follow_obj_ctl = HRR(obj1) + HRR(obj2) * right_sensor_ctl + HRR(obj3)
+
+	agent.controllers.append(Controller(left_follow_obj_ctl, sensor1, agent.wheels.left))
+	agent.controllers.append(Controller(right_follow_obj_ctl, sensor2, agent.wheels.right))
 
 	clock = pygame.time.Clock()
 
