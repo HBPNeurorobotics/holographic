@@ -400,7 +400,7 @@
 		memory and are, as such, interesting for computational modeling.
 
 		In this paper we extend the HRR approach by introducing implicit,
-		topology-preserving, encoding/decoding procedures using radial
+		topology-preserving encoding/decoding procedures using radial
 		basis functions.
 		This involves randomly chosen permutations for encoding and
 		their corresponding inverse for decoding. These are necessary
@@ -459,7 +459,7 @@ Preliminary theoretical assumptions have been made about the ability to use them
 	\begin{figure}
 		\center
 		\includegraphics[width=0.9\columnwidth]{img/probe_for_pen_w_img.png}
-		\caption{In-memory representation of top-down attention shift for visual scene short-term memory. Result shows attention distribution for a symbol "pen". In probabilistic sense it can be understood as probability of pen being at a certain position.}
+		\caption{In-memory representation of a top-down attention shift for visual scene short-term memory. The result shows attention distribution for a symbol "pen". In probabilistic sense it can be understood as the probability of a pen being at a certain position.}
 	\end{figure}
 	
 	
@@ -478,15 +478,15 @@ In other words, addressing multiple fundamentally different problems with simila
 In order to use VSA operations all types of required inputs need to first be represented as symbols, which are vectors of fixed size. The basic approach is to pick these vectors randomly once for each input used in any operation and maintain these pairs in a separate data structure.	
 	\\
 	
-	\textbf{Association} (also called "binding") is an operation of linking two operands together, resulting in a vector of the same size which is dissimilar (or orthogonal) to the original vectors, but also contains scrambled information from both of them.
+	\textbf{Association} (also called "binding") is the operation of linking two operands together, resulting in a vector of the same size which is dissimilar (or orthogonal) to the original vectors, but also contains scrambled information from both of them.
 For instance, linking the property "red" to object "triangle" can be done using the binding operation as follows:
 	
 	\begin{equation}
 	memory_1 = red \otimes triangle
 	\end{equation}
 	
-	\textbf{Superposition} is the operation of extending a set of items that have already been memorized with another item (or binding of two or more of them).
-As an example, a memory of "red triangle and blue circle" can be formed in following way:
+	\textbf{Superposition} is the operation of extending a set of items, regardless of what is already contained in them.
+As an example, a memory of "red triangle and blue circle" can be formed in the following way:
 	\begin{equation}
 	memory_2 = memory_1 + blue \otimes circle
 	\end{equation}
@@ -499,7 +499,7 @@ I.e. in this scenario the question "What color is the triangle?" could be asked 
 	\end{equation}
 	
 	
-	The probing operation assumes the existence of an inverse element to association, so the previous equation can be interpreted and explained in following way:
+	The probing operation assumes the existence of inverse elements, so the previous equation can be interpreted and explained as such:
 	\begin{multline}
 	memory_2 \otimes triangle'=\\
 	(red \otimes triangle + blue \otimes circle) \otimes triangle'=\\
@@ -508,7 +508,7 @@ I.e. in this scenario the question "What color is the triangle?" could be asked 
 	\approx red
 	\end{multline}
 	
-	where $triangle'$ represents inverse of $triangle$.
+	Here $triangle'$ represents the inverse of $triangle$.
 The resulting vector will be a composition of something that is very similar to $red$ and something that doesn't resemble anything meaningful from the symbol table, so it can be treated as negligible noise.	A usual way of computing similarity is the cosine distance, which for two vectors \pmb x and \pmb y is calculated as follows:
 	
 	\begin{equation}
@@ -517,41 +517,38 @@ cos(\pmb x, \pmb y) = \frac {\pmb x \cdot \pmb y}{||\pmb x|| \cdot ||\pmb y||}
 	
 	Obtained values of similarity clearly distinguish the matching vectors. Concrete values that highlight this will be later presented in section \ref{sec:experiments}.	
 	
-	The process of converting a noisy result of probing into the closest known symbol is called the \textbf{clean-up procedure}.
+	The process of converting the noisy result of probing into the closest known symbol is called the \textbf{clean-up procedure}.
 A straightforward way of implementing clean-up memory is using a lookup table, while other researchers show that any type of attractor network can be used (e.g. self-organizing maps).
 
-	In the case of look-up tables, in order to decode a specific symbolic vector, the elements from a symbol table are iterated over, the similarity to each of the entries is calculated and the symbol which presented maximum similarity is returned. With the help of a threshold for the similarity value false-positives can be excluded. A look-up requires O(M), where M is the number of symbols known to the system. This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding.
-	//TODO Lookup Example
-	
-	This will consequently increase space complexity and may become infeasible, depending on the type of input used. While looking for existing elements may not require the entire table to be checked probing for non-existent ones will always traverse all entries only to show up empty at the end.When handling scalars symbolic encoding can be done by discretization of the whole input range into bins and assigning a random vector to each discrete value. This however may often prove to not satisfy the task needs any more.
+	In the case of look-up tables, in order to decode a specific symbolic vector, the elements from a symbol table are iterated over, the similarity to each of the entries is calculated and the symbol which presented maximum similarity is returned. With the help of a threshold for the similarity value false-positives can be excluded. A look-up requires O(n), where $n$ is the number of symbols known to the system. This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding. The space complexity will increase and may become infeasible, depending on the number of inputs needed. One way of handling symbolic scalar encoding is to discretize the whole input range into bins and assigning a random vector to each discrete value. This however may often prove to not satisfy the task needs any more.
 	
 	\subsection{Holographic reduced representations}
 	\label{sec:hrr}
 	
-	Holographic Reduced Representations are VSAs which implement the operation of binding as circular convolution. An option to calculating this is with the help of discrete Fast Fourier Transformations, in short FFTs. Taking $f(x)$ to describe an FFT, with $f^{-1}(x)$ as its inverse, circular convolution can be calculated as follows:
+	Holographic Reduced Representations are VSAs which implement the operation of binding as circular convolution. One option for calculating it is with the help of discrete Fast Fourier Transformations, in short FFTs. Taking $f(x)$ to describe an FFT, with $f^{-1}(x)$ as its inverse, circular convolution can be calculated as follows:
 	
 	\begin{equation}
 	\pmb a = f^{-1}(f(\pmb x) * f(\pmb y))
 	\end{equation}
 	
-	where \pmb a is the result of convolution, and \pmb x and \pmb y are symbolic vectors of size $N$.
-Superposition is implemented as a simple element-wise vector addition. Taking the result of the previously displayed convolution and superposing it with some vector \pmb b is done as follows:
+	where $\pmb a$ is the result of convolution, and $\pmb x$ and $\pmb y$ are symbolic vectors of size $n$.
+Superposition is implemented as a simple element-wise vector addition. Taking the result of the previously displayed convolution and superposing it with some vector $\pmb b$ is done as follows:
 
 	\begin{equation}
 	\pmb m = \pmb a + \pmb b
 	\end{equation}
 
-The resulting vector of the superposition operation \pmb m can then be probed by using the inverse of circular convolution, which is circular correlation. Plainly put probing can be viewed as binding with the "inverse" of a vector in Fourier space:
+The resulting vector of the superposition operation $\pmb m$ can then be probed by using the inverse of circular convolution, which is circular correlation. Plainly put probing can be viewed as binding with the "inverse" of a vector in Fourier space:
 	
 	\begin{equation}
-	\pmb y' = f^{-1}(f(\pmb m) * f(\pmb x)^{-1})
+	\pmb y^* = f^{-1}(f(\pmb m) * f(\pmb x)^{-1})
 	\end{equation} 
 
-Following the previous formulas as a series of operations the vector \pmb y' will be similar to vector \pmb y, but not entirely the same due to the noisy influence of vector \pmb b. The inverse referred to here is gained by calculating the complex conjugate of the vector's entries. Complex conjugates are simply the same values with negated imaginary parts.
+Following the previous formulas as a series of operations the vector $\pmb y^*$ will be similar to vector $\pmb y$, but not entirely the same due to the noisy influence of vector $\pmb b$. The inverse in Fourier space referred to here is gained by calculating the complex conjugate of the vector's entries. Complex conjugates are simply the same values with negated imaginary parts.
 		
 	Performing FFTs has no invariant regarding the mean of the resulting vector entries and can produce all sorts of results.
 Due to this, when probing, we would receive vectors which had the correct relative distance between their values, i.e.
-the correct "shape", but would be shifted, stretched or squeezed on the Y-axis.This lead to vectors falsely being regarded as dissimilar to each other, and can be solved by performing two normalization steps:
+the correct "shape", but would be shifted, stretched or squeezed along the Y-axis. This lead to vectors falsely being regarded as dissimilar to each other, and can be solved by performing two normalization steps before comparing:
 
 	\begin{equation}
 	x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|}
@@ -580,7 +577,7 @@ Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what the
 With this result it becomes obvious that unfortunately lots of information is lost.
 If this result is probed with the same random vector used in binding something similar to the initial Gaussian distribution is expected.
 And yet figure \ref{no-perm-b} presents no such outcome.
-While there is a peak at the initial value which is probed for lots of other peaks also arise, making it impossible to detect which one is correct.
+While there is a peak at the initial value lots of other peaks also arise, making it impossible to detect which one is correct.
 
 	
 	\begin{figure}[th!]
@@ -600,16 +597,15 @@ In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a G
 		\label{no-perm}
 	\end{figure}
 	
-	This effect is due to the fact that circular convolution is based on Fourier transformations and the lack of frequencies present in encoded vectors becomes apparent in Fourier space as well.
-Figure \ref{fft} highlights this.
-All the information of a Gaussian distribution is crammed into the lowest and highest values of the Fourier transformation, resulting in a high loss.
+	This effect is due to the fact that circular convolution is based on Fourier transformations. A lack of frequencies in the Fourier space of the encoded scalar becomes apparent, as highlighted in figure \ref{fft}.
+All the information of a Gaussian distribution is crammed into the lowest and highest values of the Fourier transformation, resulting in a high loss of information.
 In these circumstances, when probing for a scalar, the vector received is in turn recreated of too few frequencies and will not come close to resembling the original Gaussian distribution.
 
 
 \begin{figure}[th!]
 	\includegraphics[width=\columnwidth]{img/scalar-pre-perm-fft.png}
 	\includegraphics[width=\columnwidth]{img/scalar-random-fft.png}
-	\caption{Fourier analysis of 1D symbols: Gaussian distribution (top row) and same dimensional vector randomly sampled from normal distribution (bottom row). It is obvious that latter is uniformly spread across the whole vector, while the former is concentrated around 2 boundary values leading to increased interference between multiple items stored one over another (when added in Fourier space).}
+	\caption{Fourier analysis of 1D symbols: a Gaussian distribution (top row) and a randomly sampled vector of the same size (bottom row). It is obvious that the latter's information in Fourier space is uniformly spread across the whole length, while the former's is concentrated around 2 boundary points.}
 	\label{fft}
 \end{figure}
 	
@@ -627,7 +623,7 @@ As such the resulting vector will present lots of jumps in value, which have a s
 	Working with such a vector makes it possible to successfully probe for scalars and receive a Gaussian distribution overlapped with some noise.
 All of this can be seen in figure \ref{perm}, which depicts the exact same operations as figure \ref{no-perm}, but using a permuted version of a Gaussian distribution.
 The result in figure \ref{perm-b} clearly shows a spike at the expected spot in the sample range.
-This vector can be smoothed out, after which the peak can easily be identified and the initial scalar can be recovered.
+This vector can now be smoothed out, after which the peak can easily be identified and the initial scalar can be recovered.
 	
 	\begin{figure}
 		\begin{subfigure}{1\columnwidth}
@@ -640,12 +636,12 @@ This vector can be smoothed out, after which the peak can easily be identified a
 			\caption{Probing}
 			\label{perm-b}
 		\end{subfigure}
-		\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian distribution for value 8 on a scale to 10 with the symbolic representation of "ball", which is random.
-In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian distribution for 8, mixed with some noise.}
+		\caption{Figure \ref{perm-a} shows the binding of the permuted Gaussian distribution for the value 8 on a scale to 10 with the symbolic representation of "ball", which is random.
+In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaussian distribution for the value8, mixed with some noise.}
 		\label{perm}
 	\end{figure}
 	
-	Algorithms 1 and 2 show, respectively, pseudo code for pipeline before and after the suggested modification are introduced.
+	Algorithms 1 and 2 show the operations pipeline before and after the suggested modification are introduced in pseudo code.
 	
 	\begin{algorithm}
 		\caption{Original pipeline}
@@ -680,15 +676,16 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 		\begin{algorithm}
 			\caption{Modified pipeline}
 			\begin{algorithmic}[1]
-				\State $P \gets chooseRandomPermutation(N)$
+				\State $P \gets chooseRandomPermutation(n)$
 				\State $m \gets initEmptyMemory()$
 				\ForAll{$(symbol_1, symbol_2)$}
-				\State $enc_1 \gets FFT(permute(enc(symbol_1, N), P))$
-				\State $enc_2 \gets FFT(permute(enc(symbol_2, N), P))$
-				\State $m \gets m + enc_1 \otimes enc_2$
+				\State $enc_1 \gets FFT(permute(enc(symbol_1, n), P))$
+				\State $enc_2 \gets FFT(permute(enc(symbol_2, n), P))$
+				\State $m \gets m + IFFT(enc_1 \otimes enc_2)$
 				\EndFor	
 				\Function{ProbeMemory}{memory, op}
-				\State $r \gets permute(IFFT(memory \oslash op), P^{-1})$
+				\State $r \gets IFFT(FFT(memory) \oslash FFT(op))$
+				\State $r \gets permute(r, P^{-1})$
 				\State $cleanResult \gets argmax(r)$
 				
 				\Return $cleanResult$
@@ -696,7 +693,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\end{algorithmic}
 		\end{algorithm}
 		
-		In contrast, Algorithm 2 shows pipeline with proposed changes. First line chooses a fixed random permutation of $N$ elements used throughout the whole process. It can bee seen that there is no initial loop to assign symbolic representations to all symbols. They are, instead, constructed according to need using function $enc(value, N)$, which returns discrete sampled normal distribution vector of N elements, centered around $value$. This perfectly sampled normal distribution is permuted using permutation $P$ in lines 4 and 5, so its frequency representation contains uniform spread over the whole spectrum, as explained earlier in this chapter. Probing operation consists of applying inverse permutation $P^{-1}$ after IFFT (line 9). Since this gives a noisy version of initial normal distribution (shown in figure \ref{perm-b}), the only thing that needs to be done is to identify the mean of the distribution. Complexity of this operation is linear w.r.t. length of the vector $N$, while in case of Algorithm 1 it is linear w.r.t. to number of symbols stored in the lookup table.
+		In contrast, Algorithm 2 shows pipeline with proposed changes. First line chooses a fixed random permutation of $n$ elements used throughout the whole process. It can bee seen that there is no initial loop to assign symbolic representations to all symbols. They are, instead, constructed according to need using function $enc(value, n)$, which returns discrete sampled normal distribution vector of $n$ elements, centered around $value$. This perfectly sampled normal distribution is permuted using permutation $P$ in lines 4 and 5, so its frequency representation contains uniform spread over the whole spectrum, as explained earlier in this chapter. Probing operation consists of applying inverse permutation $P^{-1}$ after IFFT (line 9). Since this gives a noisy version of initial normal distribution (shown in figure \ref{perm-b}), the only thing that needs to be done is to identify the mean of the distribution. Complexity of this operation is linear w.r.t. length of the vector $N$, while in case of Algorithm 1 it is linear w.r.t. to number of symbols stored in the lookup table.
 		
 
 	\subsection{Encoding coordinate symbols}
@@ -719,7 +716,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\begin{subfigure}{0.45\columnwidth}
 				\center
 				\includegraphics[width=1\columnwidth]{img/capacity.png}
-				\caption{Binding of pairs of random vectors (original pipeline).}
+				\caption{Binding pairs of random vectors (original pipeline).}
 				\label{fig:capacity}
 			\end{subfigure}
 			\begin{subfigure}{0.45\columnwidth}
@@ -755,7 +752,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	\label{sec:experiments}
 	\subsection{Visual short term memory and top-down attention model}
 	
-	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length N, sampled from normal distribution (figure \ref{fig:encoding-object}). Locations of object in image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
+	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in a number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length $n$, which are sampled from a normal distribution (figure \ref{fig:encoding-object}). The locations of objects in the image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
 	
 	
 	\begin{figure}[th!]
@@ -763,20 +760,20 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 		\begin{subfigure}{1.0\columnwidth}
 			\center
 			\includegraphics[width=0.6\columnwidth]{img/map_original.jpg}
-			\caption{Original scene and set of detected objects}
+			\caption{Original scene and a set of detected objects}
 			\label{fig:object-detection}
 		\end{subfigure}
 		
 		\begin{subfigure}{0.45\columnwidth}
 			\center
 			\includegraphics[width=\linewidth]{img/coord_example_1.png}
-			\caption{Encoding of (x,y) location for "watch"}
+			\caption{Encoding of location (x,y) for "watch"}
 			\label{fig:encoding-coord}
 		\end{subfigure}
 		\begin{subfigure}{0.45\columnwidth}
 			\center
 			\includegraphics[width=\linewidth]{img/coord_example_2.png}
-			\caption{Encoding of "watch" object ID as randomly sampled vector}
+			\caption{Encoding of the "watch" object ID as a randomly sampled vector}
 			\label{fig:encoding-object}
 		\end{subfigure}
 				\begin{subfigure}{0.8\columnwidth}
@@ -795,7 +792,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\begin{subfigure}{0.45\columnwidth}
 				\center
 				\includegraphics[width=\linewidth]{img/probe_for_pen.png}
-				\caption{Probing for "pen" return mixture of Gaussian distributions}
+				\caption{Probing for "pen" returns location probability with two areas.}
 				\label{fig:probing-double}
 			\end{subfigure}
 						
@@ -804,9 +801,9 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 		
 	\end{figure}
 	
-	Due to the noisy nature of probing given by the slight loss of information in the binding process each symbol may have some amount of similarity to whatever other symbol it is compared to. However, even though this is the case, the similarity measure of bound symbols is consistently higher and can be clearly distinguished from others. Chart \ref{pgf:bar1} represents the result of probing at (19, -26.75), which is somewhere in between the keys and the red pen, as seen in figure \ref{fig:object-detection}.
+	Due to the noisy nature of probing given by the slight loss of information in the binding process each symbol may have some amount of similarity to whatever other symbol it is compared to. However, even though this is the case, the similarity measure of bound symbols is consistently higher and can be clearly distinguished from others. Chart \ref{pgf:bar1} represents the result of probing at $(19, -26.75)$, which is somewhere in between the keys and the red pen, as seen in figure \ref{fig:object-detection}.
 	
-	 As we can see all symbols that are nowhere near the position present similarities well below 5 \%, while both close matches scored over 20 \%. Spot on probes may even attain values of over 50 \%. The example in chart \ref{pgf:bar2} is for a probe at(-13, 21.5), which is further away from the center of an object region. But even though the dark pen and the wallet are further apart the result of probing still yields distinctly higher similarities for them as opposed to objects further away. 
+	 As we can see all symbols that are nowhere near the position present similarities well below $0.05$ (values may also be negative), while both close matches scored over $0.2$. Spot on probes may even attain values of over $0.5$. The example in chart \ref{pgf:bar2} is for a probe at $(-13, 21.5)$, which is further away from the center of an object region. But even though the dark pen and the wallet are further apart the result of probing still yields distinctly higher similarities for them as opposed to objects further away. 
 	
 	\begin{figure}[th!]
 	\center
@@ -819,11 +816,11 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
           ]
             \addplot[ybar,fill=blue] coordinates {
                 (keys,   0.22827929349034107)
-                (mouse, 0.023035819302988644)
+                (mouse, -0.023035819302988644)
                 (mug, 0.025309361445942102)
                 (pen, 0.2098596398998358)
                 (wallet, 0.034187368731921304)
-                (watch, 0.018549398363469777)
+                (watch, -0.018549398363469777)
             };
         \end{axis}
     \end{tikzpicture}
@@ -838,7 +835,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
             ylabel = Similarity
           ]
             \addplot[ybar,fill=blue] coordinates {
-                (keys,   0.020032173214673016)
+                (keys,   -0.020032173214673016)
                 (mouse, 0.027742071303527464)
                 (mug, 0.03443254630997427)
                 (pen, 0.089801145874187763)
@@ -860,7 +857,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	
 \subsection{Symbolic scripting (holographic controllers)}
 
-We have used our system to demonstrate a mechanism for encoding neural programs and processes through series of associated action, perception and actuator symbols. We call this mechanism for defining controllers using holographic memories "symbolic scripting".
+We have used our system to demonstrate a mechanism for encoding neural programs and processes through a series of associated action, perception and actuator symbols. We call this mechanism for defining controllers using holographic memories "symbolic scripting".
 
 
 \begin{figure}[th!]
@@ -897,14 +894,14 @@ The basic idea is centered around symbolic representations of all three parts in
 	\item \textbf{senses} are preprocessed (classified) sensory stream labels, such as "bright", "dark", "touching", "falling\_down", "rolling", etc.
 \end{enumerate}
 
-An example of this kind of symbolic script is given on figure \ref{fig:symbolic-scripting}. Memory encodes light following behavior.
+An example of this kind of symbolic script is given in figure \ref{fig:symbolic-scripting}. Here the memory encodes a light following behaviour.
 
 	\section{Conclusions}
 	We have introduced a mechanism for intrinsic symbol encoding/decoding for Holographic Reduced Representations.
 As a consequence, our approach eliminates the need for clean-up memories as they are described in literature.
-Instead, result of probing operation directly gives interpretable symbol, which can be decoded in constant computational time.
-In other words, time needed for encoding/decoding is completely ignorant of total number of symbols memorized, allowing memories that can store large corpus of different symbols.
-	A concrete biophysical evidence and theoretical model of implementation of convolution in brain is, unfortunately, still missing.
+Instead, results of probing operations directly give interpretable symbols, which can be decoded in constant computational time.
+In other words, time needed for encoding/decoding is completely ignorant of the total number of symbols memorized, allowing memories that can store a large corpus of different symbols.
+	A concrete biophysical evidence and theoretical model of implementation of convolution in the brain is, unfortunately, still missing.
 	
 	%% Add entry to the table of contents for the bibliography
 	\printbibliography[heading=bibintoc]
