@@ -394,7 +394,7 @@
 		Vector Symbolic Architectures (VSAs) define a set of operations
 		for association, (compressed) storage, manipulation and retrieval
 		of symbolic concepts, represented as fixed-length vectors in
-		${\rm I\!R}^N$.
+		${\rm I\!R}^n$.
 		A subset of VSAs, Holographic Reduced Representations (HRRs),
 		have proven to exhibit properties similar to human short-term
 		memory and are, as such, interesting for computational modeling.
@@ -520,7 +520,7 @@ cos(\pmb x, \pmb y) = \frac {\pmb x \cdot \pmb y}{||\pmb x|| \cdot ||\pmb y||}
 	The process of converting the noisy result of probing into the closest known symbol is called the \textbf{clean-up procedure}.
 A straightforward way of implementing clean-up memory is using a lookup table, while other researchers show that any type of attractor network can be used (e.g. self-organizing maps).
 
-	In the case of look-up tables, in order to decode a specific symbolic vector, the elements from a symbol table are iterated over, the similarity to each of the entries is calculated and the symbol which presented maximum similarity is returned. With the help of a threshold for the similarity value false-positives can be excluded. A look-up requires O(n), where $n$ is the number of symbols known to the system. This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding. The space complexity will increase and may become infeasible, depending on the number of inputs needed. One way of handling symbolic scalar encoding is to discretize the whole input range into bins and assigning a random vector to each discrete value. This however may often prove to not satisfy the task needs any more.
+	In the case of lookup tables, in order to decode a specific symbolic vector, the elements from a symbol table are iterated over, the similarity to each of the entries is calculated and the symbol which presented maximum similarity is returned. With the help of a threshold for the similarity value false-positives can be excluded. A lookup requires O(n), where $n$ is the number of symbols known to the system. This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding. The space complexity will increase and may become infeasible, depending on the number of inputs needed. One way of handling symbolic scalar encoding is to discretize the whole input range into bins and assigning a random vector to each discrete value. This however may often prove to not satisfy the task needs any more.
 	
 	\subsection{Holographic reduced representations}
 	\label{sec:hrr}
@@ -653,10 +653,10 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\ForAll{$(symbol_1, symbol_2)$}
 			\State $enc_1 \gets FFT(t_{symbol_1})$
 			\State $enc_2 \gets FFT(t_{symbol_2})$
-			\State $m \gets m + IFFT(enc_1 \otimes enc_2$)
+			\State $m \gets m + IFFT(enc_1 * enc_2$)
 			\EndFor		
 			\Function{ProbeMemory}{memory, op}
-			\State $result\gets IFFT(FFT(memory)\oslash FFT(op))$
+			\State $result\gets IFFT(FFT(memory)* FFT(op)^{-1})$
 			
 			\ForAll{$symbol$}
 			\State $s \gets cosineSimilarity(t_{symbol}, result)$
@@ -671,7 +671,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	\end{algorithm}
 	
 	
-	Lines 1-3 assign a random vector representation to each symbol known to the system prior to any other operations. This lookup table is stored in array $t$. Lines 4-9 initialize the memory $m$ with arbitrary amount of pairs of associated scalars. Function $ProbeMemory(memory, op)$ returns symbol associated with provided $op$. Line 11 performs circular correlation and stores noisy result of unbinding in $s$. Lines 12-18 loop through the whole lookup table and find the maximum similarity vector to $s$.
+	Lines 1-3 assign a random vector representation to each symbol known to the system prior to any other operations. This lookup table is stored in an array $t$. Lines 4-9 initialize the memory $m$ with an arbitrary amount of pairs of associated scalars. Function $ProbeMemory(memory, op)$ returns a symbol associated with provided $op$. Line 11 performs circular correlation and stores the noisy result of unbinding in $s$. Lines 12-18 loop through the whole lookup table and find the maximum similarity vector to $s$.
 		
 		\begin{algorithm}
 			\caption{Modified pipeline}
@@ -681,10 +681,10 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 				\ForAll{$(symbol_1, symbol_2)$}
 				\State $enc_1 \gets FFT(permute(enc(symbol_1, n), P))$
 				\State $enc_2 \gets FFT(permute(enc(symbol_2, n), P))$
-				\State $m \gets m + IFFT(enc_1 \otimes enc_2)$
+				\State $m \gets m + IFFT(enc_1 * enc_2)$
 				\EndFor	
 				\Function{ProbeMemory}{memory, op}
-				\State $r \gets IFFT(FFT(memory) \oslash FFT(op))$
+				\State $r \gets IFFT(FFT(memory) * FFT(op)^{-1})$
 				\State $r \gets permute(r, P^{-1})$
 				\State $cleanResult \gets argmax(r)$
 				
@@ -693,7 +693,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\end{algorithmic}
 		\end{algorithm}
 		
-		In contrast, Algorithm 2 shows pipeline with proposed changes. First line chooses a fixed random permutation of $n$ elements used throughout the whole process. It can bee seen that there is no initial loop to assign symbolic representations to all symbols. They are, instead, constructed according to need using function $enc(value, n)$, which returns discrete sampled normal distribution vector of $n$ elements, centered around $value$. This perfectly sampled normal distribution is permuted using permutation $P$ in lines 4 and 5, so its frequency representation contains uniform spread over the whole spectrum, as explained earlier in this chapter. Probing operation consists of applying inverse permutation $P^{-1}$ after IFFT (line 9). Since this gives a noisy version of initial normal distribution (shown in figure \ref{perm-b}), the only thing that needs to be done is to identify the mean of the distribution. Complexity of this operation is linear w.r.t. length of the vector $N$, while in case of Algorithm 1 it is linear w.r.t. to number of symbols stored in the lookup table.
+		In contrast, Algorithm 2 shows a pipeline with our proposed changes. The first line chooses a fixed random permutation of $n$ elements used throughout the whole process. There is no initial loop to assign symbolic representations to all symbols. They are, instead, constructed according to need using function $enc(value, n)$. This function returns a discrete sampled Gaussian distribution vector of $n$ elements, centred around a chosen $value$. The vector is then permuted using a permutation $P$ in lines 4 and 5, so its frequency representation contains uniform spread over the whole spectrum, as explained earlier in this chapter. The probing operation consists of applying an inverse permutation $P^{-1}$ after IFFT (line 10). Since this returns a noisy version of the initial Gaussian distribution (shown in figure \ref{perm-b}), the only thing that needs to be done is to identify the peak of the distribution. The complexity of this operation is linear w.r.t. length of the vector $n$, while in the case of Algorithm 1 it is linear w.r.t. to number of symbols stored in the lookup table.
 		
 
 	\subsection{Encoding coordinate symbols}
@@ -716,7 +716,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 			\begin{subfigure}{0.45\columnwidth}
 				\center
 				\includegraphics[width=1\columnwidth]{img/capacity.png}
-				\caption{Binding pairs of random vectors (original pipeline).}
+				\caption{Binding pairs of random vectors. Accuracy decreases with more bindings.}
 				\label{fig:capacity}
 			\end{subfigure}
 			\begin{subfigure}{0.45\columnwidth}
@@ -752,7 +752,7 @@ In figure \ref{perm-b} "ball" is being probed, and the expected result is a Gaus
 	\label{sec:experiments}
 	\subsection{Visual short term memory and top-down attention model}
 	
-	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in a number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length $n$, which are sampled from a normal distribution (figure \ref{fig:encoding-object}). The locations of objects in the image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
+	In this experiment a system is given a monocular stream as an input. An arbitrary algorithm is used to perform object detection and recognition, resulting in a number of 2D coordinates associated with respective object names (figure \ref{fig:object-detection}). Object names are strings and are encoded as random vectors of length $n$, which are sampled from a Gaussian distribution (figure \ref{fig:encoding-object}). The locations of objects in the image plane are 2D coordinates $(x,y)$ and they are perceptually grounded symbols (figure \ref{fig:encoding-coord}).
 	
 	
 	\begin{figure}[th!]
