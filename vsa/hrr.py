@@ -278,7 +278,7 @@ class HRR(VSA):
             elif isinstance(input_value, (frozenset, list, np.ndarray, set, tuple)):
                 result = self.permute(helpers.normalize(self.coordinate_encoder(input_value, encode_range)))
             else:    
-                result = self.generateVector() 
+                result = helpers.normalize(self.generateVector()) 
                 HRR.mapping[input_value] = result
             if self.visualize:    
                 print("Encoded ", input_value)    
