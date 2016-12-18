@@ -373,10 +373,9 @@ class Sensor(VisObject):
 
 
 class Controller(object):
-	def __init__(self, controller, sensor, wheel):
+	def __init__(self, controller, sensor):
 		self.controller = controller
 		self.sensor = sensor
-		self.wheel = wheel
 
 
 class Agent(VisObject):
@@ -406,16 +405,26 @@ class Agent(VisObject):
 
 		for c in self.controllers:
 			output = c.sensor.read(objects)
-			max_similarity = 0.1  # NOTE: 0.1 as a similarity threshold
+			max_similarity_left = 0.1  # NOTE: 0.1 as a similarity threshold
+			max_similarity_right = 0.1  # NOTE: 0.1 as a similarity threshold
 			for obj, val in output:
 				obj_ctl = c.controller % HRR(obj)
-				actions = obj_ctl / float(val)
-				print("s: {} {} a: {}".format(c.sensor.transform.local_position, val, actions))
+				actions_ctl = obj_ctl % float(val)
+				actions = actions_ctl / HRR(self.wheels.left)
+				print("{} {} al: {}".format(obj.color, val, actions))
 				for a in actions:
-					if a[1] > max_similarity:
+					if a[1] > max_similarity_left:
 						try:
-							c.wheel.direction = WheelDir(a[0])
-							max_similarity = a[1]
+							self.wheels.left.direction = WheelDir(a[0])
+							max_similarity_left = a[1]
+						except: pass
+				actions = actions_ctl / HRR(self.wheels.right)
+				print("{} {} ar: {}".format(obj.color, val, actions))
+				for a in actions:
+					if a[1] > max_similarity_right:
+						try:
+							self.wheels.right.direction = WheelDir(a[0])
+							max_similarity_right = a[1]
 						except: pass
 		print ("al: {} ar: {}".format(self.wheels.left.direction , self.wheels.right.direction))
 
@@ -545,18 +554,14 @@ def main():
 	world = World(size=WORLD_SIZE)
 	vis = Visualization(world.size)
 
-	agent = Agent(color="RED", velocity=0.05)
+	agent = Agent(color="RED", velocity=0.07)
 	agent.transform.local_position = Vec2(10, 10)
 	#agent.transform.local_orientation = Rot2(-math.pi / 3.0)
 	agent.transform.local_orientation = Rot2(random.random() * 2.0 * math.pi)
 	sensor1 = Sensor(color="GREEN", field_of_view=0.2*math.pi)
-	sensor1.transform.local_position = Vec2(-3, 0)
-	sensor1.transform.local_orientation = Rot2(0.08 * math.pi)
-	sensor2 = Sensor(color="BLUE", field_of_view=0.2*math.pi)
-	sensor2.transform.local_position = Vec2(3, 0)
-	sensor2.transform.local_orientation = Rot2(-0.08 * math.pi)
+	#sensor1.transform.local_position = Vec2(3, 0)
+	#sensor1.transform.local_orientation = Rot2(0.08 * math.pi)
 	agent.add_sensor(sensor1)
-	agent.add_sensor(sensor2)
 	world.add_agent(agent)
 
 	obj1 = Object(color="CYAN")
@@ -592,25 +597,26 @@ def main():
 	# reset stddev to default
 	HRR.stddev = 0.02
 
-	left_sensor_ctl = (farleft * HRR(WheelDir.FORWARDS)
-			+ left * HRR(WheelDir.FORWARDS)
-			+ front * HRR(WheelDir.FORWARDS)
-			+ right * HRR(WheelDir.FORWARDS)
-			+ farright * HRR(WheelDir.FORWARDS))
+	left_wheel_backwards = HRR(agent.wheels.left) * HRR(WheelDir.BACKWARDS)
+	left_wheel_forwards = HRR(agent.wheels.left) * HRR(WheelDir.FORWARDS)
+	right_wheel_backwards = HRR(agent.wheels.right) * HRR(WheelDir.BACKWARDS)
+	right_wheel_forwards = HRR(agent.wheels.right) * HRR(WheelDir.FORWARDS)
+	farleft_ctl = farleft * (left_wheel_backwards + right_wheel_forwards)
+	left_ctl = left * (left_wheel_backwards + right_wheel_forwards)
+	front_ctl = front * (left_wheel_forwards + right_wheel_forwards)
+	right_ctl = right * (left_wheel_forwards + right_wheel_backwards)
+	farright_ctl = farright * (left_wheel_forwards + right_wheel_backwards)
 
-	right_sensor_ctl = (farleft * HRR(WheelDir.FORWARDS)
-			+ left * HRR(WheelDir.FORWARDS)
-			+ front * HRR(WheelDir.FORWARDS)
-			+ right * HRR(WheelDir.FORWARDS)
-			+ farright * HRR(WheelDir.FORWARDS))
+	sensor_ctl = farleft_ctl + left_ctl + front_ctl + right_ctl + farright_ctl
 
-	left_follow_obj_ctl = HRR(obj2) * left_sensor_ctl
-	#left_follow_obj_ctl = HRR(obj1) + HRR(obj2) * left_sensor_ctl + HRR(obj3)
-	right_follow_obj_ctl = HRR(obj2) * right_sensor_ctl
-	#right_follow_obj_ctl = HRR(obj1) + HRR(obj2) * right_sensor_ctl + HRR(obj3)
+	print(sensor_ctl.distance((sensor_ctl % farleft).memory, (left_wheel_backwards + right_wheel_forwards).memory))
 
-	agent.controllers.append(Controller(left_follow_obj_ctl, sensor1, agent.wheels.left))
-	agent.controllers.append(Controller(right_follow_obj_ctl, sensor2, agent.wheels.right))
+	follow_obj_ctl = HRR(obj2) * sensor_ctl
+	#follow_obj_ctl = HRR(obj1) + HRR(obj2) * sensor_ctl + HRR(obj3)
+
+	print(sensor_ctl.distance((follow_obj_ctl % HRR(obj2)).memory, (sensor_ctl).memory))
+
+	agent.controllers.append(Controller(follow_obj_ctl, sensor1))
 
 	clock = pygame.time.Clock()
 
