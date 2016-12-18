@@ -393,8 +393,8 @@ class Agent(VisObject):
 			self._sensors.append(sensor)
 
 	def step(self, objects, delta_time):
-		self.wheels.left = WheelDir.NONE
-		self.wheels.right = WheelDir.NONE
+		self.wheels.left = WheelDir.FORWARDS
+		self.wheels.right = WheelDir.BACKWARDS
 		max_similarity_left = 0.0
 		max_similarity_right = 0.0
 		for s in self._sensors:
