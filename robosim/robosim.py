@@ -564,15 +564,15 @@ class Visualization(object):
 		self.ax4 = self.fig.add_subplot(4, 1, 4)
 
 		#self.ax = self.fig.add_axes([0, 0, 1, 1], frameon=False)
-		self.ax1.set_xlim(0, 1)
+		self.ax1.set_xlim(0, num_pipeline_entries)
 		self.ax1.set_xticks([])
-		self.ax1.set_xlabel("Sensory Input Left to Right")
-		self.ax1.set_ylim(0, num_pipeline_entries)
-		self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
-		self.ax1.set_yticks([])
+		self.ax1.set_xlabel("Sensory Input")
+		self.ax1.set_ylim(0, 1)
+		#self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
+		#self.ax1.set_yticks([])
 		self.scat1 = self.ax1.scatter(
-				self._pipeline_inputs,
 				np.arange(num_pipeline_entries),
+				self._pipeline_inputs,
 				s=3,
 				linewidths=0.5,
 				alpha=0.5,
@@ -657,7 +657,7 @@ class Visualization(object):
 			v5[1] = self._flip_y(v5[1])
 			pygame.draw.polygon(self.screen, col, [v1, v2, v4, v5])
 		elif shape is Shape.HOUSE:
-			l = 5.0
+			l = 7.0
 			v1 = (transform.position + -transform.right * l - transform.forward * l).to_int_array()
 			v2 = (transform.position + -transform.right  * l + transform.forward * l).to_int_array()
 			v3 = (transform.position + transform.forward * l * 2.0).to_int_array()
@@ -690,7 +690,7 @@ class Visualization(object):
 		self._pipeline_distance.append(agent.target_distance)
 
 	def _update_symbolic_pipeline_plot(self):
-		self.scat1.set_offsets(zip(self._pipeline_inputs, np.arange(len(self._pipeline_inputs))))
+		self.scat1.set_offsets(zip(np.arange(len(self._pipeline_inputs)), self._pipeline_inputs))
 		self.scat21.set_offsets(zip(np.arange(len(self._pipeline_similarity_l)), [a for a,_ in self._pipeline_similarity_l]))
 		self.scat22.set_offsets(zip(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l]))
 		self.scat31.set_offsets(zip(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r]))
