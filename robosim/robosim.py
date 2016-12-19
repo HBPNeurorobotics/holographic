@@ -2,8 +2,12 @@ import math
 import pygame
 import random
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 from enum import Enum
 from pygame.locals import *
+from collections import deque
 
 import sys
 sys.path.append("../vsa/")
@@ -354,7 +358,7 @@ class Sensor(VisObject):
 			rel_pos = self.transform.local_transformed_vector(o.transform.position)
 			pos_vs = self._to_view_space(rel_pos.normalized())
 			if pos_vs >= 0.0 and pos_vs <= 1.0:
-				output.append((o, pos_vs))
+				output.append((o, pos_vs, rel_pos.length()))
 		return output
 
 	def read_hrr(self, objects):
@@ -388,6 +392,12 @@ class Agent(VisObject):
 		self.steering = DiffSteer()
 		self.wheels = WheelSet(velocity=velocity)
 
+		# state variables - read only
+		self.target_position_vs = np.NAN
+		self.target_distance = np.NAN
+		self.similarity_left = [np.NAN, np.NAN]
+		self.similarity_right = [np.NAN, np.NAN]
+
 	def __str__(self):
 		return super(Agent, self).__str__()
 
@@ -414,27 +424,46 @@ class Agent(VisObject):
 			wheel_dir_right = None
 
 			# TODO: make it more beautiful
-			for obj, val in output:
+			for obj, val, dist in output:
 				if obj is self.target:
+					self.target_position_vs = val
+					self.target_distance = dist
+
 					actions_ctl = c.controller % val
 					actions = actions_ctl / HRR(self.wheels.left)
 					print("val: {} l: {}".format(val, actions))
 					for a in actions:
-						if a[1] > max_similarity_left:
-							try:
-								wheel_dir_left = WheelDir(a[0])
-								max_similarity_left = a[1]
-							except: pass
+						wd = None
+						try: wd = WheelDir(a[0])
+						except: pass
+						if wd is not None and a[1] > max_similarity_left:
+							wheel_dir_left = wd
+							max_similarity_left = a[1]
+						if wd is WheelDir.FORWARDS:
+							self.similarity_left[0] = a[1]
+						elif wd is WheelDir.BACKWARDS:
+							self.similarity_left[1] = a[1]
 					actions = actions_ctl / HRR(self.wheels.right)
 					print("val: {} r: {}".format(val, actions))
 					for a in actions:
-						if a[1] > max_similarity_right:
-							try:
-								wheel_dir_right = WheelDir(a[0])
-								max_similarity_right = a[1]
-							except: pass
+						wd = None
+						try: wd = WheelDir(a[0])
+						except: pass
+						if wd is not None and a[1] > max_similarity_right:
+							wheel_dir_right = wd
+							max_similarity_right = a[1]
+						if wd is WheelDir.FORWARDS:
+							self.similarity_right[0] = a[1]
+						elif wd is WheelDir.BACKWARDS:
+							self.similarity_right[1] = a[1]
 
 			if wheel_dir_left is None or wheel_dir_right is None:
+				self.target_position_vs = np.NAN
+				self.target_distance = np.NAN
+				self.similarity_left = [np.NAN, np.NAN]
+				self.similarity_right = [np.NAN, np.NAN]
+
+				# we don't have results for both wheels - probe for NO_OBJECT
 				actions_ctl = c.controller % c.NO_OBJECT
 				actions = actions_ctl / HRR(self.wheels.left)
 				for a in actions:
@@ -501,12 +530,38 @@ class World(object):
 
 
 class Visualization(object):
-	def __init__(self, size):
+	def __init__(self, size, plot_pipeline=True, num_pipeline_entries=1000):
 		self.screen = pygame.display.set_mode(size)
+		self.plot_pipeline = plot_pipeline
+
+		d1 = np.empty(num_pipeline_entries, dtype=np.float)
+		d1.fill(np.NAN)
+		d2 = np.empty(num_pipeline_entries, dtype=(np.float, np.float))
+		#d2.fill((np.NAN, np.NAN))
+		self._pipeline_inputs = deque(d1, num_pipeline_entries)
+		self._pipeline_similarity_l = deque(d2, num_pipeline_entries)
+		self._pipeline_similarity_r = deque(d2, num_pipeline_entries)
+		self._pipeline_distance = deque(d1, num_pipeline_entries)
 
 		pygame.display.set_caption("robosim")
 		self.screen.fill(Color["WHITE"])
 		pygame.display.flip()
+
+		plt.ion()
+		self.fig = plt.figure(figsize=(5,3))
+		self.ax = self.fig.add_axes([0, 0, 1, 1], frameon=False)
+		self.ax.set_xlim(0, 1)
+		self.ax.set_xticks([])
+		self.ax.set_ylim(0, num_pipeline_entries)
+		self.ax.set_yticks([])
+		self.scat = self.ax.scatter(
+				self._pipeline_inputs,
+				np.arange(num_pipeline_entries),
+				linewidths=0.5,
+				alpha=0.5,
+				c=[[1.0, 0.31, 0.0]])
+		if self.plot_pipeline:
+			plt.show()
 
 	def _flip_y(self, value):
 		return self.screen.get_height() - value
@@ -558,6 +613,16 @@ class Visualization(object):
 		else:
 			raise NotImplementedError
 
+	def _update_symbolic_pipeline(self, agent):
+		self._pipeline_inputs.append(agent.target_position_vs)
+		self._pipeline_similarity_l.append(agent.similarity_left)
+		self._pipeline_similarity_r.append(agent.similarity_right)
+		self._pipeline_distance.append(agent.target_distance)
+
+	def _update_symbolic_pipeline_plot(self):
+		self.scat.set_offsets(zip(self._pipeline_inputs, np.arange(len(self._pipeline_inputs))))
+		self.fig.canvas.draw()
+
 	def update(self, world):
 		self.screen.fill(Color["WHITE"])
 		for o in world.objects:
@@ -569,6 +634,11 @@ class Visualization(object):
 			#for s in a._wheels:
 			#	self._draw(s.shape, s.transform, s.color)
 		pygame.display.flip()
+
+		if (self.plot_pipeline and len(world.agents) >= 1):
+			# only plot for the first agent
+			self._update_symbolic_pipeline(world.agents[0])
+			self._update_symbolic_pipeline_plot()
 
 
 WORLD_SIZE = (500, 500)
