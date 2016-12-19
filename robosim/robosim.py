@@ -586,6 +586,7 @@ class Visualization(object):
 		self.scat1 = self.ax1.scatter(
 				np.arange(num_pipeline_entries),
 				self._pipeline_inputs,
+				label="Similarity",
 				s=3,
 				linewidths=0.5,
 				alpha=0.5,
@@ -598,6 +599,7 @@ class Visualization(object):
 		self.scat21 = self.ax2.scatter(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_l],
+				label="Forwards",
 				s=3,
 				linewidths=0.5,
 				alpha=0.5,
@@ -605,10 +607,12 @@ class Visualization(object):
 		self.scat22 = self.ax2.scatter(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_l],
+				label="Backwards",
 				s=3,
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[0.0, 0.31, 1.0]])
+		self.ax2.legend(loc="lower left", handles=[self.scat21, self.scat22])
 
 		self.ax3.set_xlim(0, num_pipeline_entries)
 		self.ax3.set_xticks([])
@@ -617,6 +621,7 @@ class Visualization(object):
 		self.scat31 = self.ax3.scatter(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_r],
+				label="Forwards",
 				s=3,
 				linewidths=0.5,
 				alpha=0.5,
@@ -624,10 +629,12 @@ class Visualization(object):
 		self.scat32 = self.ax3.scatter(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_r],
+				label="Backwards",
 				s=3,
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[0.0, 0.31, 1.0]])
+		self.ax3.legend(loc="lower left", handles=[self.scat31, self.scat32])
 
 		self.ax4.set_xlim(0, num_pipeline_entries)
 		self.ax4.set_xticks([])
@@ -638,6 +645,7 @@ class Visualization(object):
 		self.scat4 = self.ax4.scatter(
 				np.arange(num_pipeline_entries),
 				self._pipeline_distance,
+				label="Distance",
 				s=3,
 				linewidths=0.5,
 				alpha=0.5,
