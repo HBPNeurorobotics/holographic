@@ -467,18 +467,28 @@ class Agent(VisObject):
 				actions_ctl = c.controller % c.NO_OBJECT
 				actions = actions_ctl / HRR(self.wheels.left)
 				for a in actions:
-					if a[1] > max_similarity_left:
-						try:
-							wheel_dir_left = WheelDir(a[0])
-							max_similarity_left = a[1]
-						except: pass
+					wd = None
+					try: wd = WheelDir(a[0])
+					except: pass
+					if wd is not None and a[1] > max_similarity_left:
+						wheel_dir_left = wd
+						max_similarity_left = a[1]
+					if wd is WheelDir.FORWARDS:
+						self.similarity_left[0] = a[1]
+					elif wd is WheelDir.BACKWARDS:
+						self.similarity_left[1] = a[1]
 				actions = actions_ctl / HRR(self.wheels.right)
 				for a in actions:
-					if a[1] > max_similarity_right:
-						try:
-							wheel_dir_right = WheelDir(a[0])
-							max_similarity_right = a[1]
-						except: pass
+					wd = None
+					try: wd = WheelDir(a[0])
+					except: pass
+					if wd is not None and a[1] > max_similarity_right:
+						wheel_dir_right = wd
+						max_similarity_right = a[1]
+					if wd is WheelDir.FORWARDS:
+						self.similarity_right[0] = a[1]
+					elif wd is WheelDir.BACKWARDS:
+						self.similarity_right[1] = a[1]
 
 			self.wheels.left = wheel_dir_left
 			self.wheels.right = wheel_dir_right
@@ -555,13 +565,15 @@ class Visualization(object):
 
 		#self.ax = self.fig.add_axes([0, 0, 1, 1], frameon=False)
 		self.ax1.set_xlim(0, 1)
-		#self.ax1.set_xticks([])
+		self.ax1.set_xticks([])
+		self.ax1.set_xlabel("Sensory Input Left to Right")
 		self.ax1.set_ylim(0, num_pipeline_entries)
 		self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
 		self.ax1.set_yticks([])
 		self.scat1 = self.ax1.scatter(
 				self._pipeline_inputs,
 				np.arange(num_pipeline_entries),
+				s=3,
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[1.0, 0.31, 0.0]])
@@ -573,12 +585,14 @@ class Visualization(object):
 		self.scat21 = self.ax2.scatter(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_l],
+				s=3,
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[1.0, 0.31, 0.0]])
 		self.scat22 = self.ax2.scatter(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_l],
+				s=3,
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[0.0, 0.31, 1.0]])
@@ -590,15 +604,31 @@ class Visualization(object):
 		self.scat31 = self.ax3.scatter(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_r],
+				s=3,
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[1.0, 0.31, 0.0]])
 		self.scat32 = self.ax3.scatter(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_r],
+				s=3,
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[0.0, 0.31, 1.0]])
+
+		self.ax4.set_xlim(0, num_pipeline_entries)
+		self.ax4.set_xticks([])
+		self.ax4.set_xlabel("Distance to Target")
+		w, h = self.screen.get_width(), self.screen.get_height()
+		max_len = math.sqrt(w * w + h * h)
+		self.ax4.set_ylim(0, max_len)
+		self.scat4 = self.ax4.scatter(
+				np.arange(num_pipeline_entries),
+				self._pipeline_distance,
+				s=3,
+				linewidths=0.5,
+				alpha=0.5,
+				c=[[1.0, 0.31, 0.0]])
 
 		if self.plot_pipeline:
 			plt.show()
@@ -665,6 +695,15 @@ class Visualization(object):
 		self.scat22.set_offsets(zip(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l]))
 		self.scat31.set_offsets(zip(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r]))
 		self.scat32.set_offsets(zip(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r]))
+		self.scat4.set_offsets(zip(np.arange(len(self._pipeline_distance)), self._pipeline_distance))
+		#self.ax1.relim()
+		#self.ax1.autoscale_view()
+		#self.ax2.relim()
+		#self.ax2.autoscale_view()
+		#self.ax3.relim()
+		#self.ax3.autoscale_view()
+		#self.ax4.relim()
+		#self.ax4.autoscale_view()
 		self.fig.canvas.draw()
 
 	def update(self, world):
