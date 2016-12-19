@@ -910,8 +910,10 @@ An example of this kind of symbolic script is given in figure \ref{fig:symbolic-
 				\label{fig:gaussianbarperm}
 			\end{subfigure}	
 		\caption{Sensory input of an objects positions in the visual field at two points in time. A comparison between the raw generated input and its permuted version can be seen.}
-		\label{gaussian}
+		\label{fig:gaussian}
 		\end{figure}	
+
+	In our experiment we have extended the detection of light to a position along the visual field, reduced to the X-axis, rather than just binary statements like "light is visible to the left". To visualize the difference chart \ref{fig:gaussianbar} shows the position of light for two consecutive time steps. The value $0$ represents the far left corner of the sensor, and $1$ the far right one. The chart can be viewed as a (normalized) probability of light being at a certain position, and both cases show it being somewhere right of the center. Chart \ref{fig:gaussianbarperm} shows what the Gaussian distributions look like when they are permuted. This shape of theirs is then used as a symbol. Concretely, instead of encoding a random symbol for "light\_left" we encode a scalar representing the position of light along the visual field and bind it with the rest of the controller components. Accordingly, when running the experiment, once the light reaches a position encoded in the controller it will issue new commands to the vehicle.
 
 	\section{Conclusions}
 	We have introduced a mechanism for intrinsic symbol encoding/decoding for Holographic Reduced Representations.
