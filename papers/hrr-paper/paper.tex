@@ -570,8 +570,8 @@ For example, the following probe will yield no result:
 	(10000 \otimes a) \oslash 10001
 	\end{equation}
 	
-	To facilitate these two qualities scalar encoding can be achieved with the help of radial basis functions. Among these functions one of the options are Gaussian distributions.
-The encoded vector can simply represent a Gaussian sampled over a fixed input range.
+	To facilitate these two qualities scalar encoding can be achieved using probabilistic instead of exact symbolic representation. 
+The encoded vector can simply be a Gaussian shaped probability distribution sampled over a fixed input range, with mean equal to the encoded value and arbitrarily chosen standard deviation.
 Figure \ref{no-perm-a} shows how such an encoded vector looks like, and what the result of binding it to a generic random vector is.
 With this result it becomes obvious that unfortunately lots of information is lost.
 If this result is probed with the same random vector used in binding something similar to the initial Gaussian distribution is expected.
@@ -879,7 +879,7 @@ We have used our system to demonstrate a mechanism for encoding neural programs 
 		\caption{Holographic program (script)}
 		\label{fig:symbolic-scripting-c}
 	\end{subfigure}
-	\caption{Symbolic scripting example for light following behavior of a two-wheeled robot}
+	\caption{Symbolic scripting illustration for object following behavior of a two-wheeled robot}
 	\label{fig:symbolic-scripting}
 \end{figure}
 
@@ -893,23 +893,23 @@ The basic idea is centered around symbolic representations of all three parts in
 	\item \textbf{senses} are preprocessed (classified) sensory stream labels, such as "bright", "dark", "touching", "falling\_down", "rolling", etc.
 \end{enumerate}
 
-An example of this kind of symbolic script is given in figure \ref{fig:symbolic-scripting}. Here the memory encodes a light following behaviour.
+An example of this kind of symbolic script is given in figure \ref{fig:symbolic-scripting}. Here the memory encodes an object following behavior for left wheel.
 
 		\begin{figure}[th!]
 			\begin{subfigure}{0.45\columnwidth}
 				\center
 				\includegraphics[width=1\columnwidth]{img/gaussianbar.png}
-				\caption{Gaussian distribution without permutation.}
+				\caption{Gaussian probability distribution for raw input value}
 				\label{fig:gaussianbar}
 			\end{subfigure}
-			\begin{subfigure}{0.45\columnwidth}
+			\begin{subfigure}{0.54\columnwidth}
 				\center
 				\includegraphics[width=1\columnwidth]{img/gaussianbarperm.png}
-				\caption{Gaussian distribution with permutation.\\
+				\caption{Probabilistic symbolic encoding suitable for HRR after permutation
 				}
 				\label{fig:gaussianbarperm}
 			\end{subfigure}	
-		\caption{Sensory input of an objects positions in the visual field at two points in time. A comparison between the raw generated input and its permuted version can be seen.}
+		\caption{Sensory input encoding of target object position in the visual field at two successive points in time. Left graph shows original encodings for two adjacent values and right graph shows permuted encodings. It can be seen that semantically close input values result in similar HRR encodings.}
 		\label{gaussian}
 		\end{figure}	
 
