@@ -530,6 +530,19 @@ class World(object):
 	def add_object(self, obj):
 		obj.transform.parent = self._transform
 		self.objects.append(obj)
+		return obj
+
+	def add_random_object(self):
+		idx = int(1 + ((len(Color.keys()) - 1) * random.random()))
+		obj = Object(color=Color.keys()[idx])
+		x = random.random() * (self.size[0] - 1)
+		y = random.random() * (self.size[1] - 1)
+		obj.transform.local_position = Vec2(x, y)
+		return self.add_object(obj)
+
+	def remove_target_object(self, agent):
+		self.objects.remove(agent.target)
+		agent.target = None
 
 	def step(self, delta_time):
 		for a in self.agents:
@@ -737,23 +750,26 @@ def main():
 
 	agent = Agent(color="RED", velocity=0.07)
 	agent.transform.local_position = Vec2(10, 10)
-	agent.transform.local_orientation = Rot2(-math.pi / 3.0)
-	#agent.transform.local_orientation = Rot2(random.random() * 2.0 * math.pi)
+	#agent.transform.local_orientation = Rot2(-math.pi / 3.0)
+	agent.transform.local_orientation = Rot2(random.random() * 2.0 * math.pi)
 	sensor1 = Sensor(color="GREEN", field_of_view=0.2*math.pi)
 	#sensor1.transform.local_position = Vec2(3, 0)
 	#sensor1.transform.local_orientation = Rot2(0.08 * math.pi)
 	agent.add_sensor(sensor1)
 	world.add_agent(agent)
 
-	obj1 = Object(color="CYAN")
-	obj1.transform.local_position = Vec2(50, 50)
-	obj2 = Object(color="MAGENTA")
-	obj2.transform.local_position = Vec2(400, 70)
-	obj3 = Object(color="YELLOW")
-	obj3.transform.local_position = Vec2(80, 80)
-	world.add_object(obj1)
-	world.add_object(obj2)
-	world.add_object(obj3)
+	#obj1 = Object(color="CYAN")
+	#obj1.transform.local_position = Vec2(50, 50)
+	#obj2 = Object(color="MAGENTA")
+	#obj2.transform.local_position = Vec2(400, 70)
+	#obj3 = Object(color="YELLOW")
+	#obj3.transform.local_position = Vec2(80, 80)
+	#world.add_object(obj1)
+	#world.add_object(obj2)
+	#world.add_object(obj3)
+	world.add_random_object()
+	world.add_random_object()
+	target_obj = world.add_random_object()
 
 	# create controller "follow magenta object"
 	# direction gaussians should overlap to always yield a result
@@ -798,7 +814,7 @@ def main():
 
 	agent.controllers.append(Controller(sensor_ctl, sensor1))
 	agent.controllers[0].NO_OBJECT = NO_OBJECT
-	agent.target = obj2
+	agent.target = target_obj
 
 	clock = pygame.time.Clock()
 
@@ -811,11 +827,14 @@ def main():
 				exit = True
 				break
 
-		#agent.transform.rotate(Rot2(0.001))
-		#agent.transform.translate(Default.FORWARD)
-
 		world.step(delta_time=1.0)
 		vis.update(world)
+
+		# remove and add new target if agent is close
+		if agent.target_distance < 50:
+			world.remove_target_object(agent)
+			target_obj = world.add_random_object()
+			agent.target = target_obj
 
 
 def test_transform():
