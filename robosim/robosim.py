@@ -534,10 +534,8 @@ class Visualization(object):
 		self.screen = pygame.display.set_mode(size)
 		self.plot_pipeline = plot_pipeline
 
-		d1 = np.empty(num_pipeline_entries, dtype=np.float)
-		d1.fill(np.NAN)
-		d2 = np.empty(num_pipeline_entries, dtype=(np.float, np.float))
-		#d2.fill((np.NAN, np.NAN))
+		d1 = np.full(num_pipeline_entries, np.NAN, dtype='float32')
+		d2 = np.full(num_pipeline_entries, [np.NAN, np.NAN], dtype='2float32')
 		self._pipeline_inputs = deque(d1, num_pipeline_entries)
 		self._pipeline_similarity_l = deque(d2, num_pipeline_entries)
 		self._pipeline_similarity_r = deque(d2, num_pipeline_entries)
@@ -548,18 +546,60 @@ class Visualization(object):
 		pygame.display.flip()
 
 		plt.ion()
-		self.fig = plt.figure(figsize=(5,3))
-		self.ax = self.fig.add_axes([0, 0, 1, 1], frameon=False)
-		self.ax.set_xlim(0, 1)
-		self.ax.set_xticks([])
-		self.ax.set_ylim(0, num_pipeline_entries)
-		self.ax.set_yticks([])
-		self.scat = self.ax.scatter(
+
+		self.fig = plt.figure(figsize=(6,10))
+		self.ax1 = self.fig.add_subplot(4, 1, 1)
+		self.ax2 = self.fig.add_subplot(4, 1, 2)
+		self.ax3 = self.fig.add_subplot(4, 1, 3)
+		self.ax4 = self.fig.add_subplot(4, 1, 4)
+
+		#self.ax = self.fig.add_axes([0, 0, 1, 1], frameon=False)
+		self.ax1.set_xlim(0, 1)
+		#self.ax1.set_xticks([])
+		self.ax1.set_ylim(0, num_pipeline_entries)
+		self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
+		self.ax1.set_yticks([])
+		self.scat1 = self.ax1.scatter(
 				self._pipeline_inputs,
 				np.arange(num_pipeline_entries),
 				linewidths=0.5,
 				alpha=0.5,
 				c=[[1.0, 0.31, 0.0]])
+
+		self.ax2.set_xlim(0, num_pipeline_entries)
+		self.ax2.set_xticks([])
+		self.ax2.set_xlabel("Similarity Left Wheel")
+		self.ax2.set_ylim(-1, 1)
+		self.scat21 = self.ax2.scatter(
+				np.arange(num_pipeline_entries),
+				[a for a,_ in self._pipeline_similarity_l],
+				linewidths=0.5,
+				alpha=0.5,
+				c=[[1.0, 0.31, 0.0]])
+		self.scat22 = self.ax2.scatter(
+				np.arange(num_pipeline_entries),
+				[b for _,b in self._pipeline_similarity_l],
+				linewidths=0.5,
+				alpha=0.5,
+				c=[[0.0, 0.31, 1.0]])
+
+		self.ax3.set_xlim(0, num_pipeline_entries)
+		self.ax3.set_xticks([])
+		self.ax3.set_xlabel("Similarity Right Wheel")
+		self.ax3.set_ylim(-1, 1)
+		self.scat31 = self.ax3.scatter(
+				np.arange(num_pipeline_entries),
+				[a for a,_ in self._pipeline_similarity_r],
+				linewidths=0.5,
+				alpha=0.5,
+				c=[[1.0, 0.31, 0.0]])
+		self.scat32 = self.ax3.scatter(
+				np.arange(num_pipeline_entries),
+				[b for _,b in self._pipeline_similarity_r],
+				linewidths=0.5,
+				alpha=0.5,
+				c=[[0.0, 0.31, 1.0]])
+
 		if self.plot_pipeline:
 			plt.show()
 
@@ -620,7 +660,11 @@ class Visualization(object):
 		self._pipeline_distance.append(agent.target_distance)
 
 	def _update_symbolic_pipeline_plot(self):
-		self.scat.set_offsets(zip(self._pipeline_inputs, np.arange(len(self._pipeline_inputs))))
+		self.scat1.set_offsets(zip(self._pipeline_inputs, np.arange(len(self._pipeline_inputs))))
+		self.scat21.set_offsets(zip(np.arange(len(self._pipeline_similarity_l)), [a for a,_ in self._pipeline_similarity_l]))
+		self.scat22.set_offsets(zip(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l]))
+		self.scat31.set_offsets(zip(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r]))
+		self.scat32.set_offsets(zip(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r]))
 		self.fig.canvas.draw()
 
 	def update(self, world):
