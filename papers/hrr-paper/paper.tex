@@ -352,10 +352,10 @@
 	% author names and affiliations
 	% use a multiple column layout for up to three different
 	% affiliations
-	\author{\IEEEauthorblockN{Igor Peric, Alexandru Lesi, Daniel Spies, Stefan Ulbrich, R{\"u}diger Dillman, Marius Z{\"o}llner}
+	\author{\IEEEauthorblockN{Igor Peric, Alexandru Lesi, Daniel Spies, Stefan Ulbrich, Arne R{\"o}nnau, Marius Z{\"o}llner, R{\"u}diger Dillman}
 		\IEEEauthorblockA{FZI Forschungszentrum Informatik\\
 			Karlsruhe, Germany\\
-			Email: $\{$peric, lesi, spies, ulbrich, dillmann, zoellner$\}$@fzi.de}
+			Email: $\{$peric, lesi, spies, ulbrich, roennau, zoellner, dillmann$\}$@fzi.de}
 	}
 	
 	% conference papers do not typically use \thanks and this command
@@ -591,8 +591,8 @@ While there is a peak at the initial value lots of other peaks also arise, makin
 			\label{no-perm-b}
 		\end{subfigure}
 		\caption{Plot of vector values.
-Figure \ref{no-perm-a} shows the binding of the value 8 on a scale to 10 with the symbolic representation of "ball", which is random.
-In figure \ref{no-perm-b} "ball" is being probed, and the expected result is a Gaussian distribution for 8, mixed with some noise.}
+Figure \ref{no-perm-a} shows the binding of the value 8 from representational range [0,10] with the symbolic representation of "ball" (which is randomly chosen), giving a representation of association.
+In figure \ref{no-perm-b} this resulting representation is probed with "ball" and the expected result is a Gaussian distribution for 8, mixed with some noise. As it can be seen, result is far from expected and numeric value cannot be inferred.}
 		\label{no-perm}
 	\end{figure}
 	
@@ -615,7 +615,7 @@ As such the resulting vector will present lots of jumps in value, which have a s
 	
 	\begin{figure}
 		\includegraphics[width=\columnwidth]{img/scalar-perm-step-fft.png}
-		\caption{Applying random permutation to a sampled Gaussian distribution results in more discrete changes in signal, which correspond to high-frequency components in Fourier space. This makes frequency spectrum spread more uniform, which is a desirable property for HRRs. Although this scrambling of initial signal makes it seem random, the fact that the same permutation is used in all encodings keeps two semantically close values having very similar representations, thus preserving their semantic proximity. }
+		\caption{Applying random permutation to a sampled Gaussian distribution results in more discrete changes in signal, which correspond to high-frequency components in Fourier space. This makes frequency spectrum more uniformly spread, which is a desirable property for HRRs. Although this scrambling of initial signal makes it seem random, the fact that the same permutation is used in all encodings keeps two semantically close values having very similar representations, thus preserving their semantic proximity. }
 		\label{perm-fft}
 	\end{figure}
 	
@@ -919,8 +919,9 @@ An example of this kind of symbolic script is given in figure \ref{fig:symbolic-
 	We have introduced a mechanism for intrinsic symbol encoding/decoding for Holographic Reduced Representations.
 As a consequence, our approach eliminates the need for clean-up memories as they are described in literature.
 Instead, results of probing operations directly give interpretable symbols, which can be decoded in constant computational time.
-In other words, time needed for encoding/decoding is completely ignorant of the total number of symbols memorized, allowing memories that can store a large corpus of different symbols.
-	A concrete biophysical evidence and theoretical model of implementation of convolution in the brain is, unfortunately, still missing.
+In other words, time needed for encoding/decoding is completely independent of the total number of symbols memorized.\\
+	A concrete biophysical evidence and theoretical model of implementation of convolution in the brain is, unfortunately, still missing. Nevertheless, our work assumes convolution as the basic computational substrate of higher level cognition and identifies random permutation as computational requirement without which association of probabilistically encoded symbols is not possible.
+	
 	
 	%% Add entry to the table of contents for the bibliography
 	\printbibliography[heading=bibintoc]
