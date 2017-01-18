@@ -384,9 +384,11 @@ class Controller(object):
 
 
 class Agent(VisObject):
+	TARGET_NEW_TIME = 1
+
 	def __init__(self, color, velocity=1.0):
 		super(Agent, self).__init__(Shape.HOUSE, color)
-		self.target = None
+		self._target = self.target = 0
 		self.controllers = []
 		self._sensors = []
 		self.steering = DiffSteer()
@@ -397,9 +399,19 @@ class Agent(VisObject):
 		self.target_distance = np.NAN
 		self.similarity_left = [np.NAN, np.NAN]
 		self.similarity_right = [np.NAN, np.NAN]
+		self.target_new = 0
 
 	def __str__(self):
 		return super(Agent, self).__str__()
+
+	@property
+	def target(self):
+		return self._target
+
+	@target.setter
+	def target(self, value):
+		self.target_new = Agent.TARGET_NEW_TIME + 1
+		self._target = value
 
 	def add_sensor(self, sensor=None):
 		if sensor is None:
@@ -412,6 +424,8 @@ class Agent(VisObject):
 			self._sensors.append(sensor)
 
 	def step(self, objects, delta_time):
+		self.target_new = max(0, self.target_new - 1) # decrease "target new time"
+
 		self.wheels.left = WheelDir.NONE
 		self.wheels.right = WheelDir.NONE
 
@@ -563,6 +577,7 @@ class Visualization(object):
 		self._pipeline_similarity_l = deque(d2, num_pipeline_entries)
 		self._pipeline_similarity_r = deque(d2, num_pipeline_entries)
 		self._pipeline_distance = deque(d1, num_pipeline_entries)
+		self._pipleline_new_target = deque(d1, num_pipeline_entries)
 
 		pygame.display.set_caption("robosim")
 		self.screen.fill(Color["WHITE"])
@@ -648,8 +663,9 @@ class Visualization(object):
 		self.ax4.set_xlim(0, num_pipeline_entries)
 		self.ax4.set_xticks([])
 		self.ax4.set_xlabel("Distance to Target")
-		w, h = self.screen.get_width(), self.screen.get_height()
-		max_len = math.sqrt(w * w + h * h)
+		#w, h = self.screen.get_width(), self.screen.get_height()
+		#max_len = math.sqrt(w * w + h * h)
+		max_len = 500
 		self.ax4.set_ylim(0, max_len)
 		self.line4, = self.ax4.plot(
 				np.arange(num_pipeline_entries),
@@ -717,6 +733,7 @@ class Visualization(object):
 		self._pipeline_similarity_l.append(agent.similarity_left)
 		self._pipeline_similarity_r.append(agent.similarity_right)
 		self._pipeline_distance.append(Vec2.length(agent.transform.position - agent.target.transform.position))
+		self._pipleline_new_target.append(agent.target_new > 0)
 
 	def _update_symbolic_pipeline_plot(self):
 		self.line1.set_data(np.arange(len(self._pipeline_inputs)), self._pipeline_inputs)
@@ -726,16 +743,29 @@ class Visualization(object):
 		self.line24.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
 		self.line31.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
 		self.line32.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
-		self.line4.set_data(np.arange(len(self._pipeline_distance)), self._pipeline_distance)
-		#self.ax1.relim()
-		#self.ax1.relim()
-		#self.ax1.autoscale_view()
-		#self.ax2.relim()
-		#self.ax2.autoscale_view()
-		#self.ax3.relim()
-		#self.ax3.autoscale_view()
-		#self.ax4.relim()
-		#self.ax4.autoscale_view()
+		#self.line4.set_data(np.arange(len(self._pipeline_distance)), self._pipeline_distance)
+
+		# yeah, matplotlib is so retarded...
+		self.ax4.cla()
+		self.ax4.set_xlim(0, len(self._pipleline_new_target))
+		self.ax4.set_xticks([])
+		self.ax4.set_xlabel("Distance to Target")
+		#w, h = self.screen.get_width(), self.screen.get_height()
+		#max_len = math.sqrt(w * w + h * h)
+		max_len = 500
+		self.ax4.set_ylim(0, max_len)
+		for x, v in enumerate(self._pipleline_new_target):
+			if v is True:
+				self.ax4.axvline(x=x, color=[0.0, 0.0, 0.0],
+						lw=1.0, alpha=0.8)
+		self.line4, = self.ax4.plot(
+				np.arange(len(self._pipeline_distance)),
+				self._pipeline_distance,
+				label="Distance",
+				lw=1.5,
+				alpha=0.7,
+				c=[1.0, 0.31, 0.0])
+
 		self.fig.canvas.draw()
 
 	def update(self, world):
