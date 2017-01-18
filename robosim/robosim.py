@@ -583,58 +583,53 @@ class Visualization(object):
 		self.ax1.set_ylim(0, 1)
 		#self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
 		#self.ax1.set_yticks([])
-		self.scat1 = self.ax1.scatter(
+		self.line1, = self.ax1.plot(
 				np.arange(num_pipeline_entries),
 				self._pipeline_inputs,
 				label="Similarity",
-				s=3,
-				linewidths=0.5,
-				alpha=0.5,
-				c=[[1.0, 0.31, 0.0]])
+				lw=1.5,
+				alpha=0.7,
+				c=[1.0, 0.31, 0.0])
 
 		self.ax2.set_xlim(0, num_pipeline_entries)
 		self.ax2.set_xticks([])
 		self.ax2.set_xlabel("Similarity Left Wheel")
-		self.ax2.set_ylim(-1, 1)
-		self.scat21 = self.ax2.scatter(
+		self.ax2.set_ylim(-0.4, 0.4)
+		self.line21, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_l],
 				label="Forwards",
-				s=3,
-				linewidths=0.5,
-				alpha=0.5,
-				c=[[1.0, 0.31, 0.0]])
-		self.scat22 = self.ax2.scatter(
+				lw=1.5,
+				alpha=0.7,
+				c=[1.0, 0.31, 0.0])
+		self.line22, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_l],
 				label="Backwards",
-				s=3,
-				linewidths=0.5,
-				alpha=0.5,
-				c=[[0.0, 0.31, 1.0]])
-		self.ax2.legend(loc="lower left", handles=[self.scat21, self.scat22])
+				lw=1.5,
+				alpha=0.7,
+				c=[0.0, 0.31, 1.0])
+		self.ax2.legend(loc="lower left", handles=[self.line21, self.line22])
 
 		self.ax3.set_xlim(0, num_pipeline_entries)
 		self.ax3.set_xticks([])
 		self.ax3.set_xlabel("Similarity Right Wheel")
-		self.ax3.set_ylim(-1, 1)
-		self.scat31 = self.ax3.scatter(
+		self.ax3.set_ylim(-0.4, 0.4)
+		self.line31, = self.ax3.plot(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_r],
 				label="Forwards",
-				s=3,
-				linewidths=0.5,
-				alpha=0.5,
-				c=[[1.0, 0.31, 0.0]])
-		self.scat32 = self.ax3.scatter(
+				lw=1.5,
+				alpha=0.7,
+				c=[1.0, 0.31, 0.0])
+		self.line32, = self.ax3.plot(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_r],
 				label="Backwards",
-				s=3,
-				linewidths=0.5,
-				alpha=0.5,
-				c=[[0.0, 0.31, 1.0]])
-		self.ax3.legend(loc="lower left", handles=[self.scat31, self.scat32])
+				lw=1.5,
+				alpha=0.7,
+				c=[0.0, 0.31, 1.0])
+		self.ax3.legend(loc="lower left", handles=[self.line31, self.line32])
 
 		self.ax4.set_xlim(0, num_pipeline_entries)
 		self.ax4.set_xticks([])
@@ -642,14 +637,13 @@ class Visualization(object):
 		w, h = self.screen.get_width(), self.screen.get_height()
 		max_len = math.sqrt(w * w + h * h)
 		self.ax4.set_ylim(0, max_len)
-		self.scat4 = self.ax4.scatter(
+		self.line4, = self.ax4.plot(
 				np.arange(num_pipeline_entries),
 				self._pipeline_distance,
 				label="Distance",
-				s=3,
-				linewidths=0.5,
-				alpha=0.5,
-				c=[[1.0, 0.31, 0.0]])
+				lw=1.5,
+				alpha=0.7,
+				c=[1.0, 0.31, 0.0])
 
 		if self.plot_pipeline:
 			plt.show()
@@ -711,12 +705,13 @@ class Visualization(object):
 		self._pipeline_distance.append(agent.target_distance)
 
 	def _update_symbolic_pipeline_plot(self):
-		self.scat1.set_offsets(zip(np.arange(len(self._pipeline_inputs)), self._pipeline_inputs))
-		self.scat21.set_offsets(zip(np.arange(len(self._pipeline_similarity_l)), [a for a,_ in self._pipeline_similarity_l]))
-		self.scat22.set_offsets(zip(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l]))
-		self.scat31.set_offsets(zip(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r]))
-		self.scat32.set_offsets(zip(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r]))
-		self.scat4.set_offsets(zip(np.arange(len(self._pipeline_distance)), self._pipeline_distance))
+		self.line1.set_data(np.arange(len(self._pipeline_inputs)), self._pipeline_inputs)
+		self.line21.set_data(np.arange(len(self._pipeline_similarity_l)), [a for a,_ in self._pipeline_similarity_l])
+		self.line22.set_data(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l])
+		self.line31.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
+		self.line32.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
+		self.line4.set_data(np.arange(len(self._pipeline_distance)), self._pipeline_distance)
+		#self.ax1.relim()
 		#self.ax1.relim()
 		#self.ax1.autoscale_view()
 		#self.ax2.relim()
