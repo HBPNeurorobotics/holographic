@@ -609,7 +609,21 @@ class Visualization(object):
 				lw=1.5,
 				alpha=0.7,
 				c=[0.0, 0.31, 1.0])
-		self.ax2.legend(loc="lower left", handles=[self.line21, self.line22])
+		self.line23, = self.ax2.plot(
+				np.arange(num_pipeline_entries),
+				[a for a,_ in self._pipeline_similarity_r],
+				label="Forwards",
+				lw=1.5,
+				alpha=0.7,
+				c=[1.0, 0.31, 0.0])
+		self.line24, = self.ax2.plot(
+				np.arange(num_pipeline_entries),
+				[b for _,b in self._pipeline_similarity_r],
+				label="Backwards",
+				lw=1.5,
+				alpha=0.7,
+				c=[0.0, 0.31, 1.0])
+		self.ax2.legend(loc="lower left", handles=[self.line21, self.line22, self.line23, self.line24])
 
 		self.ax3.set_xlim(0, num_pipeline_entries)
 		self.ax3.set_xticks([])
@@ -702,12 +716,14 @@ class Visualization(object):
 		self._pipeline_inputs.append(agent.target_position_vs)
 		self._pipeline_similarity_l.append(agent.similarity_left)
 		self._pipeline_similarity_r.append(agent.similarity_right)
-		self._pipeline_distance.append(agent.target_distance)
+		self._pipeline_distance.append(Vec2.length(agent.transform.position - agent.target.transform.position))
 
 	def _update_symbolic_pipeline_plot(self):
 		self.line1.set_data(np.arange(len(self._pipeline_inputs)), self._pipeline_inputs)
 		self.line21.set_data(np.arange(len(self._pipeline_similarity_l)), [a for a,_ in self._pipeline_similarity_l])
 		self.line22.set_data(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l])
+		self.line23.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
+		self.line24.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
 		self.line31.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
 		self.line32.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
 		self.line4.set_data(np.arange(len(self._pipeline_distance)), self._pipeline_distance)
