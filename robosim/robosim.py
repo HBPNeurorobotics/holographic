@@ -598,13 +598,23 @@ class Visualization(object):
 		self.ax1.set_ylim(0, 1)
 		#self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
 		#self.ax1.set_yticks([])
-		self.line1, = self.ax1.plot(
-				np.arange(num_pipeline_entries),
-				self._pipeline_inputs,
+		sens_series = np.array(self._pipeline_inputs).astype(np.double)
+		sens_mask1 = np.isfinite(sens_series)
+		sens_mask2 = np.isnan(sens_series)
+		self.line11, = self.ax1.plot(
+				np.arange(num_pipeline_entries)[sens_mask1],
+				sens_series[sens_mask1],
 				label="Similarity",
 				lw=1.5,
 				alpha=0.7,
 				c=[1.0, 0.31, 0.0])
+		self.line12, = self.ax1.plot(
+				np.arange(num_pipeline_entries)[sens_mask2],
+				sens_series[sens_mask2],
+				label="Similarity",
+				lw=1.5,
+				alpha=0.9,
+				c=[1.0, 0.0, 0.0])
 
 		self.ax2.set_xlim(0, num_pipeline_entries)
 		self.ax2.set_xticks([])
@@ -736,7 +746,12 @@ class Visualization(object):
 		self._pipleline_new_target.append(agent.target_new > 0)
 
 	def _update_symbolic_pipeline_plot(self):
-		self.line1.set_data(np.arange(len(self._pipeline_inputs)), self._pipeline_inputs)
+		sens_series = np.array(self._pipeline_inputs).astype(np.double)
+		sens_mask1 = np.isfinite(sens_series)
+		sens_mask2 = np.isnan(sens_series)
+		self.line11.set_data(np.arange(len(self._pipeline_inputs))[sens_mask1], sens_series[sens_mask1])
+		self.line12.set_data(np.arange(len(self._pipeline_inputs))[sens_mask2], sens_series[sens_mask2])
+
 		self.line21.set_data(np.arange(len(self._pipeline_similarity_l)), [a for a,_ in self._pipeline_similarity_l])
 		self.line22.set_data(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l])
 		self.line23.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
