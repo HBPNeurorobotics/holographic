@@ -594,16 +594,24 @@ class Visualization(object):
 
 		plt.ion()
 
-		self.fig = plt.figure(figsize=(6,10))
-		self.ax1 = self.fig.add_subplot(4, 1, 1)
-		self.ax2 = self.fig.add_subplot(4, 1, 2)
-		self.ax3 = self.fig.add_subplot(4, 1, 3)
-		self.ax4 = self.fig.add_subplot(4, 1, 4)
+		self.fig1 = plt.figure(figsize=(6,2.5))
+		self.fig2 = plt.figure(figsize=(6,2.5))
+		self.fig3 = plt.figure(figsize=(6,2.5))
+		self.fig4 = plt.figure(figsize=(6,2.5))
+		self.ax1 = self.fig1.add_subplot(1, 1, 1)
+		self.ax2 = self.fig2.add_subplot(1, 1, 1)
+		self.ax3 = self.fig3.add_subplot(1, 1, 1)
+		self.ax4 = self.fig4.add_subplot(1, 1, 1)
 
-		#self.ax = self.fig.add_axes([0, 0, 1, 1], frameon=False)
+		# compute ticks
+		interval = int(num_pipeline_entries / 5)
+		ticks = [interval * x for x in np.arange(6)]
+		labels = [-1 * x for x in ticks[::-1]]
+
 		self.ax1.set_xlim(0, num_pipeline_entries)
-		self.ax1.set_xticks([])
-		self.ax1.set_xlabel("Sensory Input")
+		self.ax1.set_xticks(ticks)
+		self.ax1.set_xticklabels(labels)
+		#self.ax1.set_xlabel("Sensory Input")
 		self.ax1.set_ylim(0, 1)
 		#self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
 		#self.ax1.set_yticks([])
@@ -626,9 +634,10 @@ class Visualization(object):
 				solid_capstyle="butt")
 
 		self.ax2.set_xlim(0, num_pipeline_entries)
-		self.ax2.set_xticks([])
-		self.ax2.set_xlabel("Similarity Wheels")
-		self.ax2.set_ylim(-0.4, 0.4)
+		self.ax2.set_xticks(ticks)
+		self.ax2.set_xticklabels(labels)
+		#self.ax2.set_xlabel("Similarity Wheels")
+		self.ax2.set_ylim(-0.2, 0.3)
 		self.line21, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_l],
@@ -660,9 +669,10 @@ class Visualization(object):
 		self.ax2.legend(loc="lower left", handles=[self.line21, self.line22, self.line23, self.line24])
 
 		self.ax3.set_xlim(0, num_sensor_hrr_bars)
-		self.ax3.set_xticks([])
-		self.ax3.set_xlabel("Sensory Input")
-		self.ax3.set_ylim(-0.22, 0.5)
+		self.ax3.set_xticks([0, num_sensor_hrr_bars / 2.0, num_sensor_hrr_bars])
+		self.ax3.set_xticklabels([0, 0.5, 1])
+		#self.ax3.set_xlabel("Sensory Input")
+		self.ax3.set_ylim(-0.1, 0.2)
 		self.bars = self.ax3.bar(
 				np.arange(num_sensor_hrr_bars),
 				self._sensor_hrr,
@@ -672,8 +682,9 @@ class Visualization(object):
 				color=[1.0, 0.31, 0.0])
 
 		self.ax4.set_xlim(0, num_pipeline_entries)
-		self.ax4.set_xticks([])
-		self.ax4.set_xlabel("Distance to Target")
+		self.ax2.set_xticks(ticks)
+		self.ax2.set_xticklabels(labels)
+		#self.ax4.set_xlabel("Distance to Target")
 		#w, h = self.screen.get_width(), self.screen.get_height()
 		#max_len = math.sqrt(w * w + h * h)
 		max_len = 500
@@ -804,7 +815,10 @@ class Visualization(object):
 		#		alpha=0.7,
 		#		c=[1.0, 0.31, 0.0])
 
-		self.fig.canvas.draw()
+		self.fig1.canvas.draw()
+		self.fig2.canvas.draw()
+		self.fig3.canvas.draw()
+		self.fig4.canvas.draw()
 		if self.plot_to_disk:
 			plt.savefig("plot/{}.pdf".format(tick), bbox_inches="tight")
 
