@@ -530,6 +530,7 @@ class Object(VisObject):
 
 class World(object):
 	def __init__(self, size):
+		self.tick = 0
 		self.size = size
 		self._transform = Transform()
 		self.agents = []
@@ -562,6 +563,7 @@ class World(object):
 		agent.target = None
 
 	def step(self, delta_time):
+		self.tick += 1
 		for a in self.agents:
 			a.step(self.objects, delta_time)
 			# check world space limits
@@ -571,7 +573,7 @@ class World(object):
 
 class Visualization(object):
 	def __init__(self, size, plot_pipeline=True, num_pipeline_entries=1000,
-				num_sensor_hrr_bars=20):
+				num_sensor_hrr_bars=20, plot_to_disk=False):
 		self.screen = pygame.display.set_mode(size)
 		self.plot_pipeline = plot_pipeline
 
@@ -583,6 +585,8 @@ class Visualization(object):
 		self._pipeline_distance = deque(d1, num_pipeline_entries)
 		self._pipleline_new_target = deque(d1, num_pipeline_entries)
 		self._sensor_hrr = np.full(num_sensor_hrr_bars, np.NAN, dtype='float32')
+
+		self.plot_to_disk = plot_to_disk
 
 		pygame.display.set_caption("robosim")
 		self.screen.fill(Color["WHITE"])
@@ -759,7 +763,7 @@ class Visualization(object):
 		self._pipeline_distance.append(Vec2.length(agent.transform.position - agent.target.transform.position))
 		self._pipleline_new_target.append(0.5 if agent.target_new > 0 else np.nan)
 
-	def _update_symbolic_pipeline_plot(self):
+	def _update_symbolic_pipeline_plot(self, tick=0):
 		sens_series = np.array(self._pipeline_inputs).astype(np.double)
 		sens_mask = np.isnan(sens_series)
 		sens_series[np.isfinite(sens_series)] = np.nan
@@ -801,6 +805,8 @@ class Visualization(object):
 		#		c=[1.0, 0.31, 0.0])
 
 		self.fig.canvas.draw()
+		if self.plot_to_disk:
+			plt.savefig("plot/{}.pdf".format(tick), bbox_inches="tight")
 
 	def update(self, world):
 		self.screen.fill(Color["WHITE"])
@@ -817,7 +823,7 @@ class Visualization(object):
 		if (self.plot_pipeline and len(world.agents) >= 1):
 			# only plot for the first agent
 			self._update_symbolic_pipeline(world.agents[0])
-			self._update_symbolic_pipeline_plot()
+			self._update_symbolic_pipeline_plot(tick=world.tick)
 
 
 WORLD_SIZE = (500, 500)
@@ -829,7 +835,7 @@ def main():
 	pygame.init()
 
 	world = World(size=WORLD_SIZE)
-	vis = Visualization(world.size, num_pipeline_entries=1000)
+	vis = Visualization(world.size, num_pipeline_entries=1000, plot_to_disk=True)
 
 	agent = Agent(color="RED", velocity=0.07)
 	agent.transform.local_position = Vec2(10, 10)
