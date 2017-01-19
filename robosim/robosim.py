@@ -570,7 +570,8 @@ class World(object):
 
 
 class Visualization(object):
-	def __init__(self, size, plot_pipeline=True, num_pipeline_entries=1000):
+	def __init__(self, size, plot_pipeline=True, num_pipeline_entries=1000,
+				num_sensor_hrr_bars=20):
 		self.screen = pygame.display.set_mode(size)
 		self.plot_pipeline = plot_pipeline
 
@@ -581,6 +582,7 @@ class Visualization(object):
 		self._pipeline_similarity_r = deque(d2, num_pipeline_entries)
 		self._pipeline_distance = deque(d1, num_pipeline_entries)
 		self._pipleline_new_target = deque(d1, num_pipeline_entries)
+		self._sensor_hrr = np.full(num_sensor_hrr_bars, np.NAN, dtype='float32')
 
 		pygame.display.set_caption("robosim")
 		self.screen.fill(Color["WHITE"])
@@ -621,57 +623,49 @@ class Visualization(object):
 
 		self.ax2.set_xlim(0, num_pipeline_entries)
 		self.ax2.set_xticks([])
-		self.ax2.set_xlabel("Similarity Left Wheel")
+		self.ax2.set_xlabel("Similarity Wheels")
 		self.ax2.set_ylim(-0.4, 0.4)
 		self.line21, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_l],
-				label="Forwards",
+				label="L Forwards",
 				lw=1.5,
 				alpha=0.7,
-				c=[1.0, 0.31, 0.0])
+				c=[1.0, 0.5, 0.1])
 		self.line22, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_l],
-				label="Backwards",
+				label="L Backwards",
 				lw=1.5,
 				alpha=0.7,
-				c=[0.0, 0.31, 1.0])
+				c=[1.0, 0.1, 0.5])
 		self.line23, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_r],
-				label="Forwards",
+				label="R Forwards",
 				lw=1.5,
 				alpha=0.7,
-				c=[1.0, 0.31, 0.0])
+				c=[0.1, 0.5, 1.0])
 		self.line24, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_r],
-				label="Backwards",
+				label="R Backwards",
 				lw=1.5,
 				alpha=0.7,
-				c=[0.0, 0.31, 1.0])
+				c=[0.5, 0.1, 1.0])
 		self.ax2.legend(loc="lower left", handles=[self.line21, self.line22, self.line23, self.line24])
 
-		self.ax3.set_xlim(0, num_pipeline_entries)
+		self.ax3.set_xlim(0, num_sensor_hrr_bars)
 		self.ax3.set_xticks([])
-		self.ax3.set_xlabel("Similarity Right Wheel")
-		self.ax3.set_ylim(-0.4, 0.4)
-		self.line31, = self.ax3.plot(
-				np.arange(num_pipeline_entries),
-				[a for a,_ in self._pipeline_similarity_r],
-				label="Forwards",
-				lw=1.5,
+		self.ax3.set_xlabel("Sensory Input")
+		self.ax3.set_ylim(-0.22, 0.5)
+		self.bars = self.ax3.bar(
+				np.arange(num_sensor_hrr_bars),
+				self._sensor_hrr,
+				#width=,
+				#label="",
 				alpha=0.7,
-				c=[1.0, 0.31, 0.0])
-		self.line32, = self.ax3.plot(
-				np.arange(num_pipeline_entries),
-				[b for _,b in self._pipeline_similarity_r],
-				label="Backwards",
-				lw=1.5,
-				alpha=0.7,
-				c=[0.0, 0.31, 1.0])
-		self.ax3.legend(loc="lower left", handles=[self.line31, self.line32])
+				color=[1.0, 0.31, 0.0])
 
 		self.ax4.set_xlim(0, num_pipeline_entries)
 		self.ax4.set_xticks([])
@@ -754,6 +748,14 @@ class Visualization(object):
 		self._pipeline_inputs.append(agent.target_position_vs)
 		self._pipeline_similarity_l.append(agent.similarity_left)
 		self._pipeline_similarity_r.append(agent.similarity_right)
+
+		m = None
+		if agent.target_position_vs is not np.nan:
+			m = HRR('').reverse_permute(HRR(agent.target_position_vs).memory)
+		else:
+			m = HRR('').reverse_permute(agent.controllers[0].NO_OBJECT.memory)
+		self._sensor_hrr = m[:-(len(m) % len(self._sensor_hrr))].reshape(len(self._sensor_hrr),-1).max(axis=1, keepdims=False)
+
 		self._pipeline_distance.append(Vec2.length(agent.transform.position - agent.target.transform.position))
 		self._pipleline_new_target.append(0.5 if agent.target_new > 0 else np.nan)
 
@@ -770,8 +772,10 @@ class Visualization(object):
 		self.line22.set_data(np.arange(len(self._pipeline_similarity_l)), [b for _,b in self._pipeline_similarity_l])
 		self.line23.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
 		self.line24.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
-		self.line31.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
-		self.line32.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
+
+		for bar, h in zip(self.bars, self._sensor_hrr):
+			bar.set_height(h)
+
 		self.line41.set_data(np.arange(len(self._pipeline_distance)), self._pipeline_distance)
 		self.line42.set_data(np.arange(len(self._pipleline_new_target)), self._pipleline_new_target)
 
