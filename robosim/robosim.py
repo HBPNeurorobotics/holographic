@@ -384,7 +384,7 @@ class Controller(object):
 
 
 class Agent(VisObject):
-	TARGET_NEW_TIME = 1
+	TARGET_NEW_TIME = 4
 
 	def __init__(self, color, velocity=1.0):
 		super(Agent, self).__init__(Shape.HOUSE, color)
@@ -680,13 +680,22 @@ class Visualization(object):
 		#max_len = math.sqrt(w * w + h * h)
 		max_len = 500
 		self.ax4.set_ylim(0, max_len)
-		self.line4, = self.ax4.plot(
+		self.line41, = self.ax4.plot(
 				np.arange(num_pipeline_entries),
 				self._pipeline_distance,
 				label="Distance",
 				lw=1.5,
 				alpha=0.7,
 				c=[1.0, 0.31, 0.0])
+		self.line42, = self.ax4.plot(
+				np.arange(num_pipeline_entries),
+				self._pipleline_new_target,
+				label="New Target",
+				lw=300.0,
+				alpha=1.0,
+				#aa=False,
+				c=[0.0, 0.0, 0.0],
+				solid_capstyle="butt")
 
 		if self.plot_pipeline:
 			plt.show()
@@ -746,7 +755,7 @@ class Visualization(object):
 		self._pipeline_similarity_l.append(agent.similarity_left)
 		self._pipeline_similarity_r.append(agent.similarity_right)
 		self._pipeline_distance.append(Vec2.length(agent.transform.position - agent.target.transform.position))
-		self._pipleline_new_target.append(agent.target_new > 0)
+		self._pipleline_new_target.append(0.5 if agent.target_new > 0 else np.nan)
 
 	def _update_symbolic_pipeline_plot(self):
 		sens_series = np.array(self._pipeline_inputs).astype(np.double)
@@ -763,28 +772,29 @@ class Visualization(object):
 		self.line24.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
 		self.line31.set_data(np.arange(len(self._pipeline_similarity_r)), [a for a,_ in self._pipeline_similarity_r])
 		self.line32.set_data(np.arange(len(self._pipeline_similarity_r)), [b for _,b in self._pipeline_similarity_r])
-		#self.line4.set_data(np.arange(len(self._pipeline_distance)), self._pipeline_distance)
+		self.line41.set_data(np.arange(len(self._pipeline_distance)), self._pipeline_distance)
+		self.line42.set_data(np.arange(len(self._pipleline_new_target)), self._pipleline_new_target)
 
 		# yeah, matplotlib is so retarded...
-		self.ax4.cla()
-		self.ax4.set_xlim(0, len(self._pipleline_new_target))
-		self.ax4.set_xticks([])
-		self.ax4.set_xlabel("Distance to Target")
-		#w, h = self.screen.get_width(), self.screen.get_height()
-		#max_len = math.sqrt(w * w + h * h)
-		max_len = 500
-		self.ax4.set_ylim(0, max_len)
-		for x, v in enumerate(self._pipleline_new_target):
-			if v is True:
-				self.ax4.axvline(x=x, color=[0.0, 0.0, 0.0],
-						lw=1.0, alpha=0.8)
-		self.line4, = self.ax4.plot(
-				np.arange(len(self._pipeline_distance)),
-				self._pipeline_distance,
-				label="Distance",
-				lw=1.5,
-				alpha=0.7,
-				c=[1.0, 0.31, 0.0])
+		#self.ax4.cla()
+		#self.ax4.set_xlim(0, len(self._pipleline_new_target))
+		#self.ax4.set_xticks([])
+		#self.ax4.set_xlabel("Distance to Target")
+		##w, h = self.screen.get_width(), self.screen.get_height()
+		##max_len = math.sqrt(w * w + h * h)
+		#max_len = 500
+		#self.ax4.set_ylim(0, max_len)
+		#for x, v in enumerate(self._pipleline_new_target):
+		#	if v is True:
+		#		self.ax4.axvline(x=x, color=[0.0, 0.0, 0.0],
+		#				lw=1.0, alpha=0.8)
+		#self.line4, = self.ax4.plot(
+		#		np.arange(len(self._pipeline_distance)),
+		#		self._pipeline_distance,
+		#		label="Distance",
+		#		lw=1.5,
+		#		alpha=0.7,
+		#		c=[1.0, 0.31, 0.0])
 
 		self.fig.canvas.draw()
 
@@ -815,7 +825,7 @@ def main():
 	pygame.init()
 
 	world = World(size=WORLD_SIZE)
-	vis = Visualization(world.size)
+	vis = Visualization(world.size, num_pipeline_entries=1000)
 
 	agent = Agent(color="RED", velocity=0.07)
 	agent.transform.local_position = Vec2(10, 10)
