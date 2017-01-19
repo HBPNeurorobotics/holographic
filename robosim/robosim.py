@@ -898,9 +898,12 @@ def main():
 		world.step(delta_time=1.0)
 		vis.update(world)
 
-		# remove and add new target if agent is close
+		# remove all obj and add new target if agent is close
 		if agent.target_distance < 50:
 			world.remove_target_object(agent)
+			world.objects = []
+			world.add_random_object()
+			world.add_random_object()
 			target_obj = world.add_random_object()
 			agent.target = target_obj
 
