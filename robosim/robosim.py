@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from enum import Enum
 from pygame.locals import *
-from collections import deque
+from collections import deque, OrderedDict
 
 import sys
 sys.path.append("../vsa/")
@@ -32,16 +32,16 @@ class WheelDir(Enum):
 	NONE = "NONE"
 
 
-Color = {
-	"WHITE"  : (255, 255, 255),
-	"BLACK"  : (  0,   0,   0),
-	"RED"    : (255,   0,   0),
-	"GREEN"  : (  0, 255,   0),
-	"BLUE"   : (  0,   0, 255),
-	"CYAN"   : (  0, 255, 255),
-	"MAGENTA": (255,   0, 255),
-	"YELLOW" : (255, 255,   0),
-};
+Color = OrderedDict([
+	("WHITE"  , (255, 255, 255)),
+	("BLACK"  , (  0,   0,   0)),
+	("RED"    , (255,   0,   0)),
+	("GREEN"  , (  0, 255,   0)),
+	("BLUE"   , (  0,   0, 255)),
+	("CYAN"   , (  0, 255, 255)),
+	("MAGENTA", (255,   0, 255)),
+	("YELLOW" , (255, 255,   0)),
+])
 
 def approx_equal(a, b, tolerance):
 	return abs(a - b) <= max(abs(a), abs(b)) * tolerance
