@@ -551,13 +551,14 @@ Following the previous formulas as a series of operations the vector $\pmb y^*$ 
 Due to this, when probing, we would receive vectors which had the correct relative distance between their values, i.e.
 the correct "shape", but would be shifted, stretched or squeezed along the Y-axis. This lead to vectors falsely being regarded as dissimilar to each other, and can be solved by performing two normalization steps before comparing:
 
-	\begin{equation}
-	x_i = x_i - \frac{\sum_{i=0}^n ||x_i||}{|x|}
-	\end{equation} 	
-	
-	\begin{equation}
-	\pmb x = \frac{\pmb x }{ \| \pmb x \|}
-	\end{equation} 	
+	\begin{equation}\label{eq:norm1}
+		{x_i}' = x_i - \frac{\sum_j x_j}{|{\pmb x}|},
+	\end{equation}
+and
+	\begin{equation}\label{eq:norm2}
+		{\pmb x}{'}{'} = \frac{{\pmb x}'}{ \| {\pmb x}'\|},
+	\end{equation}
+which normalize ${\pmb x}$ to a mean value of $0$ and a length of $1$.
 	
 	\section{Topology-preserving encoding}
 	
