@@ -609,14 +609,15 @@ class Visualization(object):
 				label="Similarity",
 				lw=1.5,
 				alpha=0.7,
-				c=[1.0, 0.31, 0.0])
+				c=[0.0, 0.31, 1.0])
 		self.line12, = self.ax1.plot(
 				np.arange(num_pipeline_entries)[sens_mask2],
 				sens_series[sens_mask2],
 				label="Similarity",
-				lw=8.0,
-				alpha=0.6,
-				c=[1.0, 0.0, 0.0])
+				lw=300.0,
+				alpha=0.4,
+				c=[1.0, 0.0, 0.0],
+				solid_capstyle="butt")
 
 		self.ax2.set_xlim(0, num_pipeline_entries)
 		self.ax2.set_xticks([])
