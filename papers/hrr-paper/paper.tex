@@ -392,7 +392,7 @@
 	% in the abstract
 	\begin{abstract}
 		Vector Symbolic Architectures (VSAs) define a set of operations
-		for association, (compressed) storage, manipulation and retrieval
+		for association, storage, manipulation and retrieval
 		of symbolic concepts, represented as fixed-length vectors in
 		${\rm I\!R}^n$.
 		A specific instance of VSAs, Holographic Reduced Representations (HRRs),
@@ -413,8 +413,7 @@
 		implicitly represents the scalar symbol, so no further lookup is needed.
 		We show that our encoding scheme has a positive impact
 		on memory capacity in comparison to the original capacity
-		benchmark for HRRs by Plate
-		\cite{Plate:1995:HolographicReducedRepresentations}.
+		benchmark for HRRs \cite{Plate:1995:HolographicReducedRepresentations}.
 		We also evaluate our memories in two different robotics tasks: visual scene memory and state machine scripting (holographic controllers).
 	\end{abstract}
 	
@@ -519,8 +518,9 @@ cos(\pmb x, \pmb y) = \frac {\pmb x \cdot \pmb y}{||\pmb x|| \cdot ||\pmb y||}
 A straightforward way of implementing clean-up memory is using a lookup table, while other researchers show that any type of attractor network can be used (e.g. self-organizing maps).
 
 	In the case of lookup tables, in order to decode a specific symbolic vector, the elements from a symbol table are iterated over, the similarity to each of the entries is calculated and the symbol which presented maximum similarity is returned. With the help of a threshold for the similarity value false-positives can be excluded. A lookup requires $O(n)$, where $n$ is the number of symbols known to the system. This approach works quite well for object identifiers (names), but has some non-desirable properties when used on scalar encoding. The space complexity will increase and may become infeasible, depending on the number of inputs needed. One way of handling symbolic scalar encoding is to discretize the whole input range into bins and assigning a random vector to each discrete value. This however may often prove to not satisfy the task needs any more.
+In this paper, we present a probabilistic method for removing the necessity of
+using a clean-up procedure after decoding scalar values.
 
-	
 	\subsection{Holographic reduced representations}
 	\label{sec:hrr}
 	
@@ -537,7 +537,9 @@ Superposition is implemented as a simple element-wise vector addition. Taking th
 	\pmb m = \pmb a + \pmb b
 	\end{equation}
 
-The resulting vector of the superposition operation $\pmb m$ can then be probed by using the inverse of circular convolution, which is circular correlation. Plainly put probing can be viewed as binding with the "inverse" of a vector in Fourier space:
+The resulting vector of the superposition operation $\pmb m$ can then be probed
+by using the inverse of circular convolution, which is circular correlation.
+Probing can be viewed as binding with the "inverse" of a vector in Fourier space:
 	
 	\begin{equation}
 	\pmb y^* = f^{-1}(f(\pmb m) * f(\pmb x)^{-1})
