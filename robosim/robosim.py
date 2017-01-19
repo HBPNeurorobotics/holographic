@@ -384,7 +384,7 @@ class Controller(object):
 
 
 class Agent(VisObject):
-	TARGET_NEW_TIME = 4
+	TARGET_NEW_TIME = 2
 
 	def __init__(self, color, velocity=1.0):
 		super(Agent, self).__init__(Shape.HOUSE, color)
@@ -594,10 +594,10 @@ class Visualization(object):
 
 		plt.ion()
 
-		self.fig1 = plt.figure(figsize=(6,2.5))
-		self.fig2 = plt.figure(figsize=(6,2.5))
-		self.fig3 = plt.figure(figsize=(6,2.5))
-		self.fig4 = plt.figure(figsize=(6,2.5))
+		self.fig1 = plt.figure(figsize=(6,2.8))
+		self.fig2 = plt.figure(figsize=(6,2.8))
+		self.fig3 = plt.figure(figsize=(6,2.8))
+		self.fig4 = plt.figure(figsize=(6,2.8))
 		self.ax1 = self.fig1.add_subplot(1, 1, 1)
 		self.ax2 = self.fig2.add_subplot(1, 1, 1)
 		self.ax3 = self.fig3.add_subplot(1, 1, 1)
@@ -606,13 +606,14 @@ class Visualization(object):
 		# compute ticks
 		interval = int(num_pipeline_entries / 5)
 		ticks = [interval * x for x in np.arange(6)]
-		labels = [-1 * x for x in ticks[::-1]]
+		ticklabels = [-1 * x for x in ticks[::-1]]
 
 		self.ax1.set_xlim(0, num_pipeline_entries)
 		self.ax1.set_xticks(ticks)
-		self.ax1.set_xticklabels(labels)
-		#self.ax1.set_xlabel("Sensory Input")
+		self.ax1.set_xticklabels(ticklabels)
+		self.ax1.set_xlabel("Time")
 		self.ax1.set_ylim(0, 1)
+		self.ax1.set_ylabel("Visual Field")
 		#self.ax1.set_ylim(self.ax1.get_ylim()[::-1])
 		#self.ax1.set_yticks([])
 		sens_series = np.array(self._pipeline_inputs).astype(np.double)
@@ -632,47 +633,53 @@ class Visualization(object):
 				alpha=0.4,
 				c=[1.0, 0.0, 0.0],
 				solid_capstyle="butt")
+		self.fig1.tight_layout()
 
 		self.ax2.set_xlim(0, num_pipeline_entries)
 		self.ax2.set_xticks(ticks)
-		self.ax2.set_xticklabels(labels)
-		#self.ax2.set_xlabel("Similarity Wheels")
+		self.ax2.set_xticklabels(ticklabels)
+		self.ax2.set_xlabel("Time")
 		self.ax2.set_ylim(-0.2, 0.3)
+		self.ax2.set_ylabel("Similarity")
 		self.line21, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_l],
 				label="L Forwards",
+				ls="dashed",
 				lw=1.5,
 				alpha=0.7,
-				c=[1.0, 0.5, 0.1])
+				c=[1.0, 0.31, 0.0])
 		self.line22, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_l],
 				label="L Backwards",
+				ls="dashed",
 				lw=1.5,
 				alpha=0.7,
-				c=[1.0, 0.1, 0.5])
+				c=[0.0, 0.31, 1.0])
 		self.line23, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[a for a,_ in self._pipeline_similarity_r],
 				label="R Forwards",
 				lw=1.5,
 				alpha=0.7,
-				c=[0.1, 0.5, 1.0])
+				c=[1.0, 0.31, 0.0])
 		self.line24, = self.ax2.plot(
 				np.arange(num_pipeline_entries),
 				[b for _,b in self._pipeline_similarity_r],
 				label="R Backwards",
 				lw=1.5,
 				alpha=0.7,
-				c=[0.5, 0.1, 1.0])
-		self.ax2.legend(loc="lower left", handles=[self.line21, self.line22, self.line23, self.line24])
+				c=[0.0, 0.31, 1.0])
+		self.ax2.legend(loc="lower left", handles=[self.line21, self.line22, self.line23, self.line24], ncol=2, prop={'size':8})
+		self.fig2.tight_layout()
 
 		self.ax3.set_xlim(0, num_sensor_hrr_bars)
 		self.ax3.set_xticks([0, num_sensor_hrr_bars / 2.0, num_sensor_hrr_bars])
 		self.ax3.set_xticklabels([0, 0.5, 1])
-		#self.ax3.set_xlabel("Sensory Input")
-		self.ax3.set_ylim(-0.1, 0.2)
+		self.ax3.set_xlabel("Visual Field")
+		self.ax3.set_ylim(-0.05, 0.1)
+		self.ax3.set_ylabel("Probability")
 		self.bars = self.ax3.bar(
 				np.arange(num_sensor_hrr_bars),
 				self._sensor_hrr,
@@ -680,15 +687,17 @@ class Visualization(object):
 				#label="",
 				alpha=0.7,
 				color=[1.0, 0.31, 0.0])
+		self.fig3.tight_layout()
 
 		self.ax4.set_xlim(0, num_pipeline_entries)
-		self.ax2.set_xticks(ticks)
-		self.ax2.set_xticklabels(labels)
-		#self.ax4.set_xlabel("Distance to Target")
+		self.ax4.set_xticks(ticks)
+		self.ax4.set_xticklabels(ticklabels)
+		self.ax4.set_xlabel("Time")
 		#w, h = self.screen.get_width(), self.screen.get_height()
 		#max_len = math.sqrt(w * w + h * h)
 		max_len = 500
 		self.ax4.set_ylim(0, max_len)
+		self.ax4.set_ylabel("Distance")
 		self.line41, = self.ax4.plot(
 				np.arange(num_pipeline_entries),
 				self._pipeline_distance,
@@ -705,6 +714,7 @@ class Visualization(object):
 				#aa=False,
 				c=[0.0, 0.0, 0.0],
 				solid_capstyle="butt")
+		self.fig4.tight_layout()
 
 		if self.plot_pipeline:
 			plt.show()
@@ -816,11 +826,17 @@ class Visualization(object):
 		#		c=[1.0, 0.31, 0.0])
 
 		self.fig1.canvas.draw()
+		if self.plot_to_disk:
+			self.fig1.savefig("plot/1_{}.pdf".format(tick), bbox_inches="tight")
 		self.fig2.canvas.draw()
+		if self.plot_to_disk:
+			self.fig2.savefig("plot/2_{}.pdf".format(tick), bbox_inches="tight")
 		self.fig3.canvas.draw()
+		if self.plot_to_disk:
+			self.fig3.savefig("plot/3_{}.pdf".format(tick), bbox_inches="tight")
 		self.fig4.canvas.draw()
 		if self.plot_to_disk:
-			plt.savefig("plot/{}.pdf".format(tick), bbox_inches="tight")
+			self.fig4.savefig("plot/4_{}.pdf".format(tick), bbox_inches="tight")
 
 	def update(self, world):
 		self.screen.fill(Color["WHITE"])
@@ -833,6 +849,9 @@ class Visualization(object):
 			#for s in a._wheels:
 			#	self._draw(s.shape, s.transform, s.color)
 		pygame.display.flip()
+		if self.plot_to_disk:
+			#data = pygame.image.tostring(self.screen, 'RGBA')
+			pygame.image.save(self.screen, "plot/robot_{}.png".format(world.tick))
 
 		if (self.plot_pipeline and len(world.agents) >= 1):
 			# only plot for the first agent
@@ -849,7 +868,7 @@ def main():
 	pygame.init()
 
 	world = World(size=WORLD_SIZE)
-	vis = Visualization(world.size, num_pipeline_entries=1000, plot_to_disk=True)
+	vis = Visualization(world.size, num_pipeline_entries=50, plot_to_disk=True)
 
 	agent = Agent(color="RED", velocity=0.07)
 	agent.transform.local_position = Vec2(10, 10)
