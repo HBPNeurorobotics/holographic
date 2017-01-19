@@ -437,6 +437,9 @@ class Agent(VisObject):
 			max_similarity_right = 0.1
 			wheel_dir_right = None
 
+			self.target_position_vs = np.NAN
+			self.target_distance = np.NAN
+
 			# TODO: make it more beautiful
 			for obj, val, dist in output:
 				if obj is self.target:
@@ -472,8 +475,8 @@ class Agent(VisObject):
 							self.similarity_right[1] = a[1]
 
 			if wheel_dir_left is None or wheel_dir_right is None:
-				self.target_position_vs = np.NAN
-				self.target_distance = np.NAN
+				print("NO WHEEL ACTION FOUND! l {} r {} tp {}".format(wheel_dir_left, wheel_dir_right, self.target_position_vs))
+
 				self.similarity_left = [np.NAN, np.NAN]
 				self.similarity_right = [np.NAN, np.NAN]
 
