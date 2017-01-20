@@ -859,7 +859,7 @@ In figure \ref{perm-b} "ball" is being probed, and the result after inverse perm
 	
 \subsection{Symbolic scripting (holographic controllers)}
 
-We have used our system to demonstrate a mechanism for encoding neural programs and processes through a series of associated action, perception and actuator symbols. We call this mechanism for defining controllers using holographic memories "symbolic scripting".
+We have used our system to create a mechanism for encoding neural programs and processes through a series of associated action, perception and actuator symbols. We call this mechanism for defining controllers using holographic memories "symbolic scripting".
 
 
 \begin{figure}[th!]
@@ -887,7 +887,7 @@ We have used our system to demonstrate a mechanism for encoding neural programs 
 \end{figure}
 
 
-The basic idea is centered around symbolic representations of all three parts involved:
+The basic idea is centred around symbolic representations of all three parts involved:
 \begin{enumerate}
 	\item \textbf{actions} are symbolic constants representing groups of control signals, such as "forward", "backward", "stop", "flex", etc.
 	
@@ -896,7 +896,7 @@ The basic idea is centered around symbolic representations of all three parts in
 	\item \textbf{senses} are preprocessed (classified) sensory stream labels, such as "bright", "dark", "touching", "falling\_down", "rolling", etc.
 \end{enumerate}
 
-An example of this kind of symbolic script is given in figure \ref{fig:symbolic-scripting}. Here the memory encodes an object following behavior for left wheel.
+An example of this kind of symbolic script is given in figure \ref{fig:symbolic-scripting}. Here the memory encodes an object following behaviour for its left wheel.
 
 		\begin{figure}[th!]
 			\begin{subfigure}{0.45\columnwidth}
@@ -912,7 +912,7 @@ An example of this kind of symbolic script is given in figure \ref{fig:symbolic-
 				}
 				\label{fig:gaussianbarperm}
 			\end{subfigure}	
-		\caption{Sensory input encoding of target object position in the visual field at two successive points in time. Left graph shows original encodings for two adjacent values and right graph shows permuted encodings. It can be seen that semantically close input values result in similar HRR encodings.}
+		\caption{Sensory input encoding of a target objects position in the visual field at two successive points in time. Left graph shows original encodings for two adjacent values and right graph shows permuted encodings. It can be seen that semantically close input values result in similar HRR encodings.}
 		\label{fig:gaussian}
 		\end{figure}	
 
@@ -927,38 +927,35 @@ corresponding view space positions in $[0,1]$ (far left to far right).
 % result, but IIRC this did not work well. maybe figure it out?
 All returned objects are then compared to the agent's target object.
 If the target is found, the holographic controller is probed with its view space
-position which, due to the similarity of scalar values, yields results even for
+position which, due to the similarity of scalars, yields results even for
 values that lie between the originally stored values and can consequently be
 probed with the symbols $left\_wheel$ and $right\_wheel$ to extract the symbolic
 actions $forwards$ or $backwards$.
 If the target is not found or no action could be determined, the agent defaults
-to probing the controller with the symbolic constant $no\_object$ which results
+to probing the controller with the symbolic constant $no\_object$ which results in
 a clockwise rotation when probing for wheel actions (see figure
 \ref{fig:experiment:similar2}).
 
 In the left column of figure \ref{fig:experiment}, the agent approaches the blue
 target (figure \ref{fig:experiment:agent1}). In the beginning (tick $-50$), the
 agent rotates right (default action) because the target is not visible.
-At tick $-30$, the object enters the agent's visual field and is consequently
-centered until tick $-19$.
+At tick $-30$, the object enters the agent's visual field and continuously nears the fields center, which is reached at tick $-19$.
 Then, with the sensory value of ${\sim}0.5$, the actions for both wheels switch
 to $forwards$ (figure \ref{fig:experiment:similar1}) and the agent approaches
 the target, constantly decreasing its distance
 (figure \ref{fig:experiment:distance1}).
 
-In the right column of figure \ref{fig:experiment}, the target is not currently
+In the right column of figure \ref{fig:experiment}, the target is not yet
 in the visual field of the agent.
-This is due to reaching its old target at approximately tick $-13$ which leads
-to the removal of all current objects and random placement of new objects,
-including one target.
-As the new object is placed outside of the agent's field of view, the default
-action of probing $no\_object$ is performed constantly.
-As described, this then results in the encoded default actions $backwards$ for
-probing with $left\_wheel$ and $forwards$ for probing with $right\_wheel$---a
-clockwise rotation (see figure \ref{fig:experiment:similar2}).
+This is the result of the agent previously reaching an old target (at approximately tick $-13$) which lead
+to the removal of all current objects and random placement of new ones,
+including a new target.
+As the new target is placed outside of the agent's field of view, the default
+action of probing $no\_object$ is performed. The
+clockwise rotation can also be seen in figure \ref{fig:experiment:similar2}). Regardless of how many times the agent reaches its target it will continue to find and pursue new ones solely with the help of its symbolic controller.
 
 This experiment shows the effectiveness of our approach in a practical
-application by encoding symbolic sensing, actuators and actions in a symbolic
+application by encoding symbolic sensing, actuators and actions in a
 controller.
 
 \begin{figure}%[th!]
@@ -970,7 +967,7 @@ controller.
 	%\setlength{\fboxrule}{1pt}%
 	\fbox{\includegraphics[width=.98\columnwidth]{img/exp_robot_139.png}}%
 	}%
-	\caption{Scene of Agent 1 with three randomly placed items, the blue
+	\caption{Scene of Agent 1 (red) with three randomly placed items, the blue
 	one being the target object.
 	The green fan represents the visual field.}
 	\label{fig:experiment:agent1}
@@ -983,30 +980,29 @@ controller.
 	\fbox{\includegraphics[width=.98\columnwidth]{img/robot_235.png}}%
 	}%
 	\caption{Scene of Agent 2 with three randomly placed items.
-	The agent does not have the target object in his field of view (green
-	fan).}
+	The agent does not have the target object in his field of view yet.}
 	\label{fig:experiment:agent2}
 \end{subfigure}
 \begin{subfigure}{.49\columnwidth}
 	\center
 	\includegraphics[width=.98\columnwidth]{img/3_139.pdf}
-	\caption{Symbolic sensing with target in visual field results in scalar
-	value representing target direction (${\sim}0.55$, almost straight
+	\caption{Symbolic sensing with the target in the visual field, which results in a scalar
+	value representing the target direction (${\sim}0.55$, almost straight
 	forward).}
 	\label{fig:experiment:sensor1}
 \end{subfigure}
 \begin{subfigure}{.49\columnwidth}
 	\center
 	\includegraphics[width=.98\columnwidth]{img/3_235.pdf}
-	\caption{Symbolic sensing without target in visual field showing the
-	representation for the symbolic constant $no\_object$.}
+	\caption{Symbolic sensing without the target in the visual field showing the
+	representation for the symbolic constant $no\_object$.\\}
 	\label{fig:experiment:sensor2}
 \end{subfigure}
 \begin{subfigure}{.49\columnwidth}
 	\center
 	\includegraphics[width=.98\columnwidth]{img/1_139.pdf}
-	\caption{Target position over time in the visual field of Agent 1.
-	At tick $-30$, it appears on the far right edge and then gradually
+	\caption{The targets position over time in the visual field of Agent 1.
+	At tick $-30$, the target enters the far right edge of the field of view and then gradually
 	shifts towards the center.}
 	\label{fig:experiment:pos1}
 \end{subfigure}
@@ -1014,15 +1010,15 @@ controller.
 	\center
 	\includegraphics[width=.98\columnwidth]{img/1_235.pdf}
 	\caption{Agent 2 lost track of the target object (red background).
-	In this case, the old target was reached and the new target is not in
-	the field of view yet.}
+	This is due to it having been reached, which prompts a new target creation, which is not in
+	the field of view.}
 	\label{fig:experiment:pos2}
 \end{subfigure}
 \begin{subfigure}{.49\columnwidth}
 	\center
 	\includegraphics[width=.98\columnwidth]{img/4_139.pdf}
 	\caption{Distance between Agent 1 and its target over time.
-	Here, the blue object in \subref{fig:experiment:agent1} is being
+	Here, the blue object in sub-figure \subref{fig:experiment:agent1} is being
 	approached.}
 	\label{fig:experiment:distance1}
 \end{subfigure}
@@ -1030,7 +1026,7 @@ controller.
 	\center
 	\includegraphics[width=.98\columnwidth]{img/4_235.pdf}
 	\caption{Distance between Agent 2 and its target over time.
-	At tick $-12$ a new target was added (black bar).}
+	At tick $-12$ a new target was created (black bar).}
 	\label{fig:experiment:distance2}
 \end{subfigure}
 \begin{subfigure}{.49\columnwidth}
@@ -1045,14 +1041,14 @@ controller.
 \begin{subfigure}{.49\columnwidth}
 	\center
 	\includegraphics[width=.98\columnwidth]{img/2_235.pdf}
-	\caption{Similarities as described in \subref{fig:experiment:similar1}
+	\caption{Similarities as described in sub-figure \subref{fig:experiment:similar1}
 	for Agent 2. As no target is in the visual field, the default action for
-	the symbol $no\_object$ is performed (rotate right).}
+	the symbol $no\_object$ is performed (rotate right).\\}
 	\label{fig:experiment:similar2}
 \end{subfigure}
 \caption{Excerpts from our symbolic scripting experiment, controlling a
 Braitenberg vehicle with one linear sensor.
-The left column (\protect\subref{fig:experiment:agent1},
+The left column (sub-figures \protect\subref{fig:experiment:agent1},
 \protect\subref{fig:experiment:sensor1}, \protect\subref{fig:experiment:pos1},
 \protect\subref{fig:experiment:distance1} and
 \protect\subref{fig:experiment:similar1}) illustrates an agent approaching a
@@ -1060,7 +1056,7 @@ target in its visual field.
 The right column (\protect\subref{fig:experiment:agent2},
 \protect\subref{fig:experiment:sensor2}, \protect\subref{fig:experiment:pos2},
 \protect\subref{fig:experiment:distance2},
-\protect\subref{fig:experiment:similar2}) shows an agent without a target in its
+\protect\subref{fig:experiment:similar2}) shows an agent with currently no target in its
 visual field, rotating clockwise (\protect\subref{fig:experiment:similar2}) to
 find it.
 }
