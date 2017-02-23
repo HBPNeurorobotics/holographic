@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  20 FEB 2017 18:52
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  23 FEB 2017 21:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -821,113 +821,64 @@ our preamble.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 61.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 57.
 LaTeX Font Info:    Font shape `OMS/ptm/m/it' in size <9> not available
-(Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 61.
+(Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 57.
 
-Underfull \hbox (badness 10000) in paragraph at lines 61--61
+Underfull \hbox (badness 10000) in paragraph at lines 57--57
 
  []
 
-LaTeX Font Info:    Try loading font information for OT1+ptmcm on input line 61
+LaTeX Font Info:    Try loading font information for OT1+ptmcm on input line 57
 .
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptmcm.fd
 File: ot1ptmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OT1/ptmcm.
 )
-LaTeX Font Info:    Try loading font information for OML+ptmcm on input line 61
+LaTeX Font Info:    Try loading font information for OML+ptmcm on input line 57
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlptmcm.fd
 File: omlptmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ptmcm.
 )
-LaTeX Font Info:    Try loading font information for OMX+psycm on input line 61
+LaTeX Font Info:    Try loading font information for OMX+psycm on input line 57
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxpsycm.fd
 File: omxpsycm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/psycm.
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 61.
+LaTeX Font Info:    Try loading font information for U+msa on input line 57.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 61.
+LaTeX Font Info:    Try loading font information for U+msb on input line 57.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 61.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 57.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 61.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 57.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 61.
-
-
-LaTeX Warning: Citation `Plate:1995:HolographicReducedRepresentations' on page 
-1 undefined on input line 61.
-
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 57.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <13> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 63.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 59.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 66.
-
-LaTeX Warning: Citation `Levy:2008:VectorSymbolicArchitectures' on page 1 undef
-ined on input line 66.
-
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 64.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 68.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 64.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 68.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 64.
+
 <img/probe_for_pen_w_img.png, id=4, 690.58pt x 673.51625pt>
 File: img/probe_for_pen_w_img.png Graphic file (type png)
 
 <use img/probe_for_pen_w_img.png>
-Package pdftex.def Info: img/probe_for_pen_w_img.png used on input line 77.
+Package pdftex.def Info: img/probe_for_pen_w_img.png used on input line 73.
 (pdftex.def)             Requested size: 192.07167pt x 187.31918pt.
 
-
-LaTeX Warning: Citation `Plate:1995:HolographicReducedRepresentations' on page 
-1 undefined on input line 81.
-
-
-LaTeX Warning: Citation `DeVine:2010:Semanticoscillations' on page 1 undefined 
-on input line 81.
-
-
-LaTeX Warning: Citation `Kanerva:1994:SpatterCodeEncoding' on page 1 undefined 
-on input line 81.
-
-
-LaTeX Warning: Citation `Kleyko:2016:HolographicGraphNeuron' on page 1 undefine
-d on input line 81.
-
-
-LaTeX Warning: Citation `Patyk-Lonska:2011:DistributedRepresentationsBased' on 
-page 1 undefined on input line 81.
-
-
-LaTeX Warning: Citation `Recchia:2015:EncodingSequentialInformation' on page 1 
-undefined on input line 81.
-
-
-LaTeX Warning: Citation `Golosio:2015:CognitiveNeuralArchitecture' on page 1 un
-defined on input line 83.
-
-
-LaTeX Warning: Citation `Kleyko:2016:PatternRecognitionVector' on page 1 undefi
-ned on input line 84.
-
-
-LaTeX Warning: Citation `Eliasmith:2012:LargeScaleModel' on page 1 undefined on
- input line 84.
-
-
-LaTeX Warning: Citation `Levy:2013:LearningBehaviorHierarchies' on page 1 undef
-ined on input line 85.
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 1661) has occurred while \output is active []
 
  [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
@@ -935,17 +886,12 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
  <./img/probe_for_pen_w_img.png>]
-
-LaTeX Warning: Citation `Eliasmith:2012:LargeScaleModel' on page 2 undefined on
- input line 87.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 99--101
+Underfull \hbox (badness 10000) in paragraph at lines 95--97
 
  []
 
 
-Overfull \hbox (1.37132pt too wide) detected at line 130
+Overfull \hbox (1.37132pt too wide) detected at line 126
  []$[]\OML/ptmcm/m/it/10 red \OMS/pzccm/m/n/10 
  \OML/ptmcm/m/it/10 triangle \OMS/pzccm/m/n/10 
  \OML/ptmcm/m/it/10 triangle[] \OT1/ptmcm/m/n/10 + \OML/ptmcm/m/it/10 blue \OMS
@@ -956,9 +902,9 @@ Overfull \hbox (1.37132pt too wide) detected at line 130
 
 [2]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 148.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 144.
 
-Underfull \hbox (badness 2903) in paragraph at lines 151--152
+Underfull \hbox (badness 2903) in paragraph at lines 147--148
 \OT1/ptm/m/n/10 Holographic Re-duced Rep-re-sen-ta-tions are VSAs
  []
 
@@ -966,337 +912,252 @@ Underfull \hbox (badness 2903) in paragraph at lines 151--152
 File: img/scalar-pre-perm.png Graphic file (type png)
 
 <use img/scalar-pre-perm.png>
-Package pdftex.def Info: img/scalar-pre-perm.png used on input line 211.
+Package pdftex.def Info: img/scalar-pre-perm.png used on input line 202.
 (pdftex.def)             Requested size: 213.41443pt x 41.44176pt.
 
 <img/scalar-pre-perm-probe.png, id=22, 1349.04pt x 259.97125pt>
 File: img/scalar-pre-perm-probe.png Graphic file (type png)
 
 <use img/scalar-pre-perm-probe.png>
-Package pdftex.def Info: img/scalar-pre-perm-probe.png used on input line 216.
+Package pdftex.def Info: img/scalar-pre-perm-probe.png used on input line 207.
 (pdftex.def)             Requested size: 213.41443pt x 41.12419pt.
- [3]
-<img/scalar-pre-perm-fft.png, id=27, 866.23625pt x 261.97874pt>
+ [3 <./img/scalar-pre-perm.png> <./img/scalar-pre-perm-probe.png>]
+<img/scalar-pre-perm-fft.png, id=29, 866.23625pt x 261.97874pt>
 File: img/scalar-pre-perm-fft.png Graphic file (type png)
 
 <use img/scalar-pre-perm-fft.png>
-Package pdftex.def Info: img/scalar-pre-perm-fft.png used on input line 232.
+Package pdftex.def Info: img/scalar-pre-perm-fft.png used on input line 221.
 (pdftex.def)             Requested size: 213.41443pt x 64.54312pt.
 
-<img/scalar-random-fft.png, id=28, 876.27374pt x 259.97125pt>
+<img/scalar-random-fft.png, id=30, 876.27374pt x 259.97125pt>
 File: img/scalar-random-fft.png Graphic file (type png)
 
 <use img/scalar-random-fft.png>
-Package pdftex.def Info: img/scalar-random-fft.png used on input line 233.
+Package pdftex.def Info: img/scalar-random-fft.png used on input line 222.
 (pdftex.def)             Requested size: 213.41443pt x 63.31467pt.
 
-<img/scalar-perm-step-fft.png, id=29, 1334.9875pt x 259.97125pt>
+<img/scalar-perm-step-fft.png, id=31, 1334.9875pt x 259.97125pt>
 File: img/scalar-perm-step-fft.png Graphic file (type png)
 
 <use img/scalar-perm-step-fft.png>
-Package pdftex.def Info: img/scalar-perm-step-fft.png used on input line 244.
+Package pdftex.def Info: img/scalar-perm-step-fft.png used on input line 233.
 (pdftex.def)             Requested size: 213.41443pt x 41.55658pt.
 
-<img/scalar-post-perm.png, id=30, 1349.04pt x 261.97874pt>
+<img/scalar-post-perm.png, id=32, 1349.04pt x 261.97874pt>
 File: img/scalar-post-perm.png Graphic file (type png)
 
 <use img/scalar-post-perm.png>
-Package pdftex.def Info: img/scalar-post-perm.png used on input line 256.
+Package pdftex.def Info: img/scalar-post-perm.png used on input line 245.
 (pdftex.def)             Requested size: 213.41443pt x 41.44176pt.
 
-<img/scalar-post-perm-probe.png, id=31, 1349.04pt x 259.97125pt>
+<img/scalar-post-perm-probe.png, id=33, 1349.04pt x 259.97125pt>
 File: img/scalar-post-perm-probe.png Graphic file (type png)
 
 <use img/scalar-post-perm-probe.png>
-Package pdftex.def Info: img/scalar-post-perm-probe.png used on input line 261.
+Package pdftex.def Info: img/scalar-post-perm-probe.png used on input line 250.
 
 (pdftex.def)             Requested size: 213.41443pt x 41.12419pt.
-
-Overfull \hbox (25.26459pt too wide) in paragraph at lines 295--295
-[]\OT1/pcr/m/n/9 \State $result\gets IFFT(FFT(memory)* FFT(op)^{-1})$[] 
- []
-
-
-Overfull \hbox (29.85457pt too wide) in paragraph at lines 295--295
-[]\OT1/pcr/m/n/9 \State $s \gets cosineSimilarity(t_{symbol}, result)$[] 
- []
-
-[4 <./img/scalar-pre-perm.png> <./img/scalar-pre-perm-probe.png> <./img/scalar-
-pre-perm-fft.png> <./img/scalar-random-fft.png> <./img/scalar-perm-step-fft.png
-> <./img/scalar-post-perm.png> <./img/scalar-post-perm-probe.png>]
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 334.
+(Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 271.
 
 
-Underfull \hbox (badness 2165) in paragraph at lines 335--336
+Underfull \hbox (badness 2165) in paragraph at lines 272--273
 []\OT1/ptm/m/n/10 Existence of an item in mem-ory can-not be
  []
 
-[5] <img/capacity.png, id=46, 385.44pt x 270.00874pt>
+[4 <./img/scalar-pre-perm-fft.png> <./img/scalar-random-fft.png> <./img/scalar-
+perm-step-fft.png> <./img/scalar-post-perm.png> <./img/scalar-post-perm-probe.p
+ng>] <img/capacity.png, id=42, 385.44pt x 270.00874pt>
 File: img/capacity.png Graphic file (type png)
  <use img/capacity.png>
-Package pdftex.def Info: img/capacity.png used on input line 343.
+Package pdftex.def Info: img/capacity.png used on input line 280.
 (pdftex.def)             Requested size: 96.03583pt x 67.27129pt.
 
-Underfull \hbox (badness 1248) in paragraph at lines 344--344
-\OT1/ptm/m/n/9 dom vec-tors. Ac-cu-racy
- []
-
-<img/capacity_scalar_30.png, id=47, 385.44pt x 270.00874pt>
+<img/capacity_scalar_30.png, id=43, 385.44pt x 270.00874pt>
 File: img/capacity_scalar_30.png Graphic file (type png)
 
 <use img/capacity_scalar_30.png>
-Package pdftex.def Info: img/capacity_scalar_30.png used on input line 349.
+Package pdftex.def Info: img/capacity_scalar_30.png used on input line 286.
 (pdftex.def)             Requested size: 96.03583pt x 67.27129pt.
 
-<img/capacity_coordinate.png, id=48, 385.44pt x 270.00874pt>
+<img/capacity_coordinate.png, id=44, 385.44pt x 270.00874pt>
 File: img/capacity_coordinate.png Graphic file (type png)
 
 <use img/capacity_coordinate.png>
-Package pdftex.def Info: img/capacity_coordinate.png used on input line 356.
+Package pdftex.def Info: img/capacity_coordinate.png used on input line 293.
 (pdftex.def)             Requested size: 96.03583pt x 67.27129pt.
 
+Underfull \hbox (badness 1158) in paragraph at lines 307--308
+[]\OT1/ptm/m/n/10 The ex-per-i-ment was re-peated for su-per-pos-ing
+ []
 
-LaTeX Warning: Citation `Plate:1995:HolographicReducedRepresentations' on page 
-6 undefined on input line 366.
-
-<img/map_ticks.jpg, id=49, 3549.26pt x 2773.36125pt>
+<img/map_ticks.jpg, id=45, 3549.26pt x 2773.36125pt>
 File: img/map_ticks.jpg Graphic file (type jpg)
  <use img/map_ticks.jpg>
-Package pdftex.def Info: img/map_ticks.jpg used on input line 387.
+Package pdftex.def Info: img/map_ticks.jpg used on input line 324.
 (pdftex.def)             Requested size: 128.04996pt x 100.03983pt.
 
-<img/coord_example_1.png, id=50, 578.16pt x 433.62pt>
+<img/coord_example_1.png, id=46, 578.16pt x 433.62pt>
 File: img/coord_example_1.png Graphic file (type png)
 
 <use img/coord_example_1.png>
-Package pdftex.def Info: img/coord_example_1.png used on input line 394.
+Package pdftex.def Info: img/coord_example_1.png used on input line 331.
 (pdftex.def)             Requested size: 96.03583pt x 72.0206pt.
 
-<img/coord_example_2.png, id=51, 578.16pt x 433.62pt>
+<img/coord_example_2.png, id=47, 578.16pt x 433.62pt>
 File: img/coord_example_2.png Graphic file (type png)
 
 <use img/coord_example_2.png>
-Package pdftex.def Info: img/coord_example_2.png used on input line 400.
+Package pdftex.def Info: img/coord_example_2.png used on input line 337.
 (pdftex.def)             Requested size: 96.03583pt x 72.0206pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 401--401
-[]\OT1/ptm/m/n/9 (c) |En-cod-ing of the
- []
-
-
-Underfull \hbox (badness 1997) in paragraph at lines 401--401
-\OT1/ptm/m/n/9 "watch" ob-ject ID as a
- []
-
-<img/coord_example_3.png, id=52, 578.16pt x 433.62pt>
+<img/coord_example_3.png, id=48, 578.16pt x 433.62pt>
 File: img/coord_example_3.png Graphic file (type png)
 
 <use img/coord_example_3.png>
-Package pdftex.def Info: img/coord_example_3.png used on input line 407.
+Package pdftex.def Info: img/coord_example_3.png used on input line 344.
 (pdftex.def)             Requested size: 136.58627pt x 102.43665pt.
 
-<img/probe_for_mug.png, id=53, 578.16pt x 433.62pt>
+<img/probe_for_mug.png, id=49, 578.16pt x 433.62pt>
 File: img/probe_for_mug.png Graphic file (type png)
 
 <use img/probe_for_mug.png>
-Package pdftex.def Info: img/probe_for_mug.png used on input line 414.
+Package pdftex.def Info: img/probe_for_mug.png used on input line 351.
 (pdftex.def)             Requested size: 96.03583pt x 72.0206pt.
 
-<img/probe_for_pen.png, id=54, 578.16pt x 433.62pt>
+<img/probe_for_pen.png, id=50, 578.16pt x 433.62pt>
 File: img/probe_for_pen.png Graphic file (type png)
 
 <use img/probe_for_pen.png>
-Package pdftex.def Info: img/probe_for_pen.png used on input line 420.
+Package pdftex.def Info: img/probe_for_pen.png used on input line 357.
 (pdftex.def)             Requested size: 96.03583pt x 72.0206pt.
- [6 <./img/capacity.png> <./img/capacity_scalar_30.png> <./img/capacity_coordin
+ [5 <./img/capacity.png> <./img/capacity_scalar_30.png> <./img/capacity_coordin
 ate.png>]
-Overfull \hbox (14.4385pt too wide) in paragraph at lines 451--452
+Overfull \hbox (14.4385pt too wide) in paragraph at lines 388--389
 [][] 
  []
 
 
-Overfull \hbox (14.4385pt too wide) in paragraph at lines 471--472
+Overfull \hbox (14.4385pt too wide) in paragraph at lines 408--409
 [][] 
  []
 
-<img/control_pipeline.png, id=61, 867.24pt x 213.79875pt>
+<img/control_pipeline.png, id=57, 867.24pt x 213.79875pt>
 File: img/control_pipeline.png Graphic file (type png)
 
 <use img/control_pipeline.png>
-Package pdftex.def Info: img/control_pipeline.png used on input line 491.
+Package pdftex.def Info: img/control_pipeline.png used on input line 428.
 (pdftex.def)             Requested size: 213.41443pt x 52.61113pt.
 
-<img/symbol_table.png, id=62, 476.78125pt x 233.87375pt>
+<img/symbol_table.png, id=58, 476.78125pt x 233.87375pt>
 File: img/symbol_table.png Graphic file (type png)
 
 <use img/symbol_table.png>
-Package pdftex.def Info: img/symbol_table.png used on input line 499.
+Package pdftex.def Info: img/symbol_table.png used on input line 436.
 (pdftex.def)             Requested size: 149.38943pt x 73.28163pt.
 
-<img/controller.png, id=63, 962.59625pt x 339.2675pt>
+<img/controller.png, id=59, 962.59625pt x 339.2675pt>
 File: img/controller.png Graphic file (type png)
  <use img/controller.png>
-Package pdftex.def Info: img/controller.png used on input line 504.
+Package pdftex.def Info: img/controller.png used on input line 441.
 (pdftex.def)             Requested size: 213.41443pt x 75.2137pt.
 
-Underfull \hbox (badness 5533) in paragraph at lines 515--516
+Underfull \hbox (badness 5533) in paragraph at lines 452--453
 []\OT1/ptm/b/n/10 actions \OT1/ptm/m/n/10 are sym-bolic con-stants rep-re-sent-
 ing
  []
 
 
-Underfull \hbox (badness 5970) in paragraph at lines 519--520
+Underfull \hbox (badness 5970) in paragraph at lines 456--457
 []\OT1/ptm/b/n/10 senses \OT1/ptm/m/n/10 are pre-pro-cessed (clas-si-fied) sen-
 sory
  []
 
-[7 <./img/map_ticks.jpg> <./img/coord_example_1.png> <./img/coord_example_2.png
-> <./img/coord_example_3.png> <./img/probe_for_mug.png> <./img/probe_for_pen.pn
-g> <./img/control_pipeline.png (PNG copy)> <./img/symbol_table.png (PNG copy)> 
-<./img/controller.png>]
-<img/gaussianbar.png, id=74, 396.48125pt x 272.01625pt>
+<img/gaussianbar.png, id=60, 396.48125pt x 272.01625pt>
 File: img/gaussianbar.png Graphic file (type png)
 
 <use img/gaussianbar.png>
-Package pdftex.def Info: img/gaussianbar.png used on input line 527.
+Package pdftex.def Info: img/gaussianbar.png used on input line 464.
 (pdftex.def)             Requested size: 96.03583pt x 65.88707pt.
 
-Underfull \hbox (badness 3758) in paragraph at lines 528--528
-[]\OT1/ptm/m/n/9 (a) |Gaus-sian prob-a-bil-ity
- []
-
-<img/gaussianbarperm.png, id=75, 396.48125pt x 272.01625pt>
+<img/gaussianbarperm.png, id=61, 396.48125pt x 272.01625pt>
 File: img/gaussianbarperm.png Graphic file (type png)
 
 <use img/gaussianbarperm.png>
-Package pdftex.def Info: img/gaussianbarperm.png used on input line 533.
+Package pdftex.def Info: img/gaussianbarperm.png used on input line 470.
 (pdftex.def)             Requested size: 96.03583pt x 65.88707pt.
-
-<img/exp_robot_139.png, id=76, 501.875pt x 501.875pt>
+ [6 <./img/map_ticks.jpg> <./img/coord_example_1.png> <./img/coord_example_2.pn
+g> <./img/coord_example_3.png> <./img/probe_for_mug.png> <./img/probe_for_pen.p
+ng> <./img/control_pipeline.png (PNG copy)> <./img/symbol_table.png (PNG copy)>
+ <./img/controller.png>]
+<img/exp_robot_139.png, id=71, 501.875pt x 501.875pt>
 File: img/exp_robot_139.png Graphic file (type png)
 
 <use img/exp_robot_139.png>
-Package pdftex.def Info: img/exp_robot_139.png used on input line 591.
+Package pdftex.def Info: img/exp_robot_139.png used on input line 527.
 (pdftex.def)             Requested size: 98.29851pt x 98.2979pt.
-
-Underfull \hbox (badness 3386) in paragraph at lines 595--595
-\OT1/ptm/m/n/9 items, the blue one be-
- []
-
-<img/robot_235.png, id=77, 501.875pt x 501.875pt>
+ <img/robot_235.png, id=72, 501.875pt x 501.875pt>
 File: img/robot_235.png Graphic file (type png)
- <use img/robot_235.png>
-Package pdftex.def Info: img/robot_235.png used on input line 603.
+
+<use img/robot_235.png>
+Package pdftex.def Info: img/robot_235.png used on input line 537.
 (pdftex.def)             Requested size: 98.29851pt x 98.2979pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 606--606
-\OT1/ptm/m/n/9 three ran-domly placed
- []
-
-<img/3_139.pdf, id=78, 421.76039pt x 190.6046pt>
+ <img/3_139.pdf, id=73, 421.76039pt x 190.6046pt>
 File: img/3_139.pdf Graphic file (type pdf)
- <use img/3_139.pdf>
-Package pdftex.def Info: img/3_139.pdf used on input line 611.
+
+<use img/3_139.pdf>
+Package pdftex.def Info: img/3_139.pdf used on input line 544.
 (pdftex.def)             Requested size: 102.4823pt x 46.31316pt.
-
-Underfull \hbox (badness 1655) in paragraph at lines 614--614
-[]\OT1/ptm/m/n/9 (c) |Sym-bolic sens-ing with
- []
-
-
-Underfull \hbox (badness 3758) in paragraph at lines 614--614
-\OT1/ptm/m/n/9 which re-sults in a scalar
- []
-
-
-Underfull \hbox (badness 1874) in paragraph at lines 614--614
-\OT1/ptm/m/n/9 value rep-re-sent-ing the tar-
- []
-
-<img/3_235.pdf, id=79, 421.76039pt x 190.6046pt>
+ <img/3_235.pdf, id=74, 421.76039pt x 190.6046pt>
 File: img/3_235.pdf Graphic file (type pdf)
- <use img/3_235.pdf>
-Package pdftex.def Info: img/3_235.pdf used on input line 619.
-(pdftex.def)             Requested size: 102.4823pt x 46.31316pt.
 
-<img/1_139.pdf, id=80, 421.83252pt x 190.6046pt>
+<use img/3_235.pdf>
+Package pdftex.def Info: img/3_235.pdf used on input line 550.
+(pdftex.def)             Requested size: 102.4823pt x 46.31316pt.
+ <img/1_139.pdf, id=75, 421.83252pt x 190.6046pt>
 File: img/1_139.pdf Graphic file (type pdf)
- <use img/1_139.pdf>
-Package pdftex.def Info: img/1_139.pdf used on input line 626.
-(pdftex.def)             Requested size: 102.4823pt x 46.30444pt.
 
-<img/1_235.pdf, id=81, 421.83252pt x 190.6046pt>
+<use img/1_139.pdf>
+Package pdftex.def Info: img/1_139.pdf used on input line 556.
+(pdftex.def)             Requested size: 102.4823pt x 46.30444pt.
+ <img/1_235.pdf, id=76, 421.83252pt x 190.6046pt>
 File: img/1_235.pdf Graphic file (type pdf)
- <use img/1_235.pdf>
-Package pdftex.def Info: img/1_235.pdf used on input line 634.
+
+<use img/1_235.pdf>
+Package pdftex.def Info: img/1_235.pdf used on input line 562.
 (pdftex.def)             Requested size: 102.4823pt x 46.30444pt.
-
-Underfull \hbox (badness 2351) in paragraph at lines 637--637
-[]\OT1/ptm/m/n/9 (f) |Agent 2 lost track of
- []
-
-
-Underfull \hbox (badness 1389) in paragraph at lines 637--637
-\OT1/ptm/m/n/9 prompts a new tar-get cre-
- []
-
-<img/4_139.pdf, id=82, 421.83565pt x 190.6046pt>
+ <img/4_139.pdf, id=77, 421.83565pt x 190.6046pt>
 File: img/4_139.pdf Graphic file (type pdf)
- <use img/4_139.pdf>
-Package pdftex.def Info: img/4_139.pdf used on input line 642.
-(pdftex.def)             Requested size: 102.4823pt x 46.30444pt.
 
-<img/4_235.pdf, id=83, 421.83565pt x 190.6046pt>
+<use img/4_139.pdf>
+Package pdftex.def Info: img/4_139.pdf used on input line 568.
+(pdftex.def)             Requested size: 102.4823pt x 46.30444pt.
+ <img/4_235.pdf, id=78, 421.83565pt x 190.6046pt>
 File: img/4_235.pdf Graphic file (type pdf)
- <use img/4_235.pdf>
-Package pdftex.def Info: img/4_235.pdf used on input line 650.
+
+<use img/4_235.pdf>
+Package pdftex.def Info: img/4_235.pdf used on input line 574.
 (pdftex.def)             Requested size: 102.4823pt x 46.30444pt.
-
-<img/2_139.pdf, id=84, 421.76979pt x 190.6046pt>
+ <img/2_139.pdf, id=79, 421.76979pt x 190.6046pt>
 File: img/2_139.pdf Graphic file (type pdf)
- <use img/2_139.pdf>
-Package pdftex.def Info: img/2_139.pdf used on input line 657.
+
+<use img/2_139.pdf>
+Package pdftex.def Info: img/2_139.pdf used on input line 580.
 (pdftex.def)             Requested size: 102.4823pt x 46.31316pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 661--661
-\OT1/ptm/m/n/9 and $\OML/ptmcm/m/it/9 right[]wheel$ \OT1/ptm/m/n/9 to the
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 661--661
-\OML/ptmcm/m/it/9 forwards$ \OT1/ptm/m/n/9 and $\OML/ptmcm/m/it/9 backwards$
- []
-
-
-Underfull \hbox (badness 1803) in paragraph at lines 661--661
-\OT1/ptm/m/n/9 be-cause $\OML/ptmcm/m/it/9 forwards$ \OT1/ptm/m/n/9 has the
- []
-
-
-Underfull \hbox (badness 1902) in paragraph at lines 661--661
-\OT1/ptm/m/n/9 high-est sim-i-lar-ity for both
- []
-
-<img/2_235.pdf, id=85, 421.76979pt x 190.6046pt>
+ <img/2_235.pdf, id=80, 421.76979pt x 190.6046pt>
 File: img/2_235.pdf Graphic file (type pdf)
- <use img/2_235.pdf>
-Package pdftex.def Info: img/2_235.pdf used on input line 666.
+
+<use img/2_235.pdf>
+Package pdftex.def Info: img/2_235.pdf used on input line 586.
 (pdftex.def)             Requested size: 102.4823pt x 46.31316pt.
 
-
-LaTeX Warning: Float too large for page by 39.53835pt on input line 687.
-
-
-Underfull \hbox (badness 2460) in paragraph at lines 690--695
+Underfull \hbox (badness 2460) in paragraph at lines 595--600
 \OT1/ptm/m/n/10 A con-crete bio-phys-i-cal ev-i-dence and the-o-ret-i-cal
  []
 
-No file Example.bbl.
-[8 <./img/gaussianbar.png> <./img/gaussianbarperm.png>] [9
-
- <./img/exp_robot_139.png (PNG copy)> <./img/robot_235.png (PNG copy)> <./img/3
-_139.pdf> <./img/3_235.pdf
+[7 <./img/gaussianbar.png> <./img/gaussianbarperm.png> <./img/exp_robot_139.png
+ (PNG copy)> <./img/robot_235.png (PNG copy)> <./img/3_139.pdf> <./img/3_235.pd
+f
 
 pdfTeX warning: pdflatex (file ./img/3_235.pdf): PDF inclusion: multiple pdfs w
 ith page group included in a single page
@@ -1324,27 +1185,28 @@ ith page group included in a single page
 
 pdfTeX warning: pdflatex (file ./img/2_235.pdf): PDF inclusion: multiple pdfs w
 ith page group included in a single page
->] (./Example.aux) ) 
+>] (./Example.bbl) [8
+
+] (./Example.aux) ) 
 Here is how much of TeX's memory you used:
- 21896 strings out of 494935
- 499285 string characters out of 6178122
- 619837 words of memory out of 5000000
- 24615 multiletter control sequences out of 15000+600000
- 52074 words of font info for 108 fonts, out of 8000000 for 9000
+ 21869 strings out of 494935
+ 498897 string characters out of 6178122
+ 618837 words of memory out of 5000000
+ 24592 multiletter control sequences out of 15000+600000
+ 47347 words of font info for 100 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 63i,13n,74p,1121b,1985s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive
-/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/t
-imes/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Example.pdf (9 pages, 2875809 bytes).
+ 63i,13n,74p,1139b,1985s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}<
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/time
+s/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Example.pdf (8 pages, 2873077 bytes).
 PDF statistics:
- 351 PDF objects out of 1000 (max. 8388607)
- 92 compressed objects within 1 object stream
+ 343 PDF objects out of 1000 (max. 8388607)
+ 87 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  173 words of extra memory for PDF output out of 10000 (max. 10000000)
 

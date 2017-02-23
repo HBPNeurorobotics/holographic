@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Example.aux
+The style file: apalike.bst
+Database file #1: example.bib
+Warning--there's a number but no series in DeVine:2010:Semanticoscillations
+Warning--can't use both author and editor fields in Kanerva:1994:SpatterCodeEncoding
+Warning--empty publisher in Kleyko:2016:PatternRecognitionVector
+You've used 11 entries,
+            1935 wiz_defined-function locations,
+            556 strings with 6368 characters,
+and the built_in function-call counts, 4846 in all, are:
+= -- 484
+> -- 195
+< -- 10
++ -- 66
+- -- 66
+* -- 408
+:= -- 817
+add.period$ -- 33
+call.type$ -- 11
+change.case$ -- 86
+chr.to.int$ -- 11
+cite$ -- 14
+duplicate$ -- 188
+empty$ -- 332
+format.name$ -- 81
+if$ -- 966
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 13
+newline$ -- 57
+num.names$ -- 33
+pop$ -- 78
+preamble$ -- 1
+purify$ -- 88
+quote$ -- 0
+skip$ -- 152
+stack$ -- 0
+substring$ -- 352
+swap$ -- 43
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 62
+warning$ -- 3
+while$ -- 44
+width$ -- 0
+write$ -- 146
+(There were 3 warnings)

@@ -1,0 +1,68 @@
+\begin{thebibliography}{}
+
+\bibitem[{De Vine} and Bruza, 2010]{DeVine:2010:Semanticoscillations}
+{De Vine}, L. and Bruza, P. (2010).
+\newblock {Semantic Oscillations: Encoding Context and Structure in Complex
+  Valued Holographic Vectors}.
+\newblock In {\em AAAI Fall Symp. Ser.}, number 48-55, pages 48--55, Arlington,
+  Virginia. AAAI Press.
+
+\bibitem[Eliasmith et~al., 2012]{Eliasmith:2012:LargeScaleModel}
+Eliasmith, C., Stewart, T.~C., Choo, X., Bekolay, T., DeWolf, T., Tang, Y., and
+  Rasmussen, D. (2012).
+\newblock {A Large-Scale Model of the Functioning Brain}.
+\newblock {\em Science (80-. ).}, 338(6111):1202--1205.
+
+\bibitem[Golosio et~al., 2015]{Golosio:2015:CognitiveNeuralArchitecture}
+Golosio, B., Cangelosi, A., Gamotina, O., and Masala, G.~L. (2015).
+\newblock {A cognitive neural architecture able to learn and communicate
+  through natural language}.
+\newblock {\em PLoS One}, 10(11).
+
+\bibitem[Kanerva, 1994]{Kanerva:1994:SpatterCodeEncoding}
+Kanerva, P. (1994).
+\newblock {\em {The Spatter Code for Encoding Concepts at Many Levels}}, pages
+  226--229.
+\newblock Springer London, London.
+
+\bibitem[Kleyko, 2016]{Kleyko:2016:PatternRecognitionVector}
+Kleyko, D. (2016).
+\newblock {\em {Pattern Recognition with Vector Symbolic Architectures}}.
+
+\bibitem[Kleyko et~al., 2016]{Kleyko:2016:HolographicGraphNeuron}
+Kleyko, D., Osipov, E., Senior, A., Khan, A.~I., and Sekercioglu, Y.~A. (2016).
+\newblock {Holographic Graph Neuron: A Bioinspired Architecture for Pattern
+  Processing}.
+\newblock {\em IEEE Trans. Neural Networks Learn. Syst.}, pages 1--9.
+
+\bibitem[Levy et~al., 2013]{Levy:2013:LearningBehaviorHierarchies}
+Levy, S.~D., Bajracharya, S., and Gayler, R.~W. (2013).
+\newblock {Learning behavior hierarchies via high-dimensional sensor
+  projection}.
+\newblock {\em AAAI Work. - Tech. Rep.}, WS-13-12:25--27.
+
+\bibitem[Levy and Gayler, 2008]{Levy:2008:VectorSymbolicArchitectures}
+Levy, S.~D. and Gayler, R.~W. (2008).
+\newblock {Vector Symbolic Architectures: A New Building Material for
+  Artificial General Intelligence}.
+\newblock {\em Proc. First Conf. Artif. Gen. Intell.}, pages 414--418.
+
+\bibitem[Patyk-L{\'{o}}nska et~al.,
+  2011]{Patyk-Lonska:2011:DistributedRepresentationsBased}
+Patyk-L{\'{o}}nska, A., Czachor, M., and Aerts, D. (2011).
+\newblock {Distributed representations based on geometric Algebra: The
+  continuous model}.
+\newblock {\em Inform.}, 35(4):407--417.
+
+\bibitem[Plate, 1995]{Plate:1995:HolographicReducedRepresentations}
+Plate, T.~A. (1995).
+\newblock {Holographic Reduced Representations}.
+\newblock {\em IEEE Trans. Neural Networks}, 6(3):623--641.
+
+\bibitem[Recchia et~al., 2015]{Recchia:2015:EncodingSequentialInformation}
+Recchia, G., Sahlgren, M., Kanerva, P., and Jones, M.~N. (2015).
+\newblock {Encoding Sequential Information in Semantic Space Models: Comparing
+  Holographic Reduced Representation and Random Permutation}.
+\newblock {\em Comput. Intell. Neurosci.}, 2015:1--18.
+
+\end{thebibliography}
