@@ -264,12 +264,14 @@ This vector can now be smoothed out, after which the peak can easily be identifi
 		
 		An attempt has been made to overcome the curse of dimensionality by splitting the vector up in the number of dimensions and simply encoding the value for each dimension in the resulting sub-vectors. Unfortunately it then becomes impossible to differentiate among multiple coordinates encoded in the same vector. Specifically, when decoding, there is no way to know which of the values in separate sub-vectors belong to each other and which don't. On the other hand if only a single coordinate needs to be bound to another symbol this approach is still feasible and will permit the use of smaller vectors for high accuracy. Concretely, for $d$ dimensions, splitting up the vector will require the size to be raised by a factor of $d$ to maintain the same accuracy. Reinterpreting the shape will require the size to increase exponentially by the power of $d$ to keep the accuracy.
 			
+	\newpage			
+			
 	\section{PROPERTIES OF HOLOGRAPHIC MEMORIES}
 	
 	Vector Symbolic Architectures in general have the following properties:
 	\begin{itemize}
 		\item The number of items stored in a single memory vector is not known based solely on it's content.
-		\item Existence of an item in memory cannot be checked explicitly. The closest equivalent is to probe the memory for the item of interest and to compare the similarity of the decoded result to anything meaningful. Even then it could be that the result of probing for anything might still require to be probed by a further symbol to retrieve the sought out item.
+		\item The existence of an item in memory cannot be checked explicitly. The closest equivalent is to probe the memory for the item of interest and to compare the similarity of the decoded result to anything meaningful. Even then it could be that the result of probing for anything might still require to be probed by a further symbol to retrieve the sought out item.
 		\item Chances of successful recall depend on the actual stored data.
 		\item Memories can be changed in an online fashion. There is no need to recreate memories from scratch - symbols can be appended to or removed from already existing memory vectors if present.
 	\end{itemize}
@@ -300,9 +302,7 @@ This vector can now be smoothed out, after which the peak can easily be identifi
 	
 	\subsection{Capacity}
 	
-	Just as Plate has done in the original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested the memory capacity in terms of accuracy of successful recall for variable numbers of bound pairs. Results are shown in figure \ref{fig:capacity}.
-	
-	As we can see, a $512$ element vector starts decreasing accuracy of recall after $10$ pairs stored in a single memory block. A $4096$ and $8192$ element vectors can almost perfectly recall $20$ associated pairs, which matches the results of Plate using a lookup table and a clean-up process. 
+	Just as Plate has done in the original HRR paper \cite{Plate:1995:HolographicReducedRepresentations} we have tested the memory capacity in terms of accuracy of successful recall for variable numbers of bound pairs. Results are shown in figure \ref{fig:capacity}. As we can see, a $512$ element vector starts decreasing accuracy of recall after $10$ pairs stored in a single memory block. A $4096$ and $8192$ element vectors can almost perfectly recall $20$ associated pairs, which matches the results of Plate using a lookup table and a clean-up process. 
 	
 	The experiment was repeated for superposing bounded pairs of a random symbol and a scalar, as well as pairs of a random symbol and a 2D coordinate. Figure \ref{fig:capacity_scalar} shows the result for scalars. In this instance the probe was always done for the scalar value. The total accuracy of the result depends on new factors, the main of which will be the quality of the smoothing function used to clean up the noise from the resulting signal. This will determine how much the peaks position may shift in some direction. In our experiments a Hanning window smoothing technique was used and a $2\%$ deviance from the exact initial scalar was allowed. With these settings probing performed significantly better than solely among random symbols. Vectors of size 8192 even managed to maintain $100\%$ accuracy when storing $30$ bindings. Intuitively this can be explained as follows: Gaussian distributions are far more noise tolerant than random vectors. Vectors need to maintain a high similarity to be declared identical, whereas Gaussian distributions only need to present peaks after smoothing. 
 	
@@ -475,7 +475,7 @@ An example of this kind of symbolic script is given in figure \ref{fig:symbolic-
 		\label{fig:gaussian}
 		\end{figure}	
 
-	In our experiment we have extended the detection of light to a position along the visual field, reduced to the X-axis, rather than just binary statements like "light is visible to the left". To visualize the difference chart \ref{fig:gaussianbar} shows the position of light for two consecutive time steps. The value $0$ represents the far left corner of the sensor, and $1$ the far right one. The chart can be viewed as a (normalized) probability of light being at a certain position, and both cases show it being somewhere right of the center. Chart \ref{fig:gaussianbarperm} shows what the Gaussian distributions look like when they are permuted. This shape of theirs is then used as a symbol. Concretely, instead of encoding a random symbol for "light\_left" we encode a scalar representing the position of light along the visual field and bind it with the rest of the controller components. Accordingly, when running the experiment, once the light reaches a position encoded in the controller it will issue new commands to the vehicle.
+	In our experiment we have extended the detection of light to a position along the visual field, reduced to the X-axis, rather than just binary statements like "light is visible to the left". To visualize the difference chart \ref{fig:gaussianbar} shows the position of light for two consecutive time steps. The value $0$ represents the far left corner of the sensor, and $1$ the far right one. The chart can be viewed as a probability of light being at a certain position, and both cases show it being somewhere right of the center. Chart \ref{fig:gaussianbarperm} shows what the Gaussian distributions look like when they are permuted. Instead of encoding a random symbol for "light\_left" we encode a scalar representing the position of light along the visual field and bind it with the rest of the controller components. Accordingly, when running the experiment, once the light reaches a position encoded in the controller it will issue new commands to the vehicle.
 
 The symbolic scripting experiment is set up using a single-sensor Braitenberg
 vehicle (see figures \ref{fig:experiment:agent1} and
@@ -486,8 +486,8 @@ corresponding view space positions in $[0,1]$ (far left to far right).
 % result, but IIRC this did not work well. maybe figure it out?
 All returned objects are then compared to the agent's target object.
 If the target is found, the holographic controller is probed with its view space
-position which, due to the similarity of scalars, yields results even for
-values that lie between the originally stored values and can consequently be
+position. This position yields results even for
+values that lie between the originally stored values due to the nature of scalar encoding and can consequently be
 probed with the symbols $left\_wheel$ and $right\_wheel$ to extract the symbolic
 actions $forwards$ or $backwards$.
 If the target is not found or no action could be determined, the agent defaults
@@ -502,9 +502,7 @@ At tick $-30$, the object enters the agent's visual field and continuously nears
 Then, with the sensory value of ${\sim}0.5$, the actions for both wheels switch
 to $forwards$ (figure \ref{fig:experiment:similar1}) and the agent approaches
 the target, constantly decreasing its distance
-(figure \ref{fig:experiment:distance1}).
-
-In the right column of figure \ref{fig:experiment}, the target is not yet
+(figure \ref{fig:experiment:distance1}). In the right column of figure \ref{fig:experiment}, the target is not yet
 in the visual field of the agent.
 This is the result of the agent previously reaching an old target (at approximately tick $-13$) which lead
 to the removal of all current objects and random placement of new ones,
