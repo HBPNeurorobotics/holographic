@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  24 FEB 2017 13:52
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.8.11)  19 MAY 2017 15:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1153,12 +1153,7 @@ File: img/2_235.pdf Graphic file (type pdf)
 Package pdftex.def Info: img/2_235.pdf used on input line 584.
 (pdftex.def)             Requested size: 102.4823pt x 46.31316pt.
 
-Underfull \hbox (badness 2460) in paragraph at lines 593--598
-\OT1/ptm/m/n/10 A con-crete bio-phys-i-cal ev-i-dence and the-o-ret-i-cal
- []
-
-
-Underfull \vbox (badness 4229) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [7 <./img/gaussianbar.png> <./img/gaussianbarperm.png> <./img/exp_robot_139.pn
 g (PNG copy)> <./img/robot_235.png (PNG copy)> <./img/3_139.pdf> <./img/3_235.p
@@ -1190,11 +1185,7 @@ ith page group included in a single page
 
 pdfTeX warning: pdflatex (file ./img/2_235.pdf): PDF inclusion: multiple pdfs w
 ith page group included in a single page
->] (./Example.bbl) [8] (./Example.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+>] (./Example.bbl) [8] (./Example.aux) ) 
 Here is how much of TeX's memory you used:
  21869 strings out of 494935
  498897 string characters out of 6178122
@@ -1203,14 +1194,15 @@ Here is how much of TeX's memory you used:
  47347 words of font info for 100 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  63i,13n,74p,1139b,1985s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
-utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Example.pdf (8 pages, 2872938 bytes).
+{/usr/share/texlive/texmf-dist/fonts/en
+c/dvips/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/urw/symbol/usyr.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/ur
+w/times/utmri8a.pfb>
+Output written on Example.pdf (8 pages, 2872872 bytes).
 PDF statistics:
  343 PDF objects out of 1000 (max. 8388607)
  87 compressed objects within 1 object stream

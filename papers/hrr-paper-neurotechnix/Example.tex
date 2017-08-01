@@ -485,7 +485,7 @@ corresponding view space positions in $[0,1]$ (far left to far right).
 % note: it would be better if we probe with all returned objects and check the
 % result, but IIRC this did not work well. maybe figure it out?
 All returned objects are then compared to the agent's target object.
-If the target is found, the holographic controller is probed with its view space
+If the target is found, the holographic controller is probed with the targets
 position. This position yields results even for
 values that lie between the originally stored values due to the nature of scalar encoding and can consequently be
 probed with the symbols $left\_wheel$ and $right\_wheel$ to extract the symbolic
@@ -496,7 +496,7 @@ a clockwise rotation when probing for wheel actions (see figure
 \ref{fig:experiment:similar2}).
 
 In the left column of figure \ref{fig:experiment}, the agent approaches the blue
-target (figure \ref{fig:experiment:agent1}). Following figure {fig:experiment:pos1} in the beginning (tick $-50$), the
+target (figure \ref{fig:experiment:agent1}). Following figure \ref{fig:experiment:pos1} in the beginning (tick $-50$), the
 agent rotates right (default action) because the target is not visible.
 At tick $-30$, the object enters the agent's visual field and continuously nears the fields center, which is reached at tick $-19$.
 Then, with the sensory value of ${\sim}0.5$, the actions for both wheels switch
@@ -507,11 +507,11 @@ in the visual field of the agent.
 This is the result of the agent previously reaching an old target (at approximately tick $-13$) which lead
 to the removal of all current objects and random placement of new ones,
 including a new target.
-As seen in figure {fig:experiment:pos2} since the new target is placed outside of the agent's field of view, the default
+As seen in figure \ref{fig:experiment:pos2}, since the new target is placed outside of the agent's field of view, the default
 action of probing $no\_object$ is performed. The
-clockwise rotation can also be seen in figure \ref{fig:experiment:similar2}). Regardless of how many times the agent reaches its target it will continue to find and pursue new ones solely with the help of its symbolic controller.
+clockwise rotation can also be seen in figure \ref{fig:experiment:similar2}). 
 
-This experiment shows the effectiveness of our approach in a practical
+Regardless of how many times the agent reaches its target it will continue to find and pursue new ones solely with the help of its symbolic controller. This experiment shows the effectiveness of our approach in a practical
 application by encoding symbolic sensing, actuators and actions in a
 controller.
 
@@ -594,7 +594,7 @@ controller.
 As a consequence, our approach eliminates the need for clean-up memories as they are described in literature.
 Instead, results of probing operations directly give interpretable symbols, which can be decoded in constant computational time.
 In other words, time needed for encoding/decoding is completely independent of the total number of symbols memorized.\\
-	A concrete biophysical evidence and theoretical model of implementation of convolution in the brain is, unfortunately, still missing. Nevertheless, our work assumes convolution as the basic computational substrate of higher level cognition and identifies random permutation as computational requirement without which association of probabilistically encoded symbols is not possible.
+	While concrete biophysical evidence and a theoretical model of convolution in the brain is not yet available our work assumes convolution as the basic computational substrate of higher level cognition and identifies random permutation as a solution for a computational requirement without which association of probabilistically encoded symbols is not possible.
 	
 	
 \vfill
