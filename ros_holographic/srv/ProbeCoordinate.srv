@@ -1,0 +1,5 @@
+int64 X
+int64 Y
+---
+bool return_value
+string[] Label

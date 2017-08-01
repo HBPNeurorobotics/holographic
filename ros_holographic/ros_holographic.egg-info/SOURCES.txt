@@ -1,0 +1,8 @@
+setup.py
+nodes/__init__.py
+nodes/visual_memory_module.py
+ros_holographic.egg-info/PKG-INFO
+ros_holographic.egg-info/SOURCES.txt
+ros_holographic.egg-info/dependency_links.txt
+ros_holographic.egg-info/requires.txt
+ros_holographic.egg-info/top_level.txt
