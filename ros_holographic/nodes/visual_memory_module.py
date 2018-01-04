@@ -41,7 +41,7 @@ class HRR_Node:
   def handle_label_probe(self, req):
       if self.m is None:
 	print "Memory is empty"
-	return ProbeLabelResponse(False, None)
+	return ProbeLabelResponse(False, None, None)
       out = self.m % req.Label
       d = out.decodeCoordinate(dim=2, return_list=True)
       l1 = []
