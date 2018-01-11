@@ -3,8 +3,16 @@
 import rospy
 import sys
 from ros_holographic.srv import * 
-from vsa.hrr import HRR
 import numpy as np
+
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+
+from vsa.hrr import HRR
+
+import pickle
+import time
 
 class HRR_Node: 
 
@@ -51,13 +59,56 @@ class HRR_Node:
 	  l1.append(s[0])
 	  l2.append(s[1])
       return ProbeLabelResponse(True, l1, l2)
-    
+
+  def handle_label_plot(self, req):
+      if self.m is None:
+	print "Memory is empty"
+	return ProbeLabelResponse(False, None, None)
+      timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
+      path = '/tmp/%s-%s.png' % (timestamp, req.Label)
+      out = (self.m % req.Label)
+      vect = out.reverse_permute(out.memory)
+      l = int(round((vect.size ** (0.5))))
+      vect = np.reshape(vect, (l, l))
+      X = np.arange(-len(vect)/2, len(vect)/2, 1)
+      Y = np.arange(-len(vect[0])/2, len(vect[0])/2, 1)
+      X, Y = np.meshgrid(X, Y)
+      fig = plt.figure()
+      ax = fig.gca(projection='3d')
+      surf = ax.plot_surface(X, Y, vect, rstride=1, cstride=1, cmap='coolwarm', linewidth=0, antialiased=True)
+      ax.set_zlim(np.min(vect)/3, 1.1*np.max(vect))
+      ax.set_xlabel('Y Index')
+      ax.set_ylabel('X Index')
+      ax.set_zlabel('Encoded Value')
+      ax.set_xlim3d(-len(vect)/2, len(vect)/2)
+      ax.set_ylim3d(-len(vect[0])/2, len(vect[0])/2)
+      ax.azim = 200
+      fig.colorbar(surf, shrink=0.5, aspect=5)
+      fig.savefig(path, dpi=fig.dpi, transparent=True)
+      print "Saved visualization to %s" % path
+      plt.close(fig)
+      return self.handle_label_probe(req)
+
+  def handle_label_dump(self, req):
+      if self.m is None:
+	print "Memory is empty"
+	return ProbeLabelResponse(False, None, None)
+      timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
+      path = '/tmp/%s-%s.vec' % (timestamp, req.Label)
+      out = (self.m % req.Label)
+      vect = out.reverse_permute(out.memory)
+      pickle.dump(vect, open(path, 'wb'))
+      print "Dumped vector to %s" % path
+      return self.handle_label_probe(req)
+
   def visual_scene_memory_server(self):
       rospy.init_node('visual_scene_memory_server')
       s0 = rospy.Service('clear_memory', ClearMemory, self.handle_clear_memory)
       s1 = rospy.Service('new_object', NewObject, self.handle_new_object)
       s2 = rospy.Service('probe_coordinate', ProbeCoordinate, self.handle_coordinate_probe)
       s3 = rospy.Service('probe_label', ProbeLabel, self.handle_label_probe)
+      s4 = rospy.Service('plot_label', ProbeLabel, self.handle_label_plot)
+      s5 = rospy.Service('dump_label', ProbeLabel, self.handle_label_dump)
       print "HRR Memory Node is ready..."
       rospy.spin()
 
