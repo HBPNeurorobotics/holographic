@@ -62,8 +62,8 @@ class HRR_Node:
 
   def handle_label_plot(self, req):
       if self.m is None:
-	print "Memory is empty"
-	return ProbeLabelResponse(False, None, None)
+        print "Memory is empty"
+        return ProbeLabelResponse(False, None, None)
       timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
       path = '/tmp/%s-%s.png' % (timestamp, req.Label)
       out = (self.m % req.Label)
@@ -91,8 +91,8 @@ class HRR_Node:
 
   def handle_label_dump(self, req):
       if self.m is None:
-	print "Memory is empty"
-	return ProbeLabelResponse(False, None, None)
+        print "Memory is empty"
+        return ProbeLabelResponse(False, None, None)
       timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
       path = '/tmp/%s-%s.vec' % (timestamp, req.Label)
       out = (self.m % req.Label)
