@@ -101,6 +101,31 @@ class HRR_Node:
       print "Dumped vector to %s" % path
       return self.handle_label_probe(req)
 
+  def handle_dump(self, req):
+      if self.m is None:
+        print "Memory is empty"
+        return False
+      if req.Path is '':
+        timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
+        path = '/tmp/%s.vec' % timestamp
+      else:
+        path = req.Path
+      pickle.dump(self.m, open(path, 'wb'))
+      print "Dumped memory to %s" % path
+      return True
+
+  def handle_load(self, req):
+      if self.m is None:
+        print "Memory is empty"
+        return False
+      if req is None:
+        return False
+      path = req.Path
+      m = pickle.load(open(path, 'rb'))
+      self.m = m
+      print "Loaded memory from %s" % path
+      return True
+
   def visual_scene_memory_server(self):
       rospy.init_node('visual_scene_memory_server')
       s0 = rospy.Service('clear_memory', ClearMemory, self.handle_clear_memory)
@@ -109,6 +134,8 @@ class HRR_Node:
       s3 = rospy.Service('probe_label', ProbeLabel, self.handle_label_probe)
       s4 = rospy.Service('plot_label', ProbeLabel, self.handle_label_plot)
       s5 = rospy.Service('dump_label', ProbeLabel, self.handle_label_dump)
+      s6 = rospy.Service('dump', Dump, self.handle_dump)
+      s7 = rospy.Service('load', Dump, self.handle_load)
       print "HRR Memory Node is ready..."
       rospy.spin()
 

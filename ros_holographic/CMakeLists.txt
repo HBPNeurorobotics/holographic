@@ -60,6 +60,7 @@ catkin_python_setup()
    ClearMemory.srv
    ProbeCoordinate.srv
    ProbeLabel.srv
+   Dump.srv
  )
 
 ## Generate actions in the 'action' folder
