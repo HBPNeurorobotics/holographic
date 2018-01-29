@@ -24,7 +24,7 @@ class HRR_Node:
       
   def handle_new_object(self, req):
       if not HRR.valid_range[0][0] < req.X < HRR.valid_range[0][1] or not HRR.valid_range[1][0] < req.X < HRR.valid_range[1][1]:
-	print "Coordinates outside valid range"
+	rospy.loginfo("Coordinates outside valid range")
 	return NewObjectResponse(False)
       if self.m is None:
 	self.m = HRR(req.Label) * (req.X, req.Y)
@@ -34,10 +34,10 @@ class HRR_Node:
 
   def handle_coordinate_probe(self, req):
       if not HRR.valid_range[0][0] < req.X < HRR.valid_range[0][1] or not HRR.valid_range[1][0] < req.X < HRR.valid_range[1][1]:
-	print "Coordinates outside valid range"
+	rospy.loginfo("Coordinates outside valid range")
 	return ProbeCoordinateResponse(False, None)
       elif self.m is None:
-	print "Memory is empty"
+	rospy.loginfo("Memory is empty")
 	return ProbeCoordinateResponse(False, None)
       d = self.m / (req.X, req.Y)
       l = []
@@ -48,7 +48,7 @@ class HRR_Node:
 
   def handle_label_probe(self, req):
       if self.m is None:
-	print "Memory is empty"
+	rospy.loginfo("Memory is empty")
 	return ProbeLabelResponse(False, None, None)
       out = self.m % req.Label
       d = out.decodeCoordinate(dim=2, return_list=True)
@@ -62,7 +62,7 @@ class HRR_Node:
 
   def handle_label_plot(self, req):
       if self.m is None:
-        print "Memory is empty"
+        rospy.loginfo("Memory is empty")
         return ProbeLabelResponse(False, None, None)
       timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
       path = '/tmp/%s-%s.png' % (timestamp, req.Label)
@@ -85,25 +85,25 @@ class HRR_Node:
       ax.azim = 200
       fig.colorbar(surf, shrink=0.5, aspect=5)
       fig.savefig(path, dpi=fig.dpi, transparent=True)
-      print "Saved visualization to %s" % path
+      rospy.loginfo("Saved visualization to %s" % path)
       plt.close(fig)
       return self.handle_label_probe(req)
 
   def handle_label_dump(self, req):
       if self.m is None:
-        print "Memory is empty"
+        rospy.loginfo("Memory is empty")
         return ProbeLabelResponse(False, None, None)
       timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
       path = '/tmp/%s-%s.vec' % (timestamp, req.Label)
       out = (self.m % req.Label)
       vect = out.reverse_permute(out.memory)
       pickle.dump(vect, open(path, 'wb'))
-      print "Dumped vector to %s" % path
+      rospy.loginfo("Dumped vector to %s" % path)
       return self.handle_label_probe(req)
 
   def handle_dump(self, req):
       if self.m is None:
-        print "Memory is empty"
+        rospy.loginfo("Memory is empty")
         return False
       if req.Path is '':
         timestamp = time.strftime("%Y-%m-%d-%H:%M:%S")
@@ -111,19 +111,19 @@ class HRR_Node:
       else:
         path = req.Path
       pickle.dump(self.m, open(path, 'wb'))
-      print "Dumped memory to %s" % path
+      rospy.loginfo("Dumped memory to %s" % path)
       return True
 
   def handle_load(self, req):
       if self.m is None:
-        print "Memory is empty"
+        rospy.loginfo("Memory is empty")
         return False
       if req is None:
         return False
       path = req.Path
       m = pickle.load(open(path, 'rb'))
       self.m = m
-      print "Loaded memory from %s" % path
+      rospy.loginfo("Loaded memory from %s" % path)
       return True
 
   def visual_scene_memory_server(self):
@@ -136,7 +136,7 @@ class HRR_Node:
       s5 = rospy.Service('dump_label', ProbeLabel, self.handle_label_dump)
       s6 = rospy.Service('dump', Dump, self.handle_dump)
       s7 = rospy.Service('load', Dump, self.handle_load)
-      print "HRR Memory Node is ready..."
+      rospy.loginfo("HRR Memory Node is ready...")
       rospy.spin()
 
 if __name__ == "__main__":
